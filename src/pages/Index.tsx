@@ -1,13 +1,35 @@
 
 import LandingFeatureCard from "@/components/LandingFeatureCard";
-import { AirVent, ThermometerSun, Leaf, TrendingUp } from "lucide-react";
+import { AirVent, ThermometerSun, Leaf, TrendingUp, Fan } from "lucide-react";
 
-// For subtle background image
-const backgroundUrl = "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80"; // Abstract mountain/green energy
+// Custom simple AHU graphic using icons and shapes
+const AHUGraphic = () => (
+  <div className="flex items-center justify-center my-8 animate-fade-in-up">
+    {/* Central rectangle for the "unit" */}
+    <div className="relative bg-gray-100 border border-gray-300 rounded-xl w-52 h-24 shadow-md flex items-center justify-between px-6">
+      <Fan className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 text-primary" />
+      <div className="w-full flex flex-col items-center justify-center z-10">
+        <AirVent className="w-14 h-14 text-accent" />
+        <div className="mt-1 text-center text-xs text-gray-500">AHU EC Fan</div>
+      </div>
+      {/* Outflow arrows or pictogram */}
+      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+        <svg width="32" height="16" fill="none" viewBox="0 0 32 16">
+          <g stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round">
+            <path d="M2 8h28" />
+            <path d="M24 4l6 4-6 4" />
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+);
 
 const Index = () => {
   return (
-    <div className="min-h-screen w-full font-inter bg-[url('https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-fixed py-0">
+    <div className="min-h-screen w-full font-inter bg-white py-0">
+      {/* Custom AHU graphic visual */}
+      <AHUGraphic />
       {/* Hero Section */}
       <div className="bg-hero-gradient/80 backdrop-blur-md w-full pt-24 pb-32 flex flex-col items-center relative overflow-hidden">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
