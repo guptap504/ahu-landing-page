@@ -1,18 +1,14 @@
-
 import LandingFeatureCard from "@/components/LandingFeatureCard";
 import { AirVent, ThermometerSun, Leaf, TrendingUp, Fan } from "lucide-react";
 
-// Custom simple AHU graphic using icons and shapes
 const AHUGraphic = () => (
   <div className="flex items-center justify-center my-8 animate-fade-in-up">
-    {/* Central rectangle for the "unit" */}
     <div className="relative bg-gray-100 border border-gray-300 rounded-xl w-52 h-24 shadow-md flex items-center justify-between px-6">
       <Fan className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 text-primary" />
       <div className="w-full flex flex-col items-center justify-center z-10">
         <AirVent className="w-14 h-14 text-accent" />
         <div className="mt-1 text-center text-xs text-gray-500">AHU EC Fan</div>
       </div>
-      {/* Outflow arrows or pictogram */}
       <div className="absolute right-2 top-1/2 -translate-y-1/2">
         <svg width="32" height="16" fill="none" viewBox="0 0 32 16">
           <g stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round">
@@ -28,12 +24,10 @@ const AHUGraphic = () => (
 const Index = () => {
   return (
     <div className="min-h-screen w-full font-inter bg-white py-0">
-      {/* Custom AHU graphic visual */}
       <AHUGraphic />
-      {/* Hero Section */}
       <div className="bg-hero-gradient/80 backdrop-blur-md w-full pt-24 pb-32 flex flex-col items-center relative overflow-hidden">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
-          <span className="inline-block uppercase tracking-widest text-accent mb-2 font-semibold animate-fade-in-up">Automating AHU Fan Control</span>
+          <span className="inline-block uppercase tracking-widest text-accent mb-2 font-semibold animate-fade-in-up">Automating AHU</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 leading-tight animate-fade-in-up">
             Smarter Air. <span className="text-primary">Lower Costs.</span> Greener Future.
           </h1>
@@ -49,7 +43,6 @@ const Index = () => {
           </a>
         </div>
       </div>
-      {/* Features */}
       <section className="relative z-10 -mt-16 pb-16">
         <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           <LandingFeatureCard
@@ -61,7 +54,7 @@ const Index = () => {
           <LandingFeatureCard
             icon={<Leaf className="w-7 h-7 text-green-500" />}
             title="Save Energy"
-            text="Advanced algorithms respond to real-time temperature and humidity, dramatically lowering your building’s energy use."
+            text="Advanced algorithms respond to real-time temperature and humidity, dramatically lowering your building��s energy use."
             colorClass="bg-green-50"
           />
           <LandingFeatureCard
@@ -72,7 +65,6 @@ const Index = () => {
           />
         </div>
       </section>
-      {/* Tech Section */}
       <section className="container max-w-3xl mx-auto px-4 pb-24">
         <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 animate-fade-in-up">
           <div className="flex-1 flex flex-col gap-4 items-center md:items-start">
@@ -105,7 +97,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-      {/* Footer */}
       <footer className="w-full border-t border-gray-200 bg-white/60 py-8 mt-auto">
         <div className="container mx-auto text-center text-gray-500 font-medium">
           &copy; {new Date().getFullYear()} air-flow-harmony-hub &mdash; Optimizing Air, Effortlessly.
