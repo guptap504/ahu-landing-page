@@ -90,19 +90,21 @@ const Index = () => {
                 Garvata
               </button>
             </div>
-            <div className="flex space-x-4 md:space-x-8 text-sm md:text-base">
+            <div className="flex items-center space-x-2 md:space-x-8 text-sm md:text-base">
               <button
                 onClick={scrollToHowItWorks}
                 className="text-gray-600 hover:text-primary transition-colors"
               >
                 How It Works
               </button>
+              <div className="h-4 w-px bg-gray-300"></div>
               <button
                 onClick={scrollToKeyBenefits}
                 className="text-gray-600 hover:text-primary transition-colors"
               >
                 Key Benefits
               </button>
+              <div className="h-4 w-px bg-gray-300"></div>
               <button
                 onClick={scrollToContact}
                 className="text-gray-600 hover:text-primary transition-colors"
@@ -113,8 +115,7 @@ const Index = () => {
           </div>
         </div>
       </nav>
-      {/* <AHUGraphic /> */}
-      <div className="bg-hero-gradient/80 backdrop-blur-md w-full pt-24 pb-32 flex flex-col items-center relative overflow-hidden">
+      <div className="bg-hero-gradient/80 backdrop-blur-md w-full pt-24 pb-32 px-4 flex flex-col items-center relative overflow-hidden">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
           <span className="inline-block uppercase tracking-widest text-accent mb-2 font-semibold animate-fade-in-up">
             Autonomous AHU for Energy Saving
@@ -311,7 +312,7 @@ const Index = () => {
           <h2 className="text-3xl font-extrabold text-center mb-8 text-gray-900">
             Contact Us
           </h2>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12">
+          <div className="flex flex-col md:flex-row justify-start md:justify-center items-start md:items-center gap-8 md:gap-12">
             <div className="flex items-center gap-4">
               <div className="bg-primary/10 p-3 rounded-full">
                 <Mail className="w-6 h-6 text-primary" />
