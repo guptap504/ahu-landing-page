@@ -1,5 +1,6 @@
 import LandingFeatureCard from "@/components/LandingFeatureCard";
-import { AirVent, ThermometerSun, Leaf, TrendingUp, Fan } from "lucide-react";
+import { AirVent, ThermometerSun, Leaf, TrendingUp, Fan, Mail, Phone, MapPin, ArrowUp, Brain, Shield, Zap } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 
 const AHUGraphic = () => (
   <div className="flex items-center justify-center my-8 animate-fade-in-up">
@@ -22,25 +23,49 @@ const AHUGraphic = () => (
 );
 
 const Index = () => {
+  const contactRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const scrollToContact = () => {
+    contactRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen w-full font-inter bg-white py-0">
-      <AHUGraphic />
+      {/* <AHUGraphic /> */}
       <div className="bg-hero-gradient/80 backdrop-blur-md w-full pt-24 pb-32 flex flex-col items-center relative overflow-hidden">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
-          <span className="inline-block uppercase tracking-widest text-accent mb-2 font-semibold animate-fade-in-up">Automating AHU</span>
+          <span className="inline-block uppercase tracking-widest text-accent mb-2 font-semibold animate-fade-in-up">Autonomous AHU for Energy Saving</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 leading-tight animate-fade-in-up">
             Smarter Air. <span className="text-primary">Lower Costs.</span> Greener Future.
           </h1>
           <p className="text-lg md:text-xl text-gray-700 max-w-xl mx-auto mb-8 animate-fade-in-up">
-            Our intelligent system optimizes your Air Handling Unit’s EC fan using precise temperature and humidity data.<br />
-            <span className="text-gray-800">Save on energy, prevent downtime, achieve effortless efficiency.</span>
+            Revolutionizing AHUs with <span className="text-primary">AI-Powered Autonomy</span> and <span className="text-primary">EC Fan technology</span> for Energy Savings.
+            Save on energy, prevent downtime, achieve effortless efficiency.
           </p>
-          <a
-            href="mailto:hello@yourahustartup.com"
+          <button
+            onClick={scrollToContact}
             className="inline-block bg-primary text-white rounded-full px-8 py-4 font-bold shadow-lg hover:bg-accent focus:ring-4 focus:ring-accent transition animate-fade-in-up"
           >
             Get in Touch
-          </a>
+          </button>
         </div>
       </div>
       <section className="relative z-10 -mt-16 pb-16">
@@ -54,7 +79,7 @@ const Index = () => {
           <LandingFeatureCard
             icon={<Leaf className="w-7 h-7 text-green-500" />}
             title="Save Energy"
-            text="Advanced algorithms respond to real-time temperature and humidity, dramatically lowering your building��s energy use."
+            text="Advanced algorithms respond to real-time temperature and humidity, dramatically lowering your building's energy use."
             colorClass="bg-green-50"
           />
           <LandingFeatureCard
@@ -97,11 +122,178 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <section className="bg-gray-50 py-24">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Key Benefits
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Our solution delivers measurable improvements across three critical areas
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
+                <Brain className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Autonomous Operation</h3>
+              <p className="text-gray-600 mb-6">
+                Self-learning algorithms continuously optimize performance without human intervention, reducing operational complexity and costs.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Self-diagnostic capabilities</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Predictive maintenance alerts</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Adaptive control systems</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
+                <ThermometerSun className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Enhanced Comfort</h3>
+              <p className="text-gray-600 mb-6">
+                Maintains optimal indoor conditions with precise temperature and humidity control, ensuring consistent comfort throughout your space.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Real-time environmental monitoring</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Zone-based climate control</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Smart occupancy detection</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
+                <Zap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Increased Efficiency</h3>
+              <p className="text-gray-600 mb-6">
+                Optimizes energy consumption while maintaining performance, delivering significant cost savings and reducing environmental impact.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Energy usage analytics</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Peak demand management</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Carbon footprint reduction</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section ref={contactRef} className="container max-w-3xl mx-auto px-4 py-24">
+        <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-8 md:p-12 animate-fade-in-up">
+          <h2 className="text-3xl font-extrabold text-center mb-8 text-gray-900">Contact Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Mail className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Email</h3>
+                  <p className="text-gray-600">hello@yourahustartup.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Phone className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Phone</h3>
+                  <p className="text-gray-600">+1 (555) 123-4567</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <MapPin className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Location</h3>
+                  <p className="text-gray-600">123 Innovation Drive, Tech City, TC 12345</p>
+                </div>
+              </div>
+            </div>
+            <form className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Your message"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-accent transition focus:ring-4 focus:ring-accent"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
       <footer className="w-full border-t border-gray-200 bg-white/60 py-8 mt-auto">
         <div className="container mx-auto text-center text-gray-500 font-medium">
           &copy; {new Date().getFullYear()} air-flow-harmony-hub &mdash; Optimizing Air, Effortlessly.
         </div>
       </footer>
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-accent focus:ring-4 focus:ring-accent transition-all duration-300 animate-fade-in-up z-50"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 };
