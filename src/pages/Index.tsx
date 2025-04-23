@@ -5,7 +5,6 @@ import {
   Brain,
   Leaf,
   Mail,
-  Phone,
   Shield,
   ThermometerSun,
   TrendingUp,
