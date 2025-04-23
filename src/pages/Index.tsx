@@ -1,19 +1,17 @@
 import LandingFeatureCard from "@/components/LandingFeatureCard";
 import {
   AirVent,
-  ThermometerSun,
-  Leaf,
-  TrendingUp,
-  Fan,
-  Mail,
-  Phone,
-  MapPin,
   ArrowUp,
   Brain,
+  Leaf,
+  Mail,
+  Phone,
   Shield,
-  Zap,
+  ThermometerSun,
+  TrendingUp,
+  Zap
 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Index = () => {
   const contactRef = useRef<HTMLDivElement>(null);
