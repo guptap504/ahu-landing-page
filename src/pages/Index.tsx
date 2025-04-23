@@ -9,7 +9,7 @@ import {
   Shield,
   ThermometerSun,
   TrendingUp,
-  Zap
+  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -317,11 +317,15 @@ const Index = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Email</h3>
-                <p className="text-gray-600"><a href="mailto:kunal@garvata.com">kunal@garvata.com</a></p>
-                <p className="text-gray-600"><a href="mailto:prashant@garvata.com">prashant@garvata.com</a></p>
+                <p className="text-gray-600">
+                  <a href="mailto:kunal@garvata.com">kunal@garvata.com</a>
+                </p>
+                <p className="text-gray-600">
+                  <a href="mailto:prashant@garvata.com">prashant@garvata.com</a>
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="bg-primary/10 p-3 rounded-full">
                 <Phone className="w-6 h-6 text-primary" />
               </div>
@@ -330,7 +334,7 @@ const Index = () => {
                 <p className="text-gray-600"><a href="tel:+918527205934">+91 85272 05934</a></p>
                 <p className="text-gray-600"><a href="tel:+919643236839">+91 96432 36839</a></p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
