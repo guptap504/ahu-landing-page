@@ -236,10 +236,9 @@ const Index = () => {
           </h1>
           <p className="text-lg md:text-xl text-gray-700 max-w-xl mx-auto mb-8 animate-fade-in-up">
             Revolutionizing AHUs with{" "}
-            <span className="text-primary">AI-Powered Autonomy</span> and{" "}
-            <span className="text-primary">EC Fan technology</span> for Energy
-            Savings. Save on energy, prevent downtime, achieve effortless
-            efficiency.
+            <span className="text-primary">AI-Powered Autonomy.</span>
+            <br />
+            Save on energy, prevent downtime and achieve effortless efficiency.
           </p>
           <button
             onClick={scrollToContact}
@@ -677,10 +676,31 @@ const Index = () => {
               <div>
                 <h3 className="font-semibold text-gray-900">Email</h3>
                 <p className="text-gray-600">
-                  <a href="mailto:kunal@garvata.com">kunal@garvata.com</a>
+                  <a href="mailto:info@garvata.com">info@garvata.com</a>
                 </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-full">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Twitter</h3>
                 <p className="text-gray-600">
-                  <a href="mailto:prashant@garvata.com">prashant@garvata.com</a>
+                  <a
+                    href="https://twitter.com/garvataHQ"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    @garvataHQ
+                  </a>
                 </p>
               </div>
             </div>
