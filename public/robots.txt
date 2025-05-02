@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://garvata.com/sitemap.xml
