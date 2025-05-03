@@ -168,9 +168,8 @@ const Index = () => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-          isDrawerOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="p-4">
           <div className="flex justify-between items-center mb-8">
@@ -412,16 +411,16 @@ const Index = () => {
                 </p>
               </div>
               <div className="bg-white p-2 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <CheckCircle2 className="w-5 h-5 text-red-500" />
               </div>
               <div className="bg-white p-2 flex items-center justify-center">
-                <XCircle className="w-5 h-5 text-red-500" />
+                <XCircle className="w-5 h-5 text-green-500" />
               </div>
               <div className="bg-white p-2 flex items-center justify-center">
-                <XCircle className="w-5 h-5 text-red-500" />
+                <XCircle className="w-5 h-5 text-green-500" />
               </div>
               <div className="bg-primary/5 p-2 flex items-center justify-center">
-                <XCircle className="w-5 h-5 text-red-500" />
+                <XCircle className="w-5 h-5 text-green-500" />
               </div>
             </div>
 
