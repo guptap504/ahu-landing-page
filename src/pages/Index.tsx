@@ -8,23 +8,127 @@ import {
   Leaf,
   Mail,
   Menu,
-  Phone,
   Shield,
   ThermometerSun,
   TrendingUp,
   X,
   XCircle,
   Zap,
+  CircleChevronLeft,
+  CircleChevronRight,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import useEmblaCarousel from 'embla-carousel-react'
+
+type ECFanCardProps = {
+  title: string;
+  text: string;
+  icon: React.ReactNode;
+  benefits: string[];
+};
+
+const ECFanCard = (props: ECFanCardProps) => {
+  const { title, text, icon, benefits } = props;
+  return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold text-gray-900 mb-4">
+        {title}
+      </h3>
+      <p className="text-gray-600 mb-6">
+        {text}
+      </p>
+      <ul className="space-y-2 text-gray-600">
+        {benefits.map((benefit, index) => (
+          <li className="flex items-center gap-2" key={index}>
+            <Shield className="w-4 h-4 text-primary" />
+            <span>{benefit}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const carouselCards: ECFanCardProps[] = [
+  {
+    title: "High Efficiency Factor",
+    text: "Advanced electronically commutated motor technology delivers exceptional efficiency ratings, maximizing airflow while minimizing power consumption.",
+    icon: <TrendingUp className="w-6 h-6 text-primary" />,
+    benefits: ["Superior motor efficiency", "Optimized aerodynamic design", "German engineering standards"],
+  },
+  {
+    title: "Low Energy Consumption",
+    text: "Dramatically reduce your energy costs with intelligent power management and variable speed control that adapts to real-time demand.",
+    icon: <Leaf className="w-6 h-6 text-green-600" />,
+    benefits: ["Variable speed operation", "Smart power management", "Energy-saving algorithms"],
+  },
+  {
+    title: "Integrated Monitoring Function",
+    text: "Built-in sensors and monitoring capabilities provide real-time performance data and predictive maintenance insights for optimal operation.",
+    icon: <Brain className="w-6 h-6 text-blue-600" />,
+    benefits: ["Real-time performance monitoring", "Predictive maintenance alerts", "Comprehensive diagnostics"],
+  },
+  {
+    title: "Easy Installation and Connection",
+    text: "Streamlined installation process with plug-and-play connectivity reduces setup time and minimizes integration complexity.",
+    icon: <Zap className="w-6 h-6 text-accent" />,
+    benefits: ["Plug-and-play design", "Universal mounting options", "Simplified wiring"],
+  },
+  {
+    title: "Expanded Functionality",
+    text: "Advanced control features and communication protocols enable seamless integration with building management systems and IoT platforms.",
+    icon: <ThermometerSun className="w-6 h-6 text-purple-600" />,
+    benefits: ["Multiple communication protocols", "BMS integration ready", "IoT connectivity"],
+  },
+  {
+    title: "Compact Construction",
+    text: "Space-efficient design maximizes performance while minimizing footprint, perfect for modern building constraints and retrofits.",
+    icon: <AirVent className="w-6 h-6 text-orange-600" />,
+    benefits: ["Space-saving design", "Lightweight construction", "Retrofit-friendly"],
+  },
+];
 
 const Index = () => {
   const contactRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
+  const ecFansref = useRef<HTMLDivElement>(null);
   const keyBenefitsRef = useRef<HTMLDivElement>(null);
   const howItComparesRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
+  const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setPrevBtnDisabled(!emblaApi.canScrollPrev());
+      setNextBtnDisabled(!emblaApi.canScrollNext());
+    };
+
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect); // In case of re-initialization
+    onSelect(); // Set initial state
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
 
   const scrollToContact = () => {
     const element = contactRef.current;
@@ -52,7 +156,7 @@ const Index = () => {
     }
   };
 
-  const scrollToKeyBenefits = () => {
+  const scrollToKeyFeatures = () => {
     const element = keyBenefitsRef.current;
     if (element) {
       const offset = 20; // Navbar height
@@ -65,6 +169,18 @@ const Index = () => {
     }
   };
 
+  const scrollToEcFans = () => {
+    const element = ecFansref.current;
+    if (element) {
+      const offset = 20; // Navbar height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
   const scrollToHowItCompares = () => {
     const element = howItComparesRef.current;
     if (element) {
@@ -149,10 +265,17 @@ const Index = () => {
               </button>
               <div className="h-4 w-px bg-gray-300"></div>
               <button
-                onClick={scrollToKeyBenefits}
+                onClick={scrollToEcFans}
                 className="text-gray-600 hover:text-primary transition-colors"
               >
-                Key Benefits
+                EC Fans
+              </button>
+              <div className="h-4 w-px bg-gray-300"></div>
+              <button
+                onClick={scrollToKeyFeatures}
+                className="text-gray-600 hover:text-primary transition-colors"
+              >
+                Key Features
               </button>
               <div className="h-4 w-px bg-gray-300"></div>
               <button
@@ -201,10 +324,16 @@ const Index = () => {
               How It Works
             </button>
             <button
-              onClick={() => handleNavClick(scrollToKeyBenefits)}
+              onClick={() => handleNavClick(scrollToEcFans)}
               className="text-gray-600 hover:text-primary transition-colors text-left py-2"
             >
-              Key Benefits
+              EC Fans
+            </button>
+            <button
+              onClick={() => handleNavClick(scrollToKeyFeatures)}
+              className="text-gray-600 hover:text-primary transition-colors text-left py-2"
+            >
+              Key Features
             </button>
             <button
               onClick={() => handleNavClick(scrollToContact)}
@@ -560,100 +689,56 @@ const Index = () => {
         </div>
       </section>
 
-      <section ref={keyBenefitsRef} className="bg-gray-50 py-24 pt-32">
+      <section ref={ecFansref} className="bg-gray-50 py-24 pt-16">
         <div className="container max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-4">
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
-              Key Benefits
+              Garvata EC Fans
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Our solution delivers measurable improvements across three
-              critical areas
+              Our EC fans deliver superior performance with German engineering excellence,
+              providing unmatched efficiency and reliability for your HVAC systems
             </p>
+            <div className="grid grid-cols-3 gap-2">
+              <img src="/fans/zen0.png" alt="Garvata EC Fan 0" className="w-full" />
+              <img src="/fans/zen1.webp" alt="Garvata EC Fan 1" className="w-full" />
+              <img src="/fans/zen2.jpg" alt="Garvata EC Fan 2" className="w-full" />
+              <img src="/fans/zen3.webp" alt="Garvata EC Fan 3" className="w-full" />
+              <img src="/fans/zen4.avif" alt="Garvata EC Fan 4" className="w-full" />
+              <img src="/fans/zen7.jpg" alt="Garvata EC Fan 7" className="w-full" />
+              <img src="/fans/zen10.webp" alt="Garvata EC Fan 10" className="w-full" />
+              <img src="/fans/zen11.jpg" alt="Garvata EC Fan 11" className="w-full" />
+              <img src="/fans/zen12.webp" alt="Garvata EC Fan 12" className="w-full" />
+              <img src="/fans/zen1 (1).webp" alt="Garvata EC Fan 1" className="w-full" />
+              <img src="/fans/zen11 (1).jpg" alt="Garvata EC Fan 11" className="w-full" />
+              <img src="/fans/zen14.jpg" alt="Garvata EC Fan 14" className="w-full" />
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
-                <Brain className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Autonomous Operation
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Self-learning algorithms continuously optimize performance
-                without human intervention, reducing operational complexity and
-                costs.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Self-diagnostic capabilities</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Predictive maintenance alerts</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Adaptive control systems</span>
-                </li>
-              </ul>
-            </div>
+        </div>
+      </section>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
-                <ThermometerSun className="w-6 h-6 text-primary" />
+      <section ref={keyBenefitsRef} className="bg-gray-50 py-24 pt-32">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="text-center mb-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Key Features
+            </h2>
+            <div className="flex items-center justify-center space-x-2 sm:space-x-4">
+              <button onClick={scrollPrev} disabled={prevBtnDisabled} className="cursor-pointer text-primary hover:text-accent transition-colors w-10 h-10 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <CircleChevronLeft className="w-full h-full" />
+              </button>
+              <div className="embla overflow-hidden w-full" ref={emblaRef}>
+                <div className="embla__container flex">
+                  {carouselCards.map((card) => (
+                    <div className="embla__slide flex-[0_0_100%] md:flex-[0_0_calc(100%/3)] min-w-0 p-2 sm:p-4" key={card.title}>
+                      <ECFanCard {...card} />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Enhanced Comfort
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Maintains optimal indoor conditions with precise temperature and
-                humidity control, ensuring consistent comfort throughout your
-                space.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Real-time environmental monitoring</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Zone-based climate control</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Smart occupancy detection</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Increased Efficiency
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Optimizes energy consumption while maintaining performance,
-                delivering significant cost savings and reducing environmental
-                impact.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Energy usage analytics</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Peak demand management</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  <span>Carbon footprint reduction</span>
-                </li>
-              </ul>
+              <button onClick={scrollNext} disabled={nextBtnDisabled} className="cursor-pointer text-primary hover:text-accent transition-colors w-10 h-10 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <CircleChevronRight className="w-full h-full" />
+              </button>
             </div>
           </div>
         </div>
