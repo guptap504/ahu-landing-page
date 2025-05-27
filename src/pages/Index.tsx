@@ -103,6 +103,37 @@ const Index = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange);
+    }
+  }, []);
+
+  const isMobile = width <= 640;
+
+  let images = [
+    "/fans/zen0.png",
+    "/fans/zen1.webp",
+    "/fans/zen2.jpg",
+    "/fans/zen3.webp",
+    "/fans/zen4.avif",
+    "/fans/zen7.jpg",
+    "/fans/zen10.webp",
+    "/fans/zen11.jpg",
+    "/fans/zen12.webp",
+    "/fans/zen1 (1).webp",
+    "/fans/zen11 (1).jpg",
+    "/fans/zen14.jpg",
+  ];
+  if (isMobile) {
+    images = images.slice(0, 4);
+  }
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -699,19 +730,20 @@ const Index = () => {
               Our EC fans deliver superior performance with German engineering excellence,
               providing unmatched efficiency and reliability for your HVAC systems
             </p>
-            <div className="grid grid-cols-3 gap-2">
-              <img src="/fans/zen0.png" alt="Garvata EC Fan 0" className="w-full" />
-              <img src="/fans/zen1.webp" alt="Garvata EC Fan 1" className="w-full" />
-              <img src="/fans/zen2.jpg" alt="Garvata EC Fan 2" className="w-full" />
-              <img src="/fans/zen3.webp" alt="Garvata EC Fan 3" className="w-full" />
-              <img src="/fans/zen4.avif" alt="Garvata EC Fan 4" className="w-full" />
-              <img src="/fans/zen7.jpg" alt="Garvata EC Fan 7" className="w-full" />
-              <img src="/fans/zen10.webp" alt="Garvata EC Fan 10" className="w-full" />
-              <img src="/fans/zen11.jpg" alt="Garvata EC Fan 11" className="w-full" />
-              <img src="/fans/zen12.webp" alt="Garvata EC Fan 12" className="w-full" />
-              <img src="/fans/zen1 (1).webp" alt="Garvata EC Fan 1" className="w-full" />
-              <img src="/fans/zen11 (1).jpg" alt="Garvata EC Fan 11" className="w-full" />
-              <img src="/fans/zen14.jpg" alt="Garvata EC Fan 14" className="w-full" />
+            <div className="grow mx-auto px-2 py-2 max-w-[50rem] landscape-max-w-wide mx-auto">
+              <div className="h-full w-full flex flex-wrap gap-4 justify-center">
+                {images.map((src, index) => (
+                  <div className="flex  landscape-hidden inline-block border border-[0.4rem] rounded-lg border-black md:w-[15rem] w-[10rem] h-[10rem] bg-red-500">
+                    <img
+                      key={index}
+                      src={src}
+                      alt="Garvata EC Fan"
+                      className="w-full object-cover grayscale-0 hover:grayscale transition duration-300 ease-in-out shadow-lg"
+                    />
+
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
