@@ -673,7 +673,7 @@ const Index = () => {
                             <h3 className="font-bold text-gray-900 mb-2">AHU Network</h3>
                             <p className="text-gray-700 text-sm">
                                 Multiple AHUs are equipped with EC fans and sensors, each
-                                connected to its dedicated Garvata Edge Device (GED) for
+                                connected to its dedicated Garvata Edge Device for
                                 real-time monitoring and control.
                             </p>
                         </div>
@@ -686,7 +686,7 @@ const Index = () => {
                                 Edge Intelligence
                             </h3>
                             <p className="text-gray-700 text-sm">
-                                GEDs act as smart intermediaries, facilitating communication
+                                The edge device act as smart intermediaries, facilitating communication
                                 between AHUs, EC fans, and our AI Controller while ensuring
                                 reliable operation even during network interruptions.
                             </p>
@@ -698,7 +698,7 @@ const Index = () => {
                             </div>
                             <h3 className="font-bold text-gray-900 mb-2">AI Controller</h3>
                             <p className="text-gray-700 text-sm">
-                                Our central AI Agent processes data from all GEDs, making
+                                Our central AI Agent processes data from all edge devices, making
                                 intelligent decisions for optimal performance, energy
                                 efficiency, and preventive maintenance across the entire system.
                             </p>
