@@ -161,67 +161,19 @@ const Index = () => {
         };
     }, [emblaApi]);
 
-    const scrollToContact = () => {
-        const element = contactRef.current;
-        if (element) {
-            const offset = 20; // Navbar height
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - offset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
-        }
-    };
 
-    const scrollToHowItWorks = () => {
-        const element = howItWorksRef.current;
-        if (element) {
-            const offset = 20; // Navbar height
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - offset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
-        }
-    };
-
-    const scrollToKeyFeatures = () => {
-        const element = keyBenefitsRef.current;
-        if (element) {
-            const offset = 20; // Navbar height
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - offset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
-        }
-    };
-
-    const scrollToEcFans = () => {
-        const element = ecFansref.current;
-        if (element) {
-            const offset = 20; // Navbar height
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - offset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
-        }
-    };
-    const scrollToHowItCompares = () => {
-        const element = howItComparesRef.current;
-        if (element) {
-            const offset = 20; // Navbar height
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - offset;
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-            });
+    const scrollToRef = (ref) => {
+        if (ref) {
+            const element = ref.current;
+            if (element) {
+                const offset = 20; // Navbar height
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.scrollY - offset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth",
+                });
+            }
         }
     };
 
@@ -282,35 +234,35 @@ const Index = () => {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-2 md:space-x-8 text-sm md:text-base">
                             <button
-                                onClick={scrollToHowItCompares}
+                                onClick={() => scrollToRef(howItComparesRef)}
                                 className="text-gray-600 hover:text-primary transition-colors"
                             >
                                 How It Compares
                             </button>
                             <div className="h-4 w-px bg-gray-300"></div>
                             <button
-                                onClick={scrollToHowItWorks}
+                                onClick={() => scrollToRef(howItWorksRef)}
                                 className="text-gray-600 hover:text-primary transition-colors"
                             >
                                 How It Works
                             </button>
                             <div className="h-4 w-px bg-gray-300"></div>
                             <button
-                                onClick={scrollToEcFans}
+                                onClick={() => scrollToRef(ecFansref)}
                                 className="text-gray-600 hover:text-primary transition-colors"
                             >
                                 EC Fans
                             </button>
                             <div className="h-4 w-px bg-gray-300"></div>
                             <button
-                                onClick={scrollToKeyFeatures}
+                                onClick={() => scrollToRef(keyBenefitsRef)}
                                 className="text-gray-600 hover:text-primary transition-colors"
                             >
                                 Key Features
                             </button>
                             <div className="h-4 w-px bg-gray-300"></div>
                             <button
-                                onClick={scrollToContact}
+                                onClick={() => scrollToRef(contactRef)}
                                 className="text-gray-600 hover:text-primary transition-colors"
                             >
                                 Get in Touch!
@@ -343,31 +295,31 @@ const Index = () => {
                     </div>
                     <div className="flex flex-col space-y-4">
                         <button
-                            onClick={() => handleNavClick(scrollToHowItCompares)}
+                            onClick={() => handleNavClick(() => scrollToRef(howItComparesRef))}
                             className="text-gray-600 hover:text-primary transition-colors text-left py-2"
                         >
                             How It Compares
                         </button>
                         <button
-                            onClick={() => handleNavClick(scrollToHowItWorks)}
+                            onClick={() => handleNavClick(() => scrollToRef(howItWorksRef))}
                             className="text-gray-600 hover:text-primary transition-colors text-left py-2"
                         >
                             How It Works
                         </button>
                         <button
-                            onClick={() => handleNavClick(scrollToEcFans)}
+                            onClick={() => handleNavClick(() => scrollToRef(ecFansref))}
                             className="text-gray-600 hover:text-primary transition-colors text-left py-2"
                         >
                             EC Fans
                         </button>
                         <button
-                            onClick={() => handleNavClick(scrollToKeyFeatures)}
+                            onClick={() => handleNavClick(() => scrollToRef(keyBenefitsRef))}
                             className="text-gray-600 hover:text-primary transition-colors text-left py-2"
                         >
                             Key Features
                         </button>
                         <button
-                            onClick={() => handleNavClick(scrollToContact)}
+                            onClick={() => handleNavClick(() => scrollToRef(contactRef))}
                             className="text-gray-600 hover:text-primary transition-colors text-left py-2"
                         >
                             Get in Touch!
@@ -400,7 +352,7 @@ const Index = () => {
                         Save on energy, prevent downtime and achieve effortless efficiency.
                     </p>
                     <button
-                        onClick={scrollToContact}
+                        onClick={() => scrollToRef(contactRef)}
                         className="inline-block bg-primary text-white rounded-full px-8 py-4 font-bold shadow-lg hover:bg-accent focus:ring-4 focus:ring-accent transition animate-fade-in-up"
                     >
                         Get in Touch
