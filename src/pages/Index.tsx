@@ -228,6 +228,7 @@ const Index = () => {
                         <button
                             onClick={scrollToTop}
                             className="text-lg font-bold text-primary hover:text-accent transition-colors md:hidden absolute left-1/2 transform -translate-x-1/2"
+                            aria-label="GarvataAI Home"
                         >
                             GarvataAI
                         </button>
@@ -279,13 +280,13 @@ const Index = () => {
             >
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-8">
-                        <button
-                            onClick={scrollToTop}
-                            className="text-lg font-bold text-primary hover:text-accent transition-colors"
-                        >
-                            Garvata
-                        </button>
-                        <button
+<button
+                                onClick={scrollToTop}
+                                className="text-lg font-bold text-primary hover:text-accent transition-colors"
+                                aria-label="GarvataAI Home"
+                            >
+                                Garvata
+                            </button>                        <button
                             onClick={toggleDrawer}
                             className="text-gray-600 hover:text-primary transition-colors"
                             aria-label="Close menu"
@@ -387,7 +388,7 @@ const Index = () => {
                 className="container max-w-6xl mx-auto px-4 py-24"
             >
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="how-it-compares">
                         How It Compares
                     </h2>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -605,7 +606,7 @@ const Index = () => {
             >
                 <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-8 md:p-12 flex flex-col gap-8 animate-fade-in-up">
                     <div className="text-center">
-                        <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-gray-900">
+                        <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-gray-900" id="how-it-works">
                             How It Works
                         </h2>
                         <p className="text-gray-700 max-w-3xl mx-auto">
@@ -675,7 +676,7 @@ const Index = () => {
             <section ref={ecFansref} className="bg-gray-50 py-24 pt-16">
                 <div className="container max-w-6xl mx-auto px-4">
                     <div className="text-center mb-4">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="ec-fans">
                             Garvata EC Fans
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -689,7 +690,7 @@ const Index = () => {
                                         <img
                                             key={index}
                                             src={src}
-                                            alt="Garvata EC Fan"
+                                            alt={`Garvata EC Fan ${index + 1} - High efficiency HVAC fan technology`}
                                             className="w-full object-cover grayscale-0 hover:grayscale transition duration-300 ease-in-out shadow-lg"
                                         />
 
@@ -704,7 +705,7 @@ const Index = () => {
             <section ref={keyBenefitsRef} className="bg-gray-50 py-24 pt-32">
                 <div className="container max-w-6xl mx-auto px-4">
                     <div className="text-center mb-4">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="key-features">
                             Key Features
                         </h2>
                         <div className="flex items-center justify-center space-x-2 sm:space-x-4">
@@ -733,7 +734,7 @@ const Index = () => {
                 className="container max-w-3xl mx-auto px-4 py-24 pt-32"
             >
                 <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-12 md:p-16 animate-fade-in-up">
-                    <h2 className="text-3xl font-extrabold text-center mb-12 text-gray-900">
+                    <h2 className="text-3xl font-extrabold text-center mb-12 text-gray-900" id="contact">
                         Get in Touch!
                     </h2>
                     <div className="flex flex-col md:flex-row justify-start md:justify-center items-start md:items-center gap-12 md:gap-16">
@@ -758,6 +759,7 @@ const Index = () => {
                                 >
                                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                 </svg>
+                                <span className="sr-only">X (Twitter)</span>
                             </div>
                             <div>
                                 <h3 className="font-semibold text-gray-900">X (Twitter)</h3>
