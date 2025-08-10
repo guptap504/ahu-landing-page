@@ -166,7 +166,7 @@ const Index = () => {
         if (ref) {
             const element = ref.current;
             if (element) {
-                const offset = 20; // Navbar height
+                const offset = 32; // Navbar height (4rem = 64px)
                 const elementPosition = element.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.scrollY - offset;
                 window.scrollTo({
@@ -280,13 +280,14 @@ const Index = () => {
             >
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-8">
-<button
-                                onClick={scrollToTop}
-                                className="text-lg font-bold text-primary hover:text-accent transition-colors"
-                                aria-label="GarvataAI Home"
-                            >
-                                Garvata
-                            </button>                        <button
+                        <button
+                            onClick={scrollToTop}
+                            className="text-lg font-bold text-primary hover:text-accent transition-colors"
+                            aria-label="GarvataAI Home"
+                        >
+                            Garvata
+                        </button>
+                        <button
                             onClick={toggleDrawer}
                             className="text-gray-600 hover:text-primary transition-colors"
                             aria-label="Close menu"
@@ -388,7 +389,7 @@ const Index = () => {
                 className="container max-w-6xl mx-auto px-4 py-24"
             >
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="how-it-compares">
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 scroll-mt-32" id="how-it-compares">
                         How It Compares
                     </h2>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -606,7 +607,7 @@ const Index = () => {
             >
                 <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-8 md:p-12 flex flex-col gap-8 animate-fade-in-up">
                     <div className="text-center">
-                        <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-gray-900" id="how-it-works">
+                        <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-gray-900 scroll-mt-32" id="how-it-works">
                             How It Works
                         </h2>
                         <p className="text-gray-700 max-w-3xl mx-auto">
@@ -676,7 +677,7 @@ const Index = () => {
             <section ref={ecFansref} className="bg-gray-50 py-24 pt-16">
                 <div className="container max-w-6xl mx-auto px-4">
                     <div className="text-center mb-4">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="ec-fans">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 scroll-mt-32" id="ec-fans">
                             Garvata EC Fans
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -705,7 +706,7 @@ const Index = () => {
             <section ref={keyBenefitsRef} className="bg-gray-50 py-24 pt-32">
                 <div className="container max-w-6xl mx-auto px-4">
                     <div className="text-center mb-4">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4" id="key-features">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 scroll-mt-32" id="key-features">
                             Key Features
                         </h2>
                         <div className="flex items-center justify-center space-x-2 sm:space-x-4">
@@ -734,7 +735,7 @@ const Index = () => {
                 className="container max-w-3xl mx-auto px-4 py-24 pt-32"
             >
                 <div className="rounded-2xl glass-morphism shadow-glass bg-white/70 p-12 md:p-16 animate-fade-in-up">
-                    <h2 className="text-3xl font-extrabold text-center mb-12 text-gray-900" id="contact">
+                    <h2 className="text-3xl font-extrabold text-center mb-12 text-gray-900 scroll-mt-32" id="contact">
                         Get in Touch!
                     </h2>
                     <div className="flex flex-col md:flex-row justify-start md:justify-center items-start md:items-center gap-12 md:gap-16">
