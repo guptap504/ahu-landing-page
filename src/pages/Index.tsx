@@ -353,12 +353,22 @@ const Index = () => {
                         <br />
                         Save on energy, prevent downtime and achieve effortless efficiency.
                     </p>
-                    <button
-                        onClick={() => scrollToRef(contactRef)}
-                        className="inline-block bg-primary text-white rounded-full px-8 py-4 font-bold shadow-lg hover:bg-accent focus:ring-4 focus:ring-accent transition animate-fade-in-up"
-                    >
-                        Get in Touch
-                    </button>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in-up">
+                        <button
+                            onClick={() => scrollToRef(contactRef)}
+                            className="inline-block bg-primary text-white rounded-full px-8 py-4 font-bold shadow-lg hover:bg-accent focus:ring-4 focus:ring-accent transition"
+                        >
+                            Get in Touch
+                        </button>
+                        <a
+                            href="https://app.garvata.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block bg-white text-primary border-2 border-primary rounded-full px-8 py-4 font-bold shadow-lg hover:bg-primary hover:text-white focus:ring-4 focus:ring-primary/20 transition"
+                        >
+                            View Demo
+                        </a>
+                    </div>
                 </div>
             </div>
             <section className="relative z-10 -mt-16 pb-16">
