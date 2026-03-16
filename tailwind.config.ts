@@ -20,7 +20,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        inter: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ['"DM Sans"', "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ['"Outfit"', "ui-serif", "serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -29,14 +31,13 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#8B5CF6", // Vivid purple for accent (CTA)
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#0891b2",
+          foreground: "#ffffff",
         },
         accent: {
-          DEFAULT: "#0EA5E9", // Ocean Blue accent
-          foreground: "#fff",
+          DEFAULT: "#d97706",
+          foreground: "#ffffff",
         },
-        energy: "#F2FCE2",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -45,21 +46,14 @@ export default {
       },
       keyframes: {
         "fade-in-up": {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "fade-in-up": "fade-in-up 0.7s cubic-bezier(0.23,1,0.32,1)",
+        "fade-in-up": "fade-in-up 0.4s ease-out both",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      backgroundImage: {
-        "hero-gradient": "linear-gradient(102.3deg, #93278f 5.9%, #eadae8 85%)",
-        "feature-gradient": "linear-gradient(60deg, #abecd6 0%, #fbed96 100%)",
-      },
-      boxShadow: {
-        glass: "0 6px 32px 0 rgba(139,93,246,0.10)",
       },
     },
   },

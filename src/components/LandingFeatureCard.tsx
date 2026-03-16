@@ -5,21 +5,17 @@ type LandingFeatureCardProps = {
   icon: ReactNode;
   title: string;
   text: string;
-  colorClass?: string;
 };
 
 const LandingFeatureCard = ({
   icon,
   title,
   text,
-  colorClass = "bg-white",
 }: LandingFeatureCardProps) => (
-  <div className={`rounded-2xl p-6 shadow-glass bg-white/80 glass-morphism group transition hover:scale-105 hover:shadow-lg hover:bg-primary/10 duration-200 animate-fade-in-up`}>
-    <div className={`w-12 h-12 flex items-center justify-center rounded-full mb-4 ${colorClass}`}>
-      {icon}
-    </div>
-    <h3 className="font-semibold text-xl mb-2 text-gray-800 group-hover:text-primary">{title}</h3>
-    <p className="text-gray-600 leading-snug">{text}</p>
+  <div>
+    <div className="mb-3">{icon}</div>
+    <h3 className="font-serif font-semibold text-lg text-gray-900 mb-2">{title}</h3>
+    <p className="text-gray-600 text-sm leading-relaxed">{text}</p>
   </div>
 );
 
