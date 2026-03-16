@@ -413,7 +413,7 @@ const Index = () => {
                 onClick={() => scrollToRef(contactRef)}
                 className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
               >
-                Schedule a Demo
+                Talk to Sales
               </button>
               <a
                 href="https://demo.garvata.com"
@@ -666,7 +666,7 @@ const Index = () => {
               href="mailto:info@garvata.com"
               className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors mb-10 inline-flex items-center"
             >
-              Schedule a Demo
+              Talk to Sales
             </a>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm">
               <a
