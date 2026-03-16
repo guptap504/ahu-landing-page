@@ -4,7 +4,6 @@ import {
   ArrowUp,
   Brain,
   CheckCircle2,
-  Cloud,
   Leaf,
   Mail,
   Menu,
@@ -14,11 +13,8 @@ import {
   X,
   XCircle,
   Zap,
-  CircleChevronLeft,
-  CircleChevronRight,
 } from "lucide-react";
-import { useEffect, useRef, useState, useCallback } from "react";
-import useEmblaCarousel from "embla-carousel-react";
+import { useEffect, useRef, useState } from "react";
 
 type ECFanCardProps = {
   title: string;
@@ -30,13 +26,13 @@ type ECFanCardProps = {
 const ECFanCard = (props: ECFanCardProps) => {
   const { title, text, icon, benefits } = props;
   return (
-    <div className="bg-white rounded-lg p-8 border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-      <div className="mb-5">{icon}</div>
-      <h3 className="text-lg font-serif font-bold text-gray-900 mb-3">
+    <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-gray-300 transition-colors duration-200">
+      <div className="mb-4">{icon}</div>
+      <h3 className="text-lg font-serif font-bold text-gray-900 mb-2">
         {title}
       </h3>
-      <p className="text-gray-600 text-sm mb-5 leading-relaxed">{text}</p>
-      <ul className="space-y-2">
+      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{text}</p>
+      <ul className="space-y-1.5">
         {benefits.map((benefit, index) => (
           <li
             className="flex items-center gap-2 text-sm text-gray-600"
@@ -51,10 +47,10 @@ const ECFanCard = (props: ECFanCardProps) => {
   );
 };
 
-const carouselCards: ECFanCardProps[] = [
+const featureCards: ECFanCardProps[] = [
   {
     title: "High Efficiency Factor",
-    text: "Advanced electronically commutated motor technology delivers exceptional efficiency ratings, maximizing airflow while minimizing power consumption.",
+    text: "Advanced EC motor technology delivers exceptional efficiency ratings, maximizing airflow while minimizing power consumption.",
     icon: <TrendingUp className="w-5 h-5 text-primary" />,
     benefits: [
       "Superior motor efficiency",
@@ -63,28 +59,18 @@ const carouselCards: ECFanCardProps[] = [
     ],
   },
   {
-    title: "Low Energy Consumption",
-    text: "Dramatically reduce your energy costs with intelligent power management and variable speed control that adapts to real-time demand.",
-    icon: <Leaf className="w-5 h-5 text-emerald-700" />,
-    benefits: [
-      "Variable speed operation",
-      "Smart power management",
-      "Energy-saving algorithms",
-    ],
-  },
-  {
     title: "Integrated Monitoring",
-    text: "Built-in sensors and monitoring capabilities provide real-time performance data and predictive maintenance insights for optimal operation.",
+    text: "Built-in sensors provide real-time performance data and predictive maintenance insights for optimal operation.",
     icon: <Brain className="w-5 h-5 text-primary" />,
     benefits: [
-      "Real-time performance monitoring",
+      "Real-time performance data",
       "Predictive maintenance alerts",
       "Comprehensive diagnostics",
     ],
   },
   {
     title: "Easy Installation",
-    text: "Streamlined installation process with plug-and-play connectivity reduces setup time and minimizes integration complexity.",
+    text: "Plug-and-play connectivity reduces setup time and minimizes integration complexity.",
     icon: <Zap className="w-5 h-5 text-accent" />,
     benefits: [
       "Plug-and-play design",
@@ -93,8 +79,8 @@ const carouselCards: ECFanCardProps[] = [
     ],
   },
   {
-    title: "Expanded Functionality",
-    text: "Advanced control features and communication protocols enable seamless integration with building management systems and IoT platforms.",
+    title: "BMS Integration",
+    text: "Advanced communication protocols enable seamless integration with building management systems and IoT platforms.",
     icon: <ThermometerSun className="w-5 h-5 text-gray-700" />,
     benefits: [
       "Multiple communication protocols",
@@ -104,12 +90,22 @@ const carouselCards: ECFanCardProps[] = [
   },
   {
     title: "Compact Construction",
-    text: "Space-efficient design maximizes performance while minimizing footprint, perfect for modern building constraints and retrofits.",
+    text: "Space-efficient design maximizes performance while minimizing footprint, perfect for retrofits.",
     icon: <AirVent className="w-5 h-5 text-gray-700" />,
     benefits: [
       "Space-saving design",
       "Lightweight construction",
       "Retrofit-friendly",
+    ],
+  },
+  {
+    title: "Variable Speed Control",
+    text: "Intelligent power management adapts fan speed to real-time demand, dramatically reducing energy waste.",
+    icon: <Leaf className="w-5 h-5 text-emerald-700" />,
+    benefits: [
+      "Variable speed operation",
+      "Smart power management",
+      "Energy-saving algorithms",
     ],
   },
 ];
@@ -167,25 +163,21 @@ const howItWorksSteps = [
     num: "01",
     title: "AHU Network",
     desc: "EC fans and sensors connected to dedicated Garvata Edge Devices for real-time monitoring.",
-    icon: <AirVent className="w-5 h-5" />,
   },
   {
     num: "02",
     title: "Edge Intelligence",
     desc: "Smart intermediaries ensuring reliable communication, even during network interruptions.",
-    icon: <Zap className="w-5 h-5" />,
   },
   {
     num: "03",
     title: "AI Controller",
     desc: "Central AI processing data from all edge devices for optimal energy efficiency and maintenance.",
-    icon: <Brain className="w-5 h-5" />,
   },
   {
     num: "04",
     title: "Cloud Platform",
     desc: "Comprehensive monitoring, analytics, and ML-driven continuous performance improvement.",
-    icon: <Cloud className="w-5 h-5" />,
   },
 ];
 
@@ -197,20 +189,12 @@ const Index = () => {
   const howItComparesRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
-  const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
   const [width, setWidth] = useState<number>(window.innerWidth);
 
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
   useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const isMobile = width <= 640;
@@ -233,42 +217,13 @@ const Index = () => {
     images = images.slice(0, 4);
   }
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    const onSelect = () => {
-      setPrevBtnDisabled(!emblaApi.canScrollPrev());
-      setNextBtnDisabled(!emblaApi.canScrollNext());
-    };
-
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-    onSelect();
-
-    return () => {
-      emblaApi.off("select", onSelect);
-      emblaApi.off("reInit", onSelect);
-    };
-  }, [emblaApi]);
-
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
     const element = ref.current;
     if (element) {
       const offset = 32;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.scrollY - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
 
@@ -277,22 +232,24 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
-    };
-
+    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
   const handleNavClick = (scrollFunction: () => void) => {
     scrollFunction();
     setIsDrawerOpen(false);
   };
+
+  const navLinks = [
+    { label: "How It Compares", ref: howItComparesRef },
+    { label: "How It Works", ref: howItWorksRef },
+    { label: "EC Fans", ref: ecFansref },
+    { label: "Capabilities", ref: keyBenefitsRef },
+  ];
 
   return (
     <div className="min-h-screen w-full font-sans bg-white">
@@ -310,14 +267,8 @@ const Index = () => {
               </span>
             </button>
 
-            {/* Desktop links */}
             <div className="hidden md:flex items-center gap-1 text-sm">
-              {[
-                { label: "How It Compares", ref: howItComparesRef },
-                { label: "How It Works", ref: howItWorksRef },
-                { label: "EC Fans", ref: ecFansref },
-                { label: "Key Features", ref: keyBenefitsRef },
-              ].map(({ label, ref }) => (
+              {navLinks.map(({ label, ref }) => (
                 <button
                   key={label}
                   onClick={() => scrollToRef(ref)}
@@ -334,7 +285,6 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Mobile menu button */}
             <button
               onClick={toggleDrawer}
               className="md:hidden text-gray-600"
@@ -367,12 +317,7 @@ const Index = () => {
             </button>
           </div>
           <div className="flex flex-col space-y-1">
-            {[
-              { label: "How It Compares", ref: howItComparesRef },
-              { label: "How It Works", ref: howItWorksRef },
-              { label: "EC Fans", ref: ecFansref },
-              { label: "Key Features", ref: keyBenefitsRef },
-            ].map(({ label, ref }) => (
+            {navLinks.map(({ label, ref }) => (
               <button
                 key={label}
                 onClick={() => handleNavClick(() => scrollToRef(ref))}
@@ -407,7 +352,7 @@ const Index = () => {
             Reduce AHU energy costs by up to 60%
           </h1>
           <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
-            AI-powered autonomous control for air handling units. Save energy,
+            AI-powered autonomous control for Air Handling Units. Save energy,
             prevent downtime, and achieve effortless HVAC efficiency.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -421,7 +366,7 @@ const Index = () => {
               href="https://demo.garvata.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors flex items-center gap-1"
+              className="text-accent hover:text-accent/80 font-medium transition-colors flex items-center gap-1"
             >
               View Demo <span aria-hidden="true">&rarr;</span>
             </a>
@@ -439,13 +384,13 @@ const Index = () => {
             <p className="text-sm text-gray-500">Energy Savings</p>
           </div>
           <div className="sm:border-x sm:border-gray-200">
-            <p className="font-mono text-3xl md:text-4xl font-bold text-gray-900 mb-1">
+            <p className="font-mono text-3xl md:text-4xl font-bold text-accent mb-1">
               24/7
             </p>
             <p className="text-sm text-gray-500">Autonomous Operation</p>
           </div>
           <div>
-            <p className="font-mono text-3xl md:text-4xl font-bold text-gray-900 mb-1">
+            <p className="font-mono text-3xl md:text-4xl font-bold text-emerald-700 mb-1">
               10%
             </p>
             <p className="text-sm text-gray-500">
@@ -483,7 +428,7 @@ const Index = () => {
       >
         <div className="container max-w-5xl mx-auto">
           <h2
-            className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-12 text-center scroll-mt-20"
+            className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-12 text-center scroll-mt-20"
             id="how-it-compares"
           >
             How It Compares
@@ -504,7 +449,7 @@ const Index = () => {
                   <th className="py-3 px-2 font-serif font-semibold text-gray-900 text-center">
                     EC Fan Only
                   </th>
-                  <th className="py-3 pl-2 font-serif font-bold text-primary text-center">
+                  <th className="py-3 pl-2 font-serif font-bold text-primary text-center border-l-2 border-primary">
                     EC Fan + GarvataAI
                   </th>
                 </tr>
@@ -521,7 +466,7 @@ const Index = () => {
                     {[0, 1, 2, 3].map((col) => (
                       <td
                         key={col}
-                        className={`py-3 px-2 text-center ${col === 3 ? "bg-primary/[0.03]" : ""}`}
+                        className={`py-3 px-2 text-center ${col === 3 ? "bg-primary/[0.03] border-l-2 border-primary" : ""}`}
                       >
                         {row.values[col] ? (
                           <span
@@ -565,27 +510,21 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-4">
             {howItWorksSteps.map((step, i) => (
               <div
                 key={step.num}
-                className="relative flex md:flex-col items-start gap-4 md:gap-0 py-6 md:py-0 md:px-6 md:text-center"
+                className={`py-6 md:py-0 md:px-6 md:text-center ${i < howItWorksSteps.length - 1 ? "border-b md:border-b-0 md:border-r border-dashed border-gray-300" : ""}`}
               >
-                {/* Connector line (between steps) */}
-                {i < howItWorksSteps.length - 1 && (
-                  <div className="hidden md:block absolute top-4 right-0 w-px h-[calc(100%-2rem)] md:w-full md:h-px md:top-3 md:left-1/2 border-t border-dashed border-gray-300" />
-                )}
-                <span className="font-mono text-xs text-primary font-semibold md:mb-3 mt-0.5">
+                <span className="font-mono text-xs text-primary font-semibold mb-2 block">
                   {step.num}
                 </span>
-                <div>
-                  <h3 className="font-serif font-bold text-gray-900 mb-1.5">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
+                <h3 className="font-serif font-bold text-gray-900 mb-1.5">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -618,6 +557,7 @@ const Index = () => {
               >
                 <img
                   src={src}
+                  loading="lazy"
                   alt={`Garvata EC Fan ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -627,42 +567,19 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ─── Key Features Carousel ─── */}
+      {/* ─── EC Fan Capabilities ─── */}
       <section ref={keyBenefitsRef} className="py-20 px-4">
         <div className="container max-w-5xl mx-auto">
           <h2
-            className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-8 text-center scroll-mt-20"
-            id="key-features"
+            className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-10 text-center scroll-mt-20"
+            id="capabilities"
           >
-            Key Features
+            EC Fan Capabilities
           </h2>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <button
-              onClick={scrollPrev}
-              disabled={prevBtnDisabled}
-              className="text-gray-400 hover:text-gray-600 transition-colors w-8 h-8 flex-shrink-0 disabled:opacity-20 disabled:cursor-not-allowed"
-            >
-              <CircleChevronLeft className="w-full h-full" />
-            </button>
-            <div className="embla overflow-hidden w-full" ref={emblaRef}>
-              <div className="embla__container flex">
-                {carouselCards.map((card) => (
-                  <div
-                    className="embla__slide flex-[0_0_100%] md:flex-[0_0_calc(100%/3)] min-w-0 p-2"
-                    key={card.title}
-                  >
-                    <ECFanCard {...card} />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={scrollNext}
-              disabled={nextBtnDisabled}
-              className="text-gray-400 hover:text-gray-600 transition-colors w-8 h-8 flex-shrink-0 disabled:opacity-20 disabled:cursor-not-allowed"
-            >
-              <CircleChevronRight className="w-full h-full" />
-            </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {featureCards.map((card) => (
+              <ECFanCard key={card.title} {...card} />
+            ))}
           </div>
         </div>
       </section>
@@ -679,32 +596,38 @@ const Index = () => {
           >
             Ready to reduce your energy costs?
           </h2>
-          <p className="text-gray-600 mb-10">
+          <p className="text-gray-600 mb-8">
             Get in touch and we'll walk you through our autonomous AHU solution.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-8">
+          <button
+            onClick={() => (window.location.href = "mailto:info@garvata.com")}
+            className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 hover:bg-primary/90 transition-colors mb-10 inline-block"
+          >
+            Schedule a Demo
+          </button>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm">
             <a
               href="mailto:info@garvata.com"
-              className="flex items-center gap-3 text-gray-700 hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors"
             >
-              <Mail className="w-5 h-5" />
-              <span className="font-medium">info@garvata.com</span>
+              <Mail className="w-4 h-4" />
+              <span>info@garvata.com</span>
             </a>
             <a
               href="https://x.com/garvataHQ"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 text-gray-700 hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 aria-hidden="true"
               >
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
-              <span className="font-medium">@garvataHQ</span>
+              <span>@garvataHQ</span>
             </a>
           </div>
         </div>
@@ -715,7 +638,7 @@ const Index = () => {
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
           <div className="flex items-center gap-2">
             <img src="/logo192.svg" alt="" className="w-4 h-4 opacity-50" />
-            <span>&copy; 2025 Garvata</span>
+            <span>&copy; 2026 Garvata</span>
           </div>
           <span>Optimizing Air, Effortlessly.</span>
         </div>

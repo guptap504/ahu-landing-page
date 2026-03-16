@@ -15,7 +15,7 @@ const LandingFeatureCard = ({
   <div>
     <div className="mb-3">{icon}</div>
     <h3 className="font-serif font-semibold text-lg text-gray-900 mb-2">{title}</h3>
-    <p className="text-gray-600 text-sm leading-relaxed">{text}</p>
+    <p className="text-gray-600 leading-relaxed">{text}</p>
   </div>
 );
 
