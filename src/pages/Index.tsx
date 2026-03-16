@@ -1,3 +1,4 @@
+import ContactForm from "@/components/ContactForm";
 import LandingFeatureCard from "@/components/LandingFeatureCard";
 import {
   AirVent,
@@ -661,14 +662,8 @@ const Index = () => {
               We'll walk you through a live system and show you the numbers
               for your building.
             </p>
-            {/* H2: Use <a> instead of <button> for mailto */}
-            <a
-              href="mailto:info@garvata.com"
-              className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors mb-10 inline-flex items-center"
-            >
-              Talk to Sales
-            </a>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm">
+            <ContactForm />
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm mt-10">
               <a
                 href="mailto:info@garvata.com"
                 className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors min-h-[44px]"
