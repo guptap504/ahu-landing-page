@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
 
-    --primary: 191 91% 37%;
+    --primary: 191 78% 31%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 15% 96%;
@@ -22,7 +22,7 @@
     --muted: 210 12% 95%;
     --muted-foreground: 215 12% 42%;
 
-    --accent: 32 95% 44%;
+    --accent: 28 91% 37%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -30,7 +30,7 @@
 
     --border: 216 12% 90%;
     --input: 216 12% 90%;
-    --ring: 191 91% 37%;
+    --ring: 191 78% 31%;
 
     --radius: 0.5rem;
 
@@ -106,5 +106,38 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  nav, footer, [aria-label="Scroll to top"] {
+    display: none !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  section {
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #6b7280;
+  }
+
+  a[href^="mailto:"]::after,
+  a[href^="#"]::after {
+    content: "";
+  }
+}
+
+/* Safe area for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  footer {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
   }
 }
