@@ -182,18 +182,18 @@ const howItWorksSteps = [
 ];
 
 const allImages = [
-  "/fans/zen0.png",
-  "/fans/zen1.webp",
-  "/fans/zen2.jpg",
-  "/fans/zen3.webp",
-  "/fans/zen4.avif",
-  "/fans/zen7.jpg",
-  "/fans/zen10.webp",
-  "/fans/zen11.jpg",
-  "/fans/zen12.webp",
-  "/fans/zen1 (1).webp",
-  "/fans/zen11 (1).jpg",
-  "/fans/zen14.jpg",
+  "/fans/garvata-fan-01.webp",
+  "/fans/garvata-fan-02.webp",
+  "/fans/garvata-fan-03.webp",
+  "/fans/garvata-fan-04.webp",
+  "/fans/garvata-fan-05.avif",
+  "/fans/garvata-fan-06.webp",
+  "/fans/garvata-fan-07.webp",
+  "/fans/garvata-fan-08.webp",
+  "/fans/garvata-fan-09.webp",
+  "/fans/garvata-fan-10.webp",
+  "/fans/garvata-fan-11.webp",
+  "/fans/garvata-fan-12.webp",
 ];
 
 function CheckIcon({ label }: { label: string }) {
