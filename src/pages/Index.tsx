@@ -49,71 +49,71 @@ const ECFanCard = (props: ECFanCardProps) => {
 
 const featureCards: ECFanCardProps[] = [
   {
-    title: "High Efficiency Factor",
-    text: "Advanced EC motor technology delivers exceptional efficiency ratings, maximizing airflow while minimizing power consumption.",
+    title: "High-Efficiency Motors",
+    text: "EC motors that deliver more airflow per watt than AC alternatives.",
     icon: <TrendingUp className="w-5 h-5 text-primary" />,
     benefits: [
-      "Superior motor efficiency",
-      "Optimized aerodynamic design",
-      "German engineering standards",
+      "IE5 efficiency class",
+      "Aerodynamically optimized impellers",
+      "German-engineered components",
     ],
   },
   {
-    title: "Integrated Monitoring",
-    text: "Built-in sensors provide real-time performance data and predictive maintenance insights for optimal operation.",
+    title: "Built-in Monitoring",
+    text: "Each fan reports speed, temperature, power draw, and vibration — no external sensors needed.",
     icon: <Brain className="w-5 h-5 text-primary" />,
     benefits: [
-      "Real-time performance data",
-      "Predictive maintenance alerts",
-      "Comprehensive diagnostics",
+      "Live performance data",
+      "Early fault detection",
+      "Full diagnostic history",
     ],
   },
   {
-    title: "Easy Installation",
-    text: "Plug-and-play connectivity reduces setup time and minimizes integration complexity.",
+    title: "Quick Installation",
+    text: "Drop-in replacement for existing fans. No rewiring, no controller changes.",
     icon: <Zap className="w-5 h-5 text-accent" />,
     benefits: [
-      "Plug-and-play design",
-      "Universal mounting options",
-      "Simplified wiring",
+      "Plug-and-play wiring",
+      "Standard mounting sizes",
+      "Retrofit-ready",
     ],
   },
   {
-    title: "BMS Integration",
-    text: "Advanced communication protocols enable seamless integration with building management systems and IoT platforms.",
+    title: "BMS Compatible",
+    text: "Connects to your existing building management system over Modbus or BACnet.",
     icon: <ThermometerSun className="w-5 h-5 text-gray-700" />,
     benefits: [
-      "Multiple communication protocols",
-      "BMS integration ready",
-      "IoT connectivity",
+      "Modbus and BACnet support",
+      "Works with existing BMS",
+      "IoT-ready interfaces",
     ],
   },
   {
-    title: "Compact Construction",
-    text: "Space-efficient design maximizes performance while minimizing footprint, perfect for retrofits.",
+    title: "Compact Form Factor",
+    text: "Fits in the same footprint as the fan it replaces. No structural changes needed.",
     icon: <AirVent className="w-5 h-5 text-gray-700" />,
     benefits: [
-      "Space-saving design",
-      "Lightweight construction",
-      "Retrofit-friendly",
+      "Same-size replacement",
+      "Lightweight build",
+      "No structural modifications",
     ],
   },
   {
-    title: "Variable Speed Control",
-    text: "Intelligent power management adapts fan speed to real-time demand, dramatically reducing energy waste.",
+    title: "Variable Speed",
+    text: "Fan speed adjusts continuously to match actual demand — no fixed-speed waste.",
     icon: <Leaf className="w-5 h-5 text-emerald-700" />,
     benefits: [
-      "Variable speed operation",
-      "Smart power management",
-      "Energy-saving algorithms",
+      "0–100% speed range",
+      "Demand-matched output",
+      "Cube-law energy savings",
     ],
   },
 ];
 
 const comparisonRows = [
   {
-    label: "Energy Saving",
-    values: ["-----", "upto 20%", "upto 35%", "upto 60%"],
+    label: "Energy Savings",
+    values: ["N/A", "Up to 20%", "Up to 35%", "Up to 60%"],
     checks: [null, null, null, null],
   },
   {
@@ -122,37 +122,37 @@ const comparisonRows = [
     checks: [false, false, false, true],
   },
   {
-    label: "Autonomous Operation",
+    label: "Runs Without Manual Intervention",
     values: [null, null, null, null],
     checks: [false, false, false, true],
   },
   {
-    label: "Energy Saving through Preventive Maintenance",
-    values: [null, null, null, "YES upto 10%"],
+    label: "Maintenance-based Savings",
+    values: [null, null, null, "Up to 10%"],
     checks: [false, false, false, null],
   },
   {
-    label: "Demand-controlled Ventilation (DCV)",
+    label: "Demand-controlled Ventilation",
     values: [null, null, null, null],
     checks: [false, false, false, true],
   },
   {
-    label: "Single Point of Failure",
+    label: "Redundancy (No Single Point of Failure)",
     values: [null, null, null, null],
-    checks: ["bad-true", "good-false", "good-false", "good-false"],
+    checks: [false, true, true, true],
   },
   {
-    label: "Motor Input Like Temp",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Regular Alerts",
+    label: "Motor Temperature Monitoring",
     values: [null, null, null, null],
     checks: [false, false, false, true],
   },
   {
-    label: "Operation Tickets",
+    label: "Automated Alerts",
+    values: [null, null, null, null],
+    checks: [false, false, false, true],
+  },
+  {
+    label: "Maintenance Ticket Generation",
     values: [null, null, null, null],
     checks: [false, false, false, true],
   },
@@ -161,23 +161,23 @@ const comparisonRows = [
 const howItWorksSteps = [
   {
     num: "01",
-    title: "AHU Network",
-    desc: "EC fans and sensors connected to dedicated Garvata Edge Devices for real-time monitoring.",
+    title: "Connect",
+    desc: "EC fans and sensors in each AHU connect to a Garvata edge device.",
   },
   {
     num: "02",
-    title: "Edge Intelligence",
-    desc: "Smart intermediaries ensuring reliable communication, even during network interruptions.",
+    title: "Run Locally",
+    desc: "Edge devices control fans independently — even if the network goes down.",
   },
   {
     num: "03",
-    title: "AI Controller",
-    desc: "Central AI processing data from all edge devices for optimal energy efficiency and maintenance.",
+    title: "Optimize",
+    desc: "Our AI analyses data across all units and adjusts fan speed for peak efficiency.",
   },
   {
     num: "04",
-    title: "Cloud Platform",
-    desc: "Comprehensive monitoring, analytics, and ML-driven continuous performance improvement.",
+    title: "Monitor",
+    desc: "A cloud dashboard gives you real-time visibility, alerts, and performance history.",
   },
 ];
 
@@ -402,12 +402,11 @@ const Index = () => {
               Autonomous AHU Control
             </p>
             <h1 className="text-[clamp(1.875rem,5vw,3.5rem)] font-serif font-extrabold text-gray-900 mb-6 leading-[1.1] tracking-tight">
-              Reduce AHU energy costs by up to 60%
+              Cut your Air Handling Unit energy costs by up to 60%
             </h1>
             <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
-              AI-powered autonomous control for Air Handling Units.
-              Save energy, prevent downtime, and achieve effortless HVAC
-              efficiency.
+              Autonomous control for AHUs that reduces energy spend, prevents
+              breakdowns, and runs without manual intervention.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
@@ -441,14 +440,14 @@ const Index = () => {
               <p className="font-mono text-3xl md:text-4xl font-bold text-accent mb-1">
                 24/7
               </p>
-              <p className="text-sm text-gray-600">Autonomous Operation</p>
+              <p className="text-sm text-gray-600">Always-on, No Manual Oversight</p>
             </div>
             <div>
               <p className="font-mono text-3xl md:text-4xl font-bold text-emerald-700 mb-1">
                 10%
               </p>
               <p className="text-sm text-gray-600">
-                Savings via Preventive Maintenance
+                Additional Maintenance Savings
               </p>
             </div>
           </div>
@@ -460,17 +459,17 @@ const Index = () => {
             <LandingFeatureCard
               icon={<TrendingUp className="w-5 h-5 text-primary" />}
               title="Optimize Costs"
-              text="Intelligent, demand-based fan controls that minimize unnecessary runtime and reduce operating expenses."
+              text="Demand-based fan controls cut unnecessary runtime. Typical payback within 18–20 months."
             />
             <LandingFeatureCard
               icon={<Leaf className="w-5 h-5 text-emerald-700" />}
               title="Save Energy"
-              text="Real-time response to temperature and humidity changes, dramatically lowering your building's energy consumption."
+              text="Responds to temperature and humidity in real time, adjusting fan speed instead of running at full power."
             />
             <LandingFeatureCard
               icon={<ThermometerSun className="w-5 h-5 text-accent" />}
               title="Less Maintenance"
-              text="Reduced stress on EC fans means fewer breakdowns, fewer manual interventions, and lower maintenance spend."
+              text="Lower fan stress means fewer breakdowns. The system flags issues before they cause downtime."
             />
           </div>
         </section>
@@ -565,9 +564,8 @@ const Index = () => {
                 How It Works
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                A seamless network of AHUs connected through edge devices to our
-                AI-powered controller, enabling autonomous operation and
-                cloud-based monitoring.
+                Each AHU gets an edge device. The edge devices talk to our AI. The AI
+                optimizes everything. You watch from a dashboard.
               </p>
             </div>
 
@@ -606,8 +604,8 @@ const Index = () => {
                 Garvata EC Fans
               </h2>
               <p className="text-gray-600 max-w-xl mx-auto">
-                Superior performance with German engineering excellence,
-                providing unmatched efficiency for your HVAC systems.
+                German-engineered EC fans built for commercial HVAC.
+                Designed to pair with Garvata's autonomous control system.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 justify-center max-w-[48rem] mx-auto">
@@ -660,8 +658,8 @@ const Index = () => {
               Ready to reduce your energy costs?
             </h2>
             <p className="text-gray-600 mb-8">
-              Get in touch and we'll walk you through our autonomous AHU
-              solution.
+              We'll walk you through a live system and show you the numbers
+              for your building.
             </p>
             {/* H2: Use <a> instead of <button> for mailto */}
             <a
@@ -706,7 +704,7 @@ const Index = () => {
             <img src="/logo192.svg" alt="" className="w-4 h-4 opacity-50" />
             <span>&copy; 2026 Garvata</span>
           </div>
-          <span>Optimizing Air, Effortlessly.</span>
+          <span>Smarter buildings, lower bills.</span>
         </div>
       </footer>
 
