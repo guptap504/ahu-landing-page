@@ -13,7 +13,7 @@ export default async (request: Request, _context: Context) => {
   if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "Server configuration error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 
@@ -23,7 +23,7 @@ export default async (request: Request, _context: Context) => {
     if (!name || !email || !message) {
       return new Response(
         JSON.stringify({ error: "Name, email, and message are required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -31,7 +31,7 @@ export default async (request: Request, _context: Context) => {
 
     const { error } = await resend.emails.send({
       from: "GarvataAI Website <noreply@talk.garvata.com>",
-      to: "info@garvata.com",
+      to: "hello@garvata.com",
       subject: `New inquiry from ${name}${company ? ` (${company})` : ""}`,
       replyTo: email,
       text: [
@@ -48,10 +48,10 @@ export default async (request: Request, _context: Context) => {
 
     if (error) {
       console.error("Resend error:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to send email" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Failed to send email" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -60,9 +60,9 @@ export default async (request: Request, _context: Context) => {
     });
   } catch (err) {
     console.error("Function error:", err);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };

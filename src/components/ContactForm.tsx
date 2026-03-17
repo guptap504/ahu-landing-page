@@ -158,11 +158,11 @@ export default function ContactForm() {
       <p className="text-center text-xs text-gray-400 pt-1">
         Or email us directly at{" "}
         <a
-          href="mailto:info@garvata.com"
+          href="mailto:hello@garvata.com"
           className="text-gray-500 hover:text-primary transition-colors inline-flex items-center gap-1"
         >
           <Mail className="w-3 h-3" />
-          info@garvata.com
+          hello@garvata.com
         </a>
       </p>
     </form>

@@ -5,6 +5,7 @@ import {
   ArrowUp,
   Brain,
   CheckCircle2,
+  FileDown,
   Leaf,
   Mail,
   Menu,
@@ -200,7 +201,10 @@ const allImages = [
 function CheckIcon({ label }: { label: string }) {
   return (
     <>
-      <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 mx-auto" aria-hidden="true" />
+      <CheckCircle2
+        className="w-4.5 h-4.5 text-emerald-600 mx-auto"
+        aria-hidden="true"
+      />
       <span className="sr-only">{label}</span>
     </>
   );
@@ -209,7 +213,10 @@ function CheckIcon({ label }: { label: string }) {
 function XIcon({ label }: { label: string }) {
   return (
     <>
-      <XCircle className="w-4.5 h-4.5 text-gray-300 mx-auto" aria-hidden="true" />
+      <XCircle
+        className="w-4.5 h-4.5 text-gray-300 mx-auto"
+        aria-hidden="true"
+      />
       <span className="sr-only">{label}</span>
     </>
   );
@@ -250,6 +257,24 @@ const Index = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Load Calendly popup widget
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://assets.calendly.com/assets/external/widget.css";
+    document.head.appendChild(link);
+
+    const script = document.createElement("script");
+    script.src = "https://assets.calendly.com/assets/external/widget.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.head.removeChild(link);
+      document.body.removeChild(script);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -388,10 +413,7 @@ const Index = () => {
         </div>
       </div>
       {isDrawerOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40"
-          onClick={closeDrawer}
-        />
+        <div className="fixed inset-0 bg-black/20 z-40" onClick={closeDrawer} />
       )}
 
       {/* H1: Main landmark */}
@@ -425,6 +447,17 @@ const Index = () => {
                 View Demo <span aria-hidden="true">&rarr;</span>
               </a>
             </div>
+            <div className="flex justify-center mt-3">
+              <a
+                href="/documents/Garvata Solution For AHU and EC fans.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-cyan-700 font-medium transition-colors hover:text-cyan-900 min-h-[44px]"
+              >
+                <FileDown className="w-4 h-4" />
+                Solutions Overview
+              </a>
+            </div>
           </div>
         </section>
 
@@ -441,7 +474,9 @@ const Index = () => {
               <p className="font-mono text-3xl md:text-4xl font-bold text-accent mb-1">
                 24/7
               </p>
-              <p className="text-sm text-gray-600">Always-on, No Manual Oversight</p>
+              <p className="text-sm text-gray-600">
+                Always-on, No Manual Oversight
+              </p>
             </div>
             <div>
               <p className="font-mono text-3xl md:text-4xl font-bold text-emerald-700 mb-1">
@@ -487,8 +522,15 @@ const Index = () => {
             >
               How It Compares
             </h2>
-            <p className="text-xs text-gray-400 mb-2 md:hidden">Scroll to see all columns &rarr;</p>
-            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Comparison table">
+            <p className="text-xs text-gray-400 mb-2 md:hidden">
+              Scroll to see all columns &rarr;
+            </p>
+            <div
+              className="overflow-x-auto"
+              tabIndex={0}
+              role="region"
+              aria-label="Comparison table"
+            >
               <table className="w-full min-w-[700px] text-sm">
                 <thead>
                   <tr className="border-b-2 border-gray-300">
@@ -535,12 +577,18 @@ const Index = () => {
                             <XIcon label="No" />
                           ) : row.checks[col] === "bad-true" ? (
                             <>
-                              <CheckCircle2 className="w-4.5 h-4.5 text-red-500 mx-auto" aria-hidden="true" />
+                              <CheckCircle2
+                                className="w-4.5 h-4.5 text-red-500 mx-auto"
+                                aria-hidden="true"
+                              />
                               <span className="sr-only">Yes (risk)</span>
                             </>
                           ) : row.checks[col] === "good-false" ? (
                             <>
-                              <XCircle className="w-4.5 h-4.5 text-emerald-600 mx-auto" aria-hidden="true" />
+                              <XCircle
+                                className="w-4.5 h-4.5 text-emerald-600 mx-auto"
+                                aria-hidden="true"
+                              />
                               <span className="sr-only">No (good)</span>
                             </>
                           ) : null}
@@ -565,8 +613,8 @@ const Index = () => {
                 How It Works
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Each AHU gets an edge device. The edge devices talk to our AI. The AI
-                optimizes everything. You watch from a dashboard.
+                Each AHU gets an edge device. The edge devices talk to our AI.
+                The AI optimizes everything. You watch from a dashboard.
               </p>
             </div>
 
@@ -605,9 +653,20 @@ const Index = () => {
                 Garvata EC Fans
               </h2>
               <p className="text-gray-600 max-w-xl mx-auto">
-                German-engineered EC fans built for commercial HVAC.
-                Designed to pair with Garvata's autonomous control system.
+                German-engineered EC fans built for commercial HVAC. Designed to
+                pair with Garvata's autonomous control system.
               </p>
+              <div className="flex flex-wrap gap-3 justify-center mt-4">
+                <a
+                  href="/documents/Garvata AI EC Fan Configuration Document.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-cyan-700 bg-white border border-gray-200 rounded-lg hover:border-cyan-300 transition-colors"
+                >
+                  <FileDown className="w-4 h-4" />
+                  EC Fan Configuration
+                </a>
+              </div>
             </div>
             <div className="flex flex-wrap gap-3 justify-center max-w-[48rem] mx-auto">
               {images.map((src, index) => (
@@ -659,17 +718,28 @@ const Index = () => {
               Ready to reduce your energy costs?
             </h2>
             <p className="text-gray-600 mb-8">
-              We'll walk you through a live system and show you the numbers
-              for your building.
+              We'll walk you through a live system and show you the numbers for
+              your building.
             </p>
+            <button
+              onClick={() => {
+                (window as any).Calendly?.initPopupWidget({
+                  url: "https://calendly.com/kunal-garvata/30-minute-meeting",
+                });
+              }}
+              className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
+            >
+              Schedule a Call
+            </button>
+            <p className="text-gray-400 text-sm mt-6 mb-3">or send us a message</p>
             <ContactForm />
             <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm mt-10">
               <a
-                href="mailto:info@garvata.com"
+                href="mailto:hello@garvata.com"
                 className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors min-h-[44px]"
               >
                 <Mail className="w-4 h-4" />
-                <span>info@garvata.com</span>
+                <span>hello@garvata.com</span>
               </a>
               <a
                 href="https://x.com/garvataHQ"
