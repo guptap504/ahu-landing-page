@@ -1,6 +1,19 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Privacy = () => {
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = "Privacy Policy | GarvataAI";
+    const meta = document.querySelector('meta[name="description"]');
+    const prevDesc = meta?.getAttribute("content") ?? "";
+    meta?.setAttribute("content", "GarvataAI privacy policy. Learn how we collect, use, and protect your data.");
+    return () => {
+      document.title = prevTitle;
+      meta?.setAttribute("content", prevDesc);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-6 py-16 sm:py-24">

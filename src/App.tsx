@@ -6,6 +6,8 @@ import Privacy from "./pages/Privacy";
 
 const options = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  persistence: 'memory' as const,
+  disable_cookie: true,
 }
 
 const App = () => (
