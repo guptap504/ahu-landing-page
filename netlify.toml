@@ -1,0 +1,21 @@
+[build]
+  publish = "dist"
+  command = "pnpm build"
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.html]
+  pretty_urls = true
+
+# Enable Netlify's prerendering for search engine bots
+# This renders the SPA in a headless browser for crawlers,
+# so they see fully rendered HTML instead of an empty #root div
+[build.processing.prerender]
+  enable = true
+
+# SPA routing — serve index.html for all routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

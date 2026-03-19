@@ -258,8 +258,16 @@ const Index = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Load Calendly popup widget
-  useEffect(() => {
+  // Lazy-load Calendly only when user clicks "Schedule a Call"
+  const loadCalendlyAndOpen = useCallback(() => {
+    const calendlyUrl = "https://calendly.com/kunal-garvata/30-minute-meeting";
+
+    // If already loaded, just open
+    if ((window as any).Calendly) {
+      (window as any).Calendly.initPopupWidget({ url: calendlyUrl });
+      return;
+    }
+
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "https://assets.calendly.com/assets/external/widget.css";
@@ -268,12 +276,10 @@ const Index = () => {
     const script = document.createElement("script");
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.head.removeChild(link);
-      document.body.removeChild(script);
+    script.onload = () => {
+      (window as any).Calendly?.initPopupWidget({ url: calendlyUrl });
     };
+    document.body.appendChild(script);
   }, []);
 
   useEffect(() => {
@@ -722,11 +728,7 @@ const Index = () => {
               your building.
             </p>
             <button
-              onClick={() => {
-                (window as any).Calendly?.initPopupWidget({
-                  url: "https://calendly.com/kunal-garvata/30-minute-meeting",
-                });
-              }}
+              onClick={loadCalendlyAndOpen}
               className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
             >
               Schedule a Call
@@ -769,7 +771,10 @@ const Index = () => {
             <img src="/logo192.svg" alt="" className="w-4 h-4 opacity-50" />
             <span>&copy; 2026 Garvata</span>
           </div>
-          <span>Smarter buildings, lower bills.</span>
+          <div className="flex items-center gap-4">
+            <span>Smarter buildings, lower bills.</span>
+            <a href="/privacy" className="text-gray-400 hover:text-gray-600 transition-colors">Privacy</a>
+          </div>
         </div>
       </footer>
 
