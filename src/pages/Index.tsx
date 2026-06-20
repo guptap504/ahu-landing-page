@@ -198,6 +198,17 @@ const allImages = [
   "/fans/garvata-fan-12.webp",
 ];
 
+const ecFanConfigDocuments = [
+  {
+    label: "7.5K EC Fan Configuration",
+    href: "/documents/Garvata AI EC Fan Configuration_7.5K.pdf",
+  },
+  {
+    label: "10K EC Fan Configuration",
+    href: "/documents/Garvata AI EC Fan Configuration_10K.pdf",
+  },
+];
+
 function CheckIcon({ label }: { label: string }) {
   return (
     <>
@@ -663,15 +674,18 @@ const Index = () => {
                 pair with Garvata's autonomous control system.
               </p>
               <div className="flex flex-wrap gap-3 justify-center mt-4">
-                <a
-                  href="/documents/Garvata AI EC Fan Configuration Document.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-cyan-700 bg-white border border-gray-200 rounded-lg hover:border-cyan-300 transition-colors"
-                >
-                  <FileDown className="w-4 h-4" />
-                  EC Fan Configuration
-                </a>
+                {ecFanConfigDocuments.map((document) => (
+                  <a
+                    href={document.href}
+                    key={document.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-cyan-700 bg-white border border-gray-200 rounded-lg hover:border-cyan-300 transition-colors"
+                  >
+                    <FileDown className="w-4 h-4" />
+                    {document.label}
+                  </a>
+                ))}
               </div>
             </div>
             <div className="flex flex-wrap gap-3 justify-center max-w-[48rem] mx-auto">
