@@ -1,8 +1,10 @@
 import {
   ArrowLeft,
+  FolderOpen,
   Gauge,
   IndianRupee,
   Plus,
+  Save,
   Trash2,
   Zap,
 } from "lucide-react";
@@ -17,6 +19,16 @@ type AhuRow = {
   nameplateKw: string;
   vfdFrequency: string;
   staticPressure: string;
+};
+
+type SavedAhuInput = Omit<AhuRow, "id">;
+
+type SavedProject = {
+  id: string;
+  name: string;
+  savedAt: string;
+  electricityTariff: string;
+  rows: SavedAhuInput[];
 };
 
 type FanSelection = {
@@ -49,6 +61,7 @@ type AhuResult = {
 const PER_CFM_RATE = 24;
 const BASELINE_FREQUENCY = 50;
 const DEFAULT_STATIC_PRESSURE = 400;
+const PROJECT_STORAGE_KEY = "garvata:ec-fan-roi-projects:v1";
 const FAN_TYPE_KEYS = ["sevenPointFive", "ten"] as const;
 
 type FanTypeKey = (typeof FAN_TYPE_KEYS)[number];
@@ -174,6 +187,76 @@ function createAhuRow(index: number, overrides: Partial<AhuRow> = {}): AhuRow {
     staticPressure: String(DEFAULT_STATIC_PRESSURE),
     ...overrides,
   };
+}
+
+function toText(value: unknown, fallback = "") {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return fallback;
+  return String(value);
+}
+
+function normalizeSavedAhuRow(value: unknown, index: number): SavedAhuInput | null {
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+
+  return {
+    name: toText(row.name, `AHU ${index + 1}`),
+    designCfm: toText(row.designCfm),
+    monthlyRunHours: toText(row.monthlyRunHours),
+    nameplateKw: toText(row.nameplateKw),
+    vfdFrequency: toText(row.vfdFrequency, String(BASELINE_FREQUENCY)),
+    staticPressure: toText(row.staticPressure, String(DEFAULT_STATIC_PRESSURE)),
+  };
+}
+
+function normalizeSavedProject(value: unknown): SavedProject | null {
+  if (!value || typeof value !== "object") return null;
+  const project = value as Record<string, unknown>;
+  const name = toText(project.name).trim();
+  if (!name) return null;
+
+  const rows = Array.isArray(project.rows)
+    ? project.rows
+        .map((row, index) => normalizeSavedAhuRow(row, index))
+        .filter((row): row is SavedAhuInput => row !== null)
+    : [];
+
+  return {
+    id: toText(project.id, makeId()),
+    name,
+    savedAt: toText(project.savedAt, new Date(0).toISOString()),
+    electricityTariff: toText(project.electricityTariff, "10.06"),
+    rows,
+  };
+}
+
+function readSavedProjects() {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const saved = window.localStorage.getItem(PROJECT_STORAGE_KEY);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map(normalizeSavedProject)
+      .filter((project): project is SavedProject => project !== null)
+      .sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+  } catch {
+    return [];
+  }
+}
+
+function writeSavedProjects(projects: SavedProject[]) {
+  if (typeof window === "undefined") return false;
+
+  try {
+    window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function parseNumber(value: string, fallback = 0) {
@@ -469,9 +552,18 @@ const initialRows = [
 ];
 
 const Calculate = () => {
+  const [projectName, setProjectName] = useState("");
+  const [savedProjects, setSavedProjects] = useState<SavedProject[]>(() =>
+    readSavedProjects()
+  );
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
   const [electricityTariff, setElectricityTariff] = useState("10.06");
   const [rows, setRows] = useState<AhuRow[]>(initialRows);
   const tariff = Math.max(0, parseNumber(electricityTariff));
+  const selectedProject = savedProjects.find(
+    (project) => project.id === selectedProjectId
+  );
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -555,6 +647,83 @@ const Calculate = () => {
     );
   };
 
+  const saveProject = () => {
+    const name = projectName.trim();
+    if (!name) {
+      setSaveMessage("Enter a project name before saving.");
+      return;
+    }
+
+    const existingProject = savedProjects.find(
+      (project) => project.name.toLowerCase() === name.toLowerCase()
+    );
+    const projectToSave: SavedProject = {
+      id: existingProject?.id ?? makeId(),
+      name,
+      savedAt: new Date().toISOString(),
+      electricityTariff,
+      rows: rows.map((row) => ({
+        name: row.name,
+        designCfm: row.designCfm,
+        monthlyRunHours: row.monthlyRunHours,
+        nameplateKw: row.nameplateKw,
+        vfdFrequency: row.vfdFrequency,
+        staticPressure: row.staticPressure,
+      })),
+    };
+    const nextProjects = [
+      projectToSave,
+      ...savedProjects.filter((project) => project.id !== projectToSave.id),
+    ];
+
+    if (!writeSavedProjects(nextProjects)) {
+      setSaveMessage("Could not save this project in this browser.");
+      return;
+    }
+
+    setSavedProjects(nextProjects);
+    setSelectedProjectId(projectToSave.id);
+    setSaveMessage(`Saved "${projectToSave.name}".`);
+  };
+
+  const loadSelectedProject = () => {
+    if (!selectedProject) {
+      setSaveMessage("Select a saved project to load.");
+      return;
+    }
+
+    setProjectName(selectedProject.name);
+    setElectricityTariff(selectedProject.electricityTariff);
+    setRows(
+      selectedProject.rows.length > 0
+        ? selectedProject.rows.map((row, index) =>
+            createAhuRow(index + 1, row)
+          )
+        : [createAhuRow(1)]
+    );
+    setSaveMessage(`Loaded "${selectedProject.name}".`);
+  };
+
+  const deleteSelectedProject = () => {
+    if (!selectedProject) {
+      setSaveMessage("Select a saved project to delete.");
+      return;
+    }
+
+    const nextProjects = savedProjects.filter(
+      (project) => project.id !== selectedProject.id
+    );
+
+    if (!writeSavedProjects(nextProjects)) {
+      setSaveMessage("Could not update saved projects in this browser.");
+      return;
+    }
+
+    setSavedProjects(nextProjects);
+    setSelectedProjectId("");
+    setSaveMessage(`Deleted "${selectedProject.name}".`);
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
       <header className="border-b border-gray-200 bg-white">
@@ -594,6 +763,82 @@ const Calculate = () => {
                 </p>
               </div>
               <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:grid-cols-2">
+                <div className="sm:col-span-2 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Project name
+                    </span>
+                    <input
+                      aria-label="Project name"
+                      className="h-11 w-full rounded-md border border-gray-300 px-3 text-base font-semibold text-gray-900 outline-none transition-colors focus:border-primary"
+                      placeholder="e.g. Hotel AHU retrofit"
+                      value={projectName}
+                      onChange={(event) => setProjectName(event.target.value)}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={saveProject}
+                    disabled={!projectName.trim()}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 md:min-w-[10rem]"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save Project
+                  </button>
+                </div>
+                <div className="sm:col-span-2 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end">
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Saved projects
+                    </span>
+                    <select
+                      aria-label="Saved projects"
+                      className="h-11 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition-colors focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
+                      disabled={savedProjects.length === 0}
+                      value={selectedProjectId}
+                      onChange={(event) =>
+                        setSelectedProjectId(event.target.value)
+                      }
+                    >
+                      <option value="">
+                        {savedProjects.length === 0
+                          ? "No saved projects"
+                          : "Select saved project"}
+                      </option>
+                      {savedProjects.map((project) => (
+                        <option value={project.id} key={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={loadSelectedProject}
+                    disabled={!selectedProject}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-gray-300 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                    Load
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deleteSelectedProject}
+                    disabled={!selectedProject}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-gray-300 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </button>
+                </div>
+                {saveMessage && (
+                  <p
+                    className="sm:col-span-2 text-sm font-medium text-gray-500"
+                    role="status"
+                  >
+                    {saveMessage}
+                  </p>
+                )}
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Electricity tariff
