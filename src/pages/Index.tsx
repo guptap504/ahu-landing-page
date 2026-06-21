@@ -17,6 +17,15 @@ import {
   Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
 
 type ECFanCardProps = {
   title: string;
@@ -274,8 +283,8 @@ const Index = () => {
     const calendlyUrl = "https://calendly.com/kunal-garvata/30-minute-meeting";
 
     // If already loaded, just open
-    if ((window as any).Calendly) {
-      (window as any).Calendly.initPopupWidget({ url: calendlyUrl });
+    if (window.Calendly) {
+      window.Calendly.initPopupWidget({ url: calendlyUrl });
       return;
     }
 
@@ -288,7 +297,7 @@ const Index = () => {
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
     script.onload = () => {
-      (window as any).Calendly?.initPopupWidget({ url: calendlyUrl });
+      window.Calendly?.initPopupWidget({ url: calendlyUrl });
     };
     document.body.appendChild(script);
   }, []);
@@ -455,6 +464,12 @@ const Index = () => {
               >
                 Talk to Sales
               </button>
+              <Link
+                to="/calculate"
+                className="border border-primary text-primary font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary hover:text-white transition-colors"
+              >
+                Calculate ROI
+              </Link>
               <a
                 href="https://demo.garvata.com"
                 target="_blank"
@@ -741,13 +756,23 @@ const Index = () => {
               We'll walk you through a live system and show you the numbers for
               your building.
             </p>
-            <button
-              onClick={loadCalendlyAndOpen}
-              className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
-            >
-              Schedule a Call
-            </button>
-            <p className="text-gray-400 text-sm mt-6 mb-3">or send us a message</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={loadCalendlyAndOpen}
+                className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
+              >
+                Schedule a Call
+              </button>
+              <Link
+                to="/calculate"
+                className="border border-primary text-primary font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary hover:text-white transition-colors"
+              >
+                Calculate ROI
+              </Link>
+            </div>
+            <p className="text-gray-400 text-sm mt-6 mb-3">
+              or send us a message
+            </p>
             <ContactForm />
             <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm mt-10">
               <a
@@ -787,7 +812,12 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-4">
             <span>Smarter buildings, lower bills.</span>
-            <a href="/privacy" className="text-gray-400 hover:text-gray-600 transition-colors">Privacy</a>
+            <a
+              href="/privacy"
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Privacy
+            </a>
           </div>
         </div>
       </footer>

@@ -1,5 +1,6 @@
 import { PostHogProvider } from 'posthog-js/react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Calculate from "./pages/Calculate";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
@@ -18,6 +19,7 @@ const App = () => (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/calculate" element={<Calculate />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
