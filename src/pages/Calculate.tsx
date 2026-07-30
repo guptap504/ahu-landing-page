@@ -567,7 +567,7 @@ const Calculate = () => {
 
   useEffect(() => {
     const prevTitle = document.title;
-    document.title = "EC Fan ROI Calculator | GarvataAI";
+    document.title = "EC Fan ROI Calculator | Garvata Labs";
     const meta = document.querySelector('meta[name="description"]');
     const prevDesc = meta?.getAttribute("content") ?? "";
     meta?.setAttribute(
@@ -733,7 +733,7 @@ const Calculate = () => {
             className="flex min-h-[44px] items-center gap-2.5 text-gray-900 transition-opacity hover:opacity-80"
           >
             <img src="/logo192.svg" alt="" className="h-7 w-7" />
-            <span className="font-serif text-lg font-bold">GarvataAI</span>
+            <span className="font-serif text-lg font-bold">Garvata Labs</span>
           </Link>
           <Link
             to="/"

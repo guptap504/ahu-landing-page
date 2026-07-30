@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 const Privacy = () => {
   useEffect(() => {
     const prevTitle = document.title;
-    document.title = "Privacy Policy | GarvataAI";
+    document.title = "Privacy Policy | Garvata Labs";
     const meta = document.querySelector('meta[name="description"]');
     const prevDesc = meta?.getAttribute("content") ?? "";
-    meta?.setAttribute("content", "GarvataAI privacy policy. Learn how we collect, use, and protect your data.");
+    meta?.setAttribute("content", "Garvata Labs privacy policy. Learn how we collect, use, and protect your data.");
     return () => {
       document.title = prevTitle;
       meta?.setAttribute("content", prevDesc);

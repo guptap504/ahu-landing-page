@@ -248,6 +248,7 @@ const Index = () => {
   const ecFansref = useRef<HTMLDivElement>(null);
   const keyBenefitsRef = useRef<HTMLDivElement>(null);
   const howItComparesRef = useRef<HTMLDivElement>(null);
+  const demoRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -338,6 +339,7 @@ const Index = () => {
   const navLinks = [
     { label: "How It Compares", ref: howItComparesRef },
     { label: "How It Works", ref: howItWorksRef },
+    { label: "Demo", ref: demoRef },
     { label: "EC Fans", ref: ecFansref },
     { label: "Capabilities", ref: keyBenefitsRef },
   ];
@@ -362,7 +364,7 @@ const Index = () => {
             >
               <img src="/logo192.svg" alt="" className="w-7 h-7" />
               <span className="text-lg font-serif font-bold text-gray-900">
-                GarvataAI
+                Garvata Labs
               </span>
             </button>
 
@@ -667,6 +669,61 @@ const Index = () => {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── Product Demo ─── */}
+        <section
+          ref={demoRef}
+          className="relative overflow-hidden border-y border-cyan-900/50 bg-slate-950 px-4 py-20"
+        >
+          <div
+            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute -left-32 top-12 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl"
+            aria-hidden="true"
+          />
+
+          <div className="container relative mx-auto max-w-5xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
+                Product Demo
+              </p>
+              <h2 className="mb-4 font-serif text-2xl font-bold text-white md:text-3xl">
+                See autonomous AHU control in action
+              </h2>
+              <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
+                Watch a guided walkthrough of the Garvata platform and see how
+                operators monitor and optimize AHU performance.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-10 max-w-4xl">
+              <div className="mb-3 flex items-center justify-between px-1 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-slate-500">
+                <span>Garvata Labs</span>
+                <span>Product Walkthrough</span>
+              </div>
+              <div className="aspect-video overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl shadow-cyan-950/50">
+                <iframe
+                  className="h-full w-full"
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/MYFq11-nYx4?si=EIoPq_NVQbiHpFGv"
+                  title="Garvata autonomous AHU control product demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  loading="lazy"
+                  allowFullScreen
+                />
+              </div>
             </div>
           </div>
         </section>
