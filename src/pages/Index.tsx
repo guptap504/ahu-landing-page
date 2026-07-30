@@ -447,8 +447,47 @@ const Index = () => {
       {/* H1: Main landmark */}
       <main id="main-content">
         {/* ─── Hero ─── */}
-        <section className="pt-32 pb-20 px-4">
-          <div className="container max-w-3xl mx-auto text-center">
+        <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,_#ecfeff_0%,_#ffffff_58%)] px-4 pb-20 pt-32">
+          <div
+            className="pointer-events-none absolute inset-0 overflow-hidden"
+            aria-hidden="true"
+          >
+            <div className="hero-airflow-pulse absolute -right-16 top-4 h-[34rem] w-[34rem] rounded-full border border-cyan-700/20 sm:right-0 xl:right-16" />
+            <div className="hero-airflow-pulse-delayed absolute right-4 top-20 h-[26rem] w-[26rem] rounded-full border border-cyan-700/20 sm:right-16 xl:right-32" />
+            <div className="hero-electron-orbit absolute -right-16 top-4 h-[34rem] w-[34rem] sm:right-0 xl:right-16">
+              <span className="hero-electron absolute left-1/2 top-[-4px] h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-600" />
+              <span className="hero-electron hero-electron-muted absolute bottom-[12%] left-[12%] h-1.5 w-1.5 rounded-full bg-cyan-500" />
+            </div>
+            <div className="hero-electron-orbit-reverse absolute right-4 top-20 h-[26rem] w-[26rem] sm:right-16 xl:right-32">
+              <span className="hero-electron absolute right-[-4px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-cyan-700" />
+            </div>
+            <div className="hero-electron-orbit-slow absolute -left-20 bottom-[-12rem] hidden h-[30rem] w-[30rem] sm:block xl:left-8">
+              <span className="hero-electron hero-electron-muted absolute left-1/2 top-[-3px] h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-600" />
+            </div>
+
+            <div className="hero-fan-drift absolute -right-40 top-8 h-[28rem] w-[28rem] opacity-[0.12] sm:-right-20 sm:opacity-[0.2] lg:right-0 xl:right-16">
+              <img
+                src="/fans/garvata-fan-01.webp"
+                width={600}
+                height={608}
+                alt=""
+                className="h-full w-full object-contain mix-blend-multiply saturate-75"
+              />
+            </div>
+            <div className="hero-fan-drift-reverse absolute -left-28 bottom-[-9rem] hidden h-[25rem] w-[25rem] opacity-[0.14] sm:block lg:left-0 xl:left-16">
+              <img
+                src="/fans/garvata-fan-12.webp"
+                width={450}
+                height={515}
+                alt=""
+                className="h-full w-full object-contain mix-blend-multiply grayscale-[20%]"
+              />
+            </div>
+
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.98)_0%,_rgba(255,255,255,0.9)_42%,_rgba(255,255,255,0.18)_78%)]" />
+          </div>
+
+          <div className="container relative z-10 mx-auto max-w-3xl text-center">
             <p className="text-sm font-medium text-primary tracking-widest uppercase mb-5">
               Autonomous AHU Control
             </p>
