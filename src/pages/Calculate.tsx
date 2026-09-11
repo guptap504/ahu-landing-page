@@ -1456,14 +1456,14 @@ const Calculate = () => {
             </div>
 
             <div
-              className="overflow-x-auto rounded-lg border border-gray-200"
+              className="max-h-[32rem] overflow-auto rounded-lg border border-gray-200"
               role="region"
               aria-label="AHU ROI calculator table"
               tabIndex={0}
             >
               <table className="w-full min-w-[1280px] text-sm">
-                <thead className="bg-gray-50">
-                  <tr className="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
+                <thead className="sticky top-0 z-10 bg-gray-50">
+                  <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
                     <th className="w-[9rem] px-3 py-3 font-semibold">AHU</th>
                     <th className="w-[8rem] px-3 py-3 font-semibold">
                       Design CFM
@@ -1640,8 +1640,8 @@ const Calculate = () => {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="border-t border-gray-300 bg-gray-50 font-semibold text-gray-900">
-                  <tr>
+                <tfoot className="sticky bottom-0 z-10 border-t border-gray-300 bg-gray-50 font-semibold text-gray-900">
+                  <tr className="bg-gray-50">
                     <td className="px-3 py-3" colSpan={7}>
                       Project total
                     </td>
