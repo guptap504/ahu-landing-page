@@ -1,14 +1,17 @@
 import {
   ArrowLeft,
+  Download,
   FolderOpen,
   Gauge,
   IndianRupee,
   Plus,
   Save,
   Trash2,
+  Upload,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
 type AhuRow = {
@@ -28,6 +31,7 @@ type SavedProject = {
   name: string;
   savedAt: string;
   electricityTariff: string;
+  retrofitRate: string;
   rows: SavedAhuInput[];
 };
 
@@ -226,6 +230,7 @@ function normalizeSavedProject(value: unknown): SavedProject | null {
     name,
     savedAt: toText(project.savedAt, new Date(0).toISOString()),
     electricityTariff: toText(project.electricityTariff, "10.06"),
+    retrofitRate: toText(project.retrofitRate, String(PER_CFM_RATE)),
     rows,
   };
 }
@@ -489,7 +494,11 @@ function chooseFanMix(designCfm: number, staticPressure: number): FanSelection {
   return best ?? emptySelection;
 }
 
-function calculateAhu(row: AhuRow, electricityTariff: number): AhuResult {
+function calculateAhu(
+  row: AhuRow,
+  electricityTariff: number,
+  perCfmRate: number
+): AhuResult {
   const designCfm = Math.max(0, parseNumber(row.designCfm));
   const monthlyRunHours = Math.max(0, parseNumber(row.monthlyRunHours));
   const nameplateKw = Math.max(0, parseNumber(row.nameplateKw));
@@ -510,7 +519,7 @@ function calculateAhu(row: AhuRow, electricityTariff: number): AhuResult {
     ...fullSpeedSelection,
     totalKw: fullSpeedSelection.totalKw * speedDerating,
   };
-  const capex = designCfm * PER_CFM_RATE;
+  const capex = designCfm * perCfmRate;
   const baselineMonthlyCost = baselineKw * monthlyRunHours * electricityTariff;
   const ecMonthlyCost = selection.totalKw * monthlyRunHours * electricityTariff;
   const monthlySavings = baselineMonthlyCost - ecMonthlyCost;
@@ -559,8 +568,11 @@ const Calculate = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
   const [electricityTariff, setElectricityTariff] = useState("10.06");
+  const [retrofitRate, setRetrofitRate] = useState(String(PER_CFM_RATE));
   const [rows, setRows] = useState<AhuRow[]>(initialRows);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const tariff = Math.max(0, parseNumber(electricityTariff));
+  const perCfmRate = Math.max(0, parseNumber(retrofitRate, PER_CFM_RATE));
   const selectedProject = savedProjects.find(
     (project) => project.id === selectedProjectId
   );
@@ -581,8 +593,8 @@ const Calculate = () => {
   }, []);
 
   const results = useMemo(
-    () => rows.map((row) => calculateAhu(row, tariff)),
-    [rows, tariff]
+    () => rows.map((row) => calculateAhu(row, tariff, perCfmRate)),
+    [rows, tariff, perCfmRate]
   );
 
   const project = useMemo(
@@ -662,6 +674,7 @@ const Calculate = () => {
       name,
       savedAt: new Date().toISOString(),
       electricityTariff,
+      retrofitRate,
       rows: rows.map((row) => ({
         name: row.name,
         designCfm: row.designCfm,
@@ -694,6 +707,7 @@ const Calculate = () => {
 
     setProjectName(selectedProject.name);
     setElectricityTariff(selectedProject.electricityTariff);
+    setRetrofitRate(selectedProject.retrofitRate);
     setRows(
       selectedProject.rows.length > 0
         ? selectedProject.rows.map((row, index) =>
@@ -722,6 +736,477 @@ const Calculate = () => {
     setSavedProjects(nextProjects);
     setSelectedProjectId("");
     setSaveMessage(`Deleted "${selectedProject.name}".`);
+  };
+
+  const exportToExcel = async () => {
+    const { Workbook } = await import("exceljs");
+    const workbook = new Workbook();
+    workbook.creator = "Garvata Labs";
+    workbook.created = new Date();
+    workbook.calcProperties = { fullCalcOnLoad: true };
+
+    const roundTwo = (value: number) => Math.round(value * 100) / 100;
+    const toCell = (value: string | number) =>
+      typeof value === "number" ? roundTwo(value) : value;
+    // Number formats never render more than two decimal places.
+    const money = "#,##0.00";
+    const eng = "#,##0.##";
+    const whole = "#,##0";
+
+    const theme = {
+      primary: "FF0891B2",
+      border: "FFE5E7EB",
+      stripe: "FFF1F6F8",
+      surface: "FFF8FAFC",
+      text: "FF111827",
+      white: "FFFFFFFF",
+    };
+    const border = {
+      top: { style: "thin" as const, color: { argb: theme.border } },
+      left: { style: "thin" as const, color: { argb: theme.border } },
+      bottom: { style: "thin" as const, color: { argb: theme.border } },
+      right: { style: "thin" as const, color: { argb: theme.border } },
+    };
+    const headerFill = {
+      type: "pattern" as const,
+      pattern: "solid" as const,
+      fgColor: { argb: theme.primary },
+    };
+    const stripeFill = {
+      type: "pattern" as const,
+      pattern: "solid" as const,
+      fgColor: { argb: theme.stripe },
+    };
+    const totalFill = {
+      type: "pattern" as const,
+      pattern: "solid" as const,
+      fgColor: { argb: theme.surface },
+    };
+    const headerFont = {
+      name: "Calibri",
+      size: 11,
+      bold: true,
+      color: { argb: theme.white },
+    };
+    const boldFont = {
+      name: "Calibri",
+      size: 11,
+      bold: true,
+      color: { argb: theme.text },
+    };
+    const alignLeft = { horizontal: "left" as const, vertical: "middle" as const };
+    const alignCenter = {
+      horizontal: "center" as const,
+      vertical: "middle" as const,
+    };
+    const alignRight = { horizontal: "right" as const, vertical: "middle" as const };
+
+    // ----- ROI Summary -----
+    const summary = workbook.addWorksheet("ROI Summary", {
+      views: [{ state: "frozen", ySplit: 1 }],
+    });
+    summary.columns = [{ width: 32 }, { width: 24 }];
+
+    const titleRow = summary.addRow(["EC Fan Retrofit ROI"]);
+    titleRow.height = 28;
+    summary.mergeCells(`A${titleRow.number}:B${titleRow.number}`);
+    const titleCell = titleRow.getCell(1);
+    titleCell.font = {
+      name: "Calibri",
+      size: 16,
+      bold: true,
+      color: { argb: theme.primary },
+    };
+    titleCell.alignment = alignLeft;
+
+    summary.addRow([]);
+
+    const addMetaRow = (
+      label: string,
+      value: string | number,
+      numFmt = ""
+    ) => {
+      const row = summary.addRow([label, toCell(value)]);
+      row.height = 19;
+      const labelCell = row.getCell(1);
+      const valueCell = row.getCell(2);
+      labelCell.font = boldFont;
+      labelCell.border = border;
+      labelCell.alignment = alignLeft;
+      valueCell.font = { name: "Calibri", size: 11, color: { argb: theme.text } };
+      valueCell.border = border;
+      valueCell.alignment = alignRight;
+      if (numFmt) valueCell.numFmt = numFmt;
+      return row;
+    };
+
+    addMetaRow("Project", projectName.trim() || "Untitled project");
+    addMetaRow("Electricity tariff (INR/kWh)", tariff, money);
+    addMetaRow("Retrofit rate (INR/CFM)", perCfmRate, money);
+
+    summary.addRow([]);
+
+    const totalsTitleRow = summary.addRow(["Project totals"]);
+    summary.mergeCells(
+      `A${totalsTitleRow.number}:B${totalsTitleRow.number}`
+    );
+    totalsTitleRow.height = 21;
+    totalsTitleRow.eachCell((cell) => {
+      cell.font = headerFont;
+      cell.fill = headerFill;
+      cell.border = border;
+      cell.alignment = alignLeft;
+    });
+
+    const projectTotals: [string, string | number, string][] = [
+      ["Design CFM", project.designCfm, whole],
+      ["Installed CFM", project.installedCfm, whole],
+      ["Fan count", project.fanCount, whole],
+      ["Project capex (INR)", project.capex, money],
+      [
+        "Baseline monthly cost (INR)",
+        roundTwo(project.baselineMonthlyCost),
+        money,
+      ],
+      ["EC fan monthly cost (INR)", roundTwo(project.ecMonthlyCost), money],
+      ["Monthly savings (INR)", roundTwo(project.monthlySavings), money],
+      ["Annual savings (INR)", roundTwo(project.annualSavings), money],
+      ["Project payback (months)", projectPaybackMonths ?? "", money],
+      ["Savings (%)", roundTwo(projectSavingsPct * 100), "#,##0.##"],
+    ];
+
+    projectTotals.forEach(([label, value, numFmt], index) => {
+      const row = summary.addRow([label, toCell(value)]);
+      row.height = 19;
+      const labelCell = row.getCell(1);
+      const valueCell = row.getCell(2);
+      labelCell.font = boldFont;
+      labelCell.border = border;
+      labelCell.alignment = alignLeft;
+      valueCell.font = {
+        name: "Calibri",
+        size: 11,
+        bold: true,
+        color: { argb: theme.primary },
+      };
+      valueCell.border = border;
+      valueCell.alignment = alignRight;
+      if (numFmt) valueCell.numFmt = numFmt;
+      if (index % 2 === 1) {
+        labelCell.fill = stripeFill;
+        valueCell.fill = stripeFill;
+      }
+    });
+
+    // ----- AHU Schedule -----
+    const schedule = workbook.addWorksheet("AHU Schedule", {
+      views: [{ state: "frozen", ySplit: 1 }],
+    });
+
+    const scheduleColumns = [
+      { header: "AHU", width: 24, align: alignLeft, numFmt: "" },
+      { header: "Design CFM", width: 13, align: alignRight, numFmt: whole },
+      { header: "Monthly hours", width: 15, align: alignRight, numFmt: eng },
+      { header: "Nameplate kW", width: 14, align: alignRight, numFmt: money },
+      { header: "VFD Hz", width: 9, align: alignRight, numFmt: eng },
+      { header: "Static Pa", width: 11, align: alignRight, numFmt: whole },
+      { header: "Fan mix", width: 22, align: alignLeft, numFmt: "" },
+      { header: "Installed CFM", width: 14, align: alignRight, numFmt: whole },
+      { header: "Overshoot CFM", width: 14, align: alignRight, numFmt: eng },
+      { header: "Baseline kW", width: 13, align: alignRight, numFmt: money },
+      { header: "EC kW", width: 11, align: alignRight, numFmt: money },
+      { header: "Capex (INR)", width: 15, align: alignRight, numFmt: money },
+      {
+        header: "Baseline cost/mo (INR)",
+        width: 20,
+        align: alignRight,
+        numFmt: money,
+      },
+      {
+        header: "EC cost/mo (INR)",
+        width: 18,
+        align: alignRight,
+        numFmt: money,
+      },
+      { header: "Saving/mo (INR)", width: 17, align: alignRight, numFmt: money },
+      {
+        header: "Annual saving (INR)",
+        width: 19,
+        align: alignRight,
+        numFmt: money,
+      },
+      { header: "Payback (mo)", width: 14, align: alignRight, numFmt: money },
+    ];
+    schedule.columns = scheduleColumns;
+
+    const styleDataRow = (
+      row: ReturnType<typeof schedule.addRow>,
+      index: number,
+      isTotal = false
+    ) => {
+      row.height = 20;
+      row.eachCell((cell, colNumber) => {
+        const column = scheduleColumns[colNumber - 1];
+        if (isTotal) {
+          cell.font = boldFont;
+          cell.fill = totalFill;
+        } else if (index % 2 === 1) {
+          cell.fill = stripeFill;
+        }
+        cell.border = border;
+        if (column?.numFmt) cell.numFmt = column.numFmt;
+        cell.alignment = column?.align ?? alignRight;
+      });
+    };
+
+    results.forEach((result, index) => {
+      const row = schedule.addRow([
+        result.row.name,
+        toCell(result.designCfm),
+        toCell(result.monthlyRunHours),
+        toCell(result.nameplateKw),
+        toCell(result.vfdFrequency),
+        toCell(result.staticPressure),
+        getFanMixLabel(result.selection),
+        toCell(result.selection.installedCfm),
+        toCell(result.selection.overshootCfm),
+        toCell(result.baselineKw),
+        toCell(result.selection.totalKw),
+        toCell(result.capex),
+        toCell(result.baselineMonthlyCost),
+        toCell(result.ecMonthlyCost),
+        toCell(result.monthlySavings),
+        toCell(result.annualSavings),
+        result.paybackMonths == null ? "" : toCell(result.paybackMonths),
+      ]);
+
+      // Live formulas so the exported workbook can be iterated on.
+      const rn = row.number;
+      row.getCell(9).value = {
+        formula: `H${rn}-B${rn}`,
+        result: roundTwo(result.selection.overshootCfm),
+      };
+      row.getCell(10).value = {
+        formula: `D${rn}*(E${rn}/50)^3`,
+        result: roundTwo(result.baselineKw),
+      };
+      row.getCell(12).value = {
+        formula: `B${rn}*'ROI Summary'!B5`,
+        result: roundTwo(result.capex),
+      };
+      row.getCell(13).value = {
+        formula: `J${rn}*C${rn}*'ROI Summary'!B4`,
+        result: roundTwo(result.baselineMonthlyCost),
+      };
+      row.getCell(14).value = {
+        formula: `K${rn}*C${rn}*'ROI Summary'!B4`,
+        result: roundTwo(result.ecMonthlyCost),
+      };
+      row.getCell(15).value = {
+        formula: `M${rn}-N${rn}`,
+        result: roundTwo(result.monthlySavings),
+      };
+      row.getCell(16).value = {
+        formula: `O${rn}*12`,
+        result: roundTwo(result.annualSavings),
+      };
+      row.getCell(17).value = {
+        formula: `IFERROR(L${rn}/O${rn},"No payback")`,
+        result:
+          result.paybackMonths == null
+            ? "No payback"
+            : roundTwo(result.paybackMonths),
+      };
+
+      styleDataRow(row, index);
+    });
+
+    const lastDataRow = results.length + 1;
+    const totalsRowNumber = results.length + 2;
+    const totalBaselineKw = results.reduce(
+      (sum, result) => sum + result.baselineKw,
+      0
+    );
+    const totalEcKw = results.reduce(
+      (sum, result) => sum + result.selection.totalKw,
+      0
+    );
+    const totalOvershootCfm = project.installedCfm - project.designCfm;
+
+    const totalsRow = schedule.addRow([
+      "Project total",
+      { formula: `SUM(B2:B${lastDataRow})`, result: roundTwo(project.designCfm) },
+      "",
+      "",
+      "",
+      "",
+      "",
+      {
+        formula: `SUM(H2:H${lastDataRow})`,
+        result: roundTwo(project.installedCfm),
+      },
+      {
+        formula: `SUM(I2:I${lastDataRow})`,
+        result: roundTwo(totalOvershootCfm),
+      },
+      {
+        formula: `SUM(J2:J${lastDataRow})`,
+        result: roundTwo(totalBaselineKw),
+      },
+      {
+        formula: `SUM(K2:K${lastDataRow})`,
+        result: roundTwo(totalEcKw),
+      },
+      {
+        formula: `SUM(L2:L${lastDataRow})`,
+        result: roundTwo(project.capex),
+      },
+      {
+        formula: `SUM(M2:M${lastDataRow})`,
+        result: roundTwo(project.baselineMonthlyCost),
+      },
+      {
+        formula: `SUM(N2:N${lastDataRow})`,
+        result: roundTwo(project.ecMonthlyCost),
+      },
+      {
+        formula: `SUM(O2:O${lastDataRow})`,
+        result: roundTwo(project.monthlySavings),
+      },
+      {
+        formula: `SUM(P2:P${lastDataRow})`,
+        result: roundTwo(project.annualSavings),
+      },
+      {
+        formula: `IFERROR(L${totalsRowNumber}/O${totalsRowNumber},"No payback")`,
+        result:
+          projectPaybackMonths == null
+            ? "No payback"
+            : roundTwo(projectPaybackMonths),
+      },
+    ]);
+    styleDataRow(totalsRow, results.length, true);
+
+    const headerRow = schedule.getRow(1);
+    headerRow.height = 24;
+    headerRow.eachCell((cell) => {
+      cell.font = headerFont;
+      cell.fill = headerFill;
+      cell.border = border;
+      cell.alignment = alignCenter;
+    });
+
+    schedule.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1 + results.length, column: scheduleColumns.length },
+    };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const fileBase = (projectName.trim() || "EC-Fan-ROI").replace(
+      /[\\/:*?"<>|]+/g,
+      "-"
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${fileBase}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const importFromExcel = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { Workbook } = await import("exceljs");
+      const workbook = new Workbook();
+      await workbook.xlsx.load(await file.arrayBuffer());
+
+      // Read raw input values from the schedule sheet (columns 1-6).
+      const schedule =
+        workbook.getWorksheet("AHU Schedule") ?? workbook.worksheets[0];
+      if (!schedule) {
+        setSaveMessage("No sheet found in this workbook.");
+        return;
+      }
+
+      const importedRows: SavedAhuInput[] = [];
+      schedule.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return; // skip header
+
+        const name = toText(row.getCell(1).value);
+        // Skip the totals row and any fully empty rows.
+        const label = name.trim().toLowerCase();
+        const cells = [
+          row.getCell(1).value,
+          row.getCell(2).value,
+          row.getCell(3).value,
+          row.getCell(4).value,
+          row.getCell(5).value,
+          row.getCell(6).value,
+        ];
+        const isEmpty = cells.every(
+          (value) => value === null || value === undefined || value === ""
+        );
+        if (isEmpty || label === "project total") return;
+
+        importedRows.push({
+          name,
+          designCfm: toText(row.getCell(2).value),
+          monthlyRunHours: toText(row.getCell(3).value),
+          nameplateKw: toText(row.getCell(4).value),
+          vfdFrequency: toText(row.getCell(5).value),
+          staticPressure: toText(row.getCell(6).value),
+        });
+      });
+
+      if (importedRows.length === 0) {
+        setSaveMessage("No AHU rows found in this workbook.");
+        return;
+      }
+
+      // Optionally restore project-level settings from the summary sheet.
+      const summary = workbook.getWorksheet("ROI Summary");
+      if (summary) {
+        let importedProject = "";
+        let importedTariff = "";
+        let importedRate = "";
+        summary.eachRow((row) => {
+          const label = toText(row.getCell(1).value).trim();
+          const value =
+            row.getCell(2).value === null || row.getCell(2).value === undefined
+              ? ""
+              : toText(row.getCell(2).value);
+          if (label === "Project") importedProject = value;
+          else if (label === "Electricity tariff (INR/kWh)")
+            importedTariff = value;
+          else if (label === "Retrofit rate (INR/CFM)") importedRate = value;
+        });
+
+        if (importedProject) setProjectName(importedProject);
+        if (importedTariff) setElectricityTariff(importedTariff);
+        if (importedRate) setRetrofitRate(importedRate);
+      }
+
+      setRows(
+        importedRows.map((row, index) => createAhuRow(index + 1, row))
+      );
+      setSaveMessage(
+        `Imported ${importedRows.length} AHU row(s) from "${file.name}".`
+      );
+    } catch {
+      setSaveMessage(
+        "Could not read that file. Please upload a Garvata EC fan ROI export (.xlsx)."
+      );
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -858,17 +1343,25 @@ const Calculate = () => {
                     <span className="text-sm text-gray-500">/kWh</span>
                   </div>
                 </label>
-                <div>
+                <label className="block">
                   <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
                     Retrofit rate
                   </span>
-                  <div className="flex min-h-[44px] items-center rounded-md border border-gray-200 bg-gray-50 px-3">
-                    <span className="font-semibold text-gray-900">
-                      Rs {PER_CFM_RATE}
-                    </span>
-                    <span className="ml-1 text-sm text-gray-500">/CFM</span>
+                  <div className="flex min-h-[44px] items-center rounded-md border border-gray-300 bg-white px-3 focus-within:border-primary">
+                    <IndianRupee className="mr-2 h-4 w-4 text-gray-400" />
+                    <input
+                      aria-label="Retrofit rate in rupees per CFM"
+                      className="h-10 w-full bg-transparent text-base font-semibold text-gray-900 outline-none"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      type="number"
+                      value={retrofitRate}
+                      onChange={(event) => setRetrofitRate(event.target.value)}
+                    />
+                    <span className="text-sm text-gray-500">/CFM</span>
                   </div>
-                </div>
+                </label>
               </div>
             </div>
           </div>
@@ -926,14 +1419,40 @@ const Calculate = () => {
                   VFD derating.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={addRow}
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
-              >
-                <Plus className="h-4 w-4" />
-                Add AHU
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  className="sr-only"
+                  onChange={importFromExcel}
+                  aria-label="Import AHU schedule from Excel"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Upload className="h-4 w-4" />
+                  Import from Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={exportToExcel}
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Download className="h-4 w-4" />
+                  Export to Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={addRow}
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add AHU
+                </button>
+              </div>
             </div>
 
             <div
