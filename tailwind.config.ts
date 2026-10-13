@@ -38,6 +38,11 @@ export default {
           DEFAULT: "#b45309",
           foreground: "#ffffff",
         },
+        navy: {
+          DEFAULT: "#071827",
+          800: "#0a1c2b",
+          700: "#11283d",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -45,17 +50,16 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        "fade-in-up": {
-          "0%": { opacity: "0", transform: "translateY(8px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        // Opacity only: moving the content would offset #anchor scrolling.
+        "page-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
       },
       animation: {
-        "fade-in-up": "fade-in-up 0.4s ease-out both",
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "page-in": "page-in 0.35s ease-out backwards",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
 } satisfies Config;

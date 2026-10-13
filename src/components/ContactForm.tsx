@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
 import { useState } from "react";
@@ -42,8 +43,13 @@ export default function ContactForm() {
 
       setIsSubmitted(true);
       reset();
+      track("contact_form_submitted", {
+        status: "success",
+        has_company: Boolean(data.company?.trim()),
+      });
       toast.success("Message sent — we'll be in touch soon.");
     } catch {
+      track("contact_form_submitted", { status: "error" });
       toast.error("Something went wrong. Please email us directly.");
     } finally {
       setIsSubmitting(false);

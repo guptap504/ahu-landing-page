@@ -1,936 +1,118 @@
-import ContactForm from "@/components/ContactForm";
-import LandingFeatureCard from "@/components/LandingFeatureCard";
+import ContactSection from "@/components/site/ContactSection";
+import PageHero from "@/components/site/PageHero";
+import { HowItWorks, RoiCallout } from "@/components/site/sections";
 import {
-  AirVent,
-  ArrowUp,
-  Brain,
-  CheckCircle2,
-  FileDown,
-  Leaf,
-  Mail,
-  Menu,
-  Shield,
-  ThermometerSun,
-  TrendingUp,
-  X,
-  XCircle,
-  Zap,
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+  Container,
+  PillLink,
+  SectionHeading,
+  StatGrid,
+} from "@/components/site/ui";
+import { usePageMeta } from "@/lib/usePageMeta";
 
-declare global {
-  interface Window {
-    Calendly?: {
-      initPopupWidget: (options: { url: string }) => void;
-    };
-  }
-}
-
-type ECFanCardProps = {
-  title: string;
-  text: string;
-  icon: React.ReactNode;
-  benefits: string[];
-};
-
-const ECFanCard = (props: ECFanCardProps) => {
-  const { title, text, icon, benefits } = props;
-  return (
-    <div className="bg-white rounded-lg p-6 border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-lg font-serif font-bold text-gray-900 mb-2">
-        {title}
-      </h3>
-      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{text}</p>
-      <ul className="space-y-1.5">
-        {benefits.map((benefit, index) => (
-          <li
-            className="flex items-center gap-2 text-sm text-gray-600"
-            key={index}
-          >
-            <Shield className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-            <span>{benefit}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-const featureCards: ECFanCardProps[] = [
+const stats = [
   {
-    title: "High-Efficiency Motors",
-    text: "EC motors that deliver more airflow per watt than AC alternatives.",
-    icon: <TrendingUp className="w-5 h-5 text-primary" />,
-    benefits: [
-      "IE5 efficiency class",
-      "Aerodynamically optimized impellers",
-      "German-engineered components",
-    ],
+    value: "60%",
+    label: "Energy savings",
+    detail: "Up to 60% lower AHU fan energy versus conventional drives.",
   },
   {
-    title: "Built-in Monitoring",
-    text: "Each fan reports speed, temperature, power draw, and vibration — no external sensors needed.",
-    icon: <Brain className="w-5 h-5 text-primary" />,
-    benefits: [
-      "Live performance data",
-      "Early fault detection",
-      "Full diagnostic history",
-    ],
+    value: "10%",
+    label: "Maintenance savings",
+    detail: "Additional savings from fewer breakdowns and planned service.",
   },
   {
-    title: "Quick Installation",
-    text: "Drop-in replacement for existing fans. No rewiring, no controller changes.",
-    icon: <Zap className="w-5 h-5 text-accent" />,
-    benefits: [
-      "Plug-and-play wiring",
-      "Standard mounting sizes",
-      "Retrofit-ready",
-    ],
+    value: "18–20",
+    label: "Months to payback",
+    detail: "Typical payback for demand-based fan control.",
   },
   {
-    title: "BMS Compatible",
-    text: "Connects to your existing building management system over Modbus or BACnet.",
-    icon: <ThermometerSun className="w-5 h-5 text-gray-700" />,
-    benefits: [
-      "Modbus and BACnet support",
-      "Works with existing BMS",
-      "IoT-ready interfaces",
-    ],
-  },
-  {
-    title: "Compact Form Factor",
-    text: "Fits in the same footprint as the fan it replaces. No structural changes needed.",
-    icon: <AirVent className="w-5 h-5 text-gray-700" />,
-    benefits: [
-      "Same-size replacement",
-      "Lightweight build",
-      "No structural modifications",
-    ],
-  },
-  {
-    title: "Variable Speed",
-    text: "Fan speed adjusts continuously to match actual demand — no fixed-speed waste.",
-    icon: <Leaf className="w-5 h-5 text-emerald-700" />,
-    benefits: [
-      "0–100% speed range",
-      "Demand-matched output",
-      "Cube-law energy savings",
-    ],
+    value: "24/7",
+    label: "Autonomous",
+    detail: "Always on, with no manual oversight or tuning.",
   },
 ];
-
-const comparisonRows = [
-  {
-    label: "Energy Savings",
-    values: ["N/A", "Up to 20%", "Up to 35%", "Up to 60%"],
-    checks: [null, null, null, null],
-  },
-  {
-    label: "Preventive Maintenance",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Runs Without Manual Intervention",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Maintenance-based Savings",
-    values: [null, null, null, "Up to 10%"],
-    checks: [false, false, false, null],
-  },
-  {
-    label: "Demand-controlled Ventilation",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Redundancy (No Single Point of Failure)",
-    values: [null, null, null, null],
-    checks: [false, true, true, true],
-  },
-  {
-    label: "Motor Temperature Monitoring",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Automated Alerts",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-  {
-    label: "Maintenance Ticket Generation",
-    values: [null, null, null, null],
-    checks: [false, false, false, true],
-  },
-];
-
-const howItWorksSteps = [
-  {
-    num: "01",
-    title: "Connect",
-    desc: "EC fans and sensors in each AHU connect to a Garvata edge device.",
-  },
-  {
-    num: "02",
-    title: "Run Locally",
-    desc: "Edge devices control fans independently — even if the network goes down.",
-  },
-  {
-    num: "03",
-    title: "Optimize",
-    desc: "Our AI analyses data across all units and adjusts fan speed for peak efficiency.",
-  },
-  {
-    num: "04",
-    title: "Monitor",
-    desc: "A cloud dashboard gives you real-time visibility, alerts, and performance history.",
-  },
-];
-
-const allImages = [
-  "/fans/garvata-fan-01.webp",
-  "/fans/garvata-fan-02.webp",
-  "/fans/garvata-fan-03.webp",
-  "/fans/garvata-fan-04.webp",
-  "/fans/garvata-fan-05.avif",
-  "/fans/garvata-fan-06.webp",
-  "/fans/garvata-fan-07.webp",
-  "/fans/garvata-fan-08.webp",
-  "/fans/garvata-fan-09.webp",
-  "/fans/garvata-fan-10.webp",
-  "/fans/garvata-fan-11.webp",
-  "/fans/garvata-fan-12.webp",
-];
-
-const ecFanConfigDocuments = [
-  {
-    label: "7.5K EC Fan Configuration",
-    href: "/documents/Garvata AI EC Fan Configuration_7.5K.pdf",
-  },
-  {
-    label: "10K EC Fan Configuration",
-    href: "/documents/Garvata AI EC Fan Configuration_10K.pdf",
-  },
-];
-
-function CheckIcon({ label }: { label: string }) {
-  return (
-    <>
-      <CheckCircle2
-        className="w-4.5 h-4.5 text-emerald-600 mx-auto"
-        aria-hidden="true"
-      />
-      <span className="sr-only">{label}</span>
-    </>
-  );
-}
-
-function XIcon({ label }: { label: string }) {
-  return (
-    <>
-      <XCircle
-        className="w-4.5 h-4.5 text-gray-300 mx-auto"
-        aria-hidden="true"
-      />
-      <span className="sr-only">{label}</span>
-    </>
-  );
-}
 
 const Index = () => {
-  const contactRef = useRef<HTMLDivElement>(null);
-  const howItWorksRef = useRef<HTMLDivElement>(null);
-  const ecFansref = useRef<HTMLDivElement>(null);
-  const keyBenefitsRef = useRef<HTMLDivElement>(null);
-  const howItComparesRef = useRef<HTMLDivElement>(null);
-  const demoRef = useRef<HTMLDivElement>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // M4: Use matchMedia instead of resize listener
-  useEffect(() => {
-    const mql = window.matchMedia("(max-width: 640px)");
-    setIsMobile(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
-
-  const images = isMobile ? allImages.slice(0, 4) : allImages;
-
-  const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
-    const element = ref.current;
-    if (element) {
-      const offset = 32;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - offset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    }
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  // Lazy-load Calendly only when user clicks "Schedule a Call"
-  const loadCalendlyAndOpen = useCallback(() => {
-    const calendlyUrl = "https://calendly.com/kunal-garvata/30-minute-meeting";
-
-    // If already loaded, just open
-    if (window.Calendly) {
-      window.Calendly.initPopupWidget({ url: calendlyUrl });
-      return;
-    }
-
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://assets.calendly.com/assets/external/widget.css";
-    document.head.appendChild(link);
-
-    const script = document.createElement("script");
-    script.src = "https://assets.calendly.com/assets/external/widget.js";
-    script.async = true;
-    script.onload = () => {
-      window.Calendly?.initPopupWidget({ url: calendlyUrl });
-    };
-    document.body.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const openDrawer = () => setIsDrawerOpen(true);
-
-  const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
-
-  // H5: Escape key closes drawer
-  useEffect(() => {
-    if (!isDrawerOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDrawer();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isDrawerOpen, closeDrawer]);
-
-  // H5: Focus trap — focus the drawer when it opens
-  useEffect(() => {
-    if (isDrawerOpen && drawerRef.current) {
-      const firstButton = drawerRef.current.querySelector("button");
-      firstButton?.focus();
-    }
-  }, [isDrawerOpen]);
-
-  const handleNavClick = (scrollFunction: () => void) => {
-    scrollFunction();
-    closeDrawer();
-  };
-
-  const navLinks = [
-    { label: "Demo", ref: demoRef },
-    { label: "How It Compares", ref: howItComparesRef },
-    { label: "How It Works", ref: howItWorksRef },
-    { label: "EC Fans", ref: ecFansref },
-    { label: "Capabilities", ref: keyBenefitsRef },
-  ];
+  usePageMeta(
+    "Garvata Labs: AI Native Cooling for Data Centers, IT Parks & Pharma",
+    "AI native cooling from Garvata Labs. Autonomous control and EC fans that cut cooling energy for data centers, commercial IT parks and pharma manufacturing.",
+    "/",
+  );
 
   return (
-    <div className="min-h-screen w-full font-sans bg-white">
-      {/* M5: Skip to content link */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-gray-900 focus:font-medium"
-      >
-        Skip to content
-      </a>
-
-      {/* ─── Navigation ─── */}
-      <nav className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            <button
-              onClick={scrollToTop}
-              className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+    <>
+      <PageHero
+        eyebrow="Garvata Labs"
+        title="AI native cooling"
+        accent="for data centers, IT parks and pharma."
+        description="Cooling that runs itself. Garvata pairs AI that predicts, coordinates and controls with EC fans and controllers built to take its commands — cutting energy without letting conditions drift."
+        actions={
+          <>
+            <PillLink
+              href="#contact"
+              variant="light"
+              trackCta={{ cta: "talk_to_sales", location: "home_hero" }}
             >
-              <img src="/logo192.svg" alt="" className="w-7 h-7" />
-              <span className="text-lg font-serif font-bold text-gray-900">
-                Garvata Labs
-              </span>
-            </button>
-
-            <div className="hidden md:flex items-center gap-1 text-sm">
-              {navLinks.map(({ label, ref }) => (
-                <button
-                  key={label}
-                  onClick={() => scrollToRef(ref)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors px-3 py-2 min-h-[44px] flex items-center"
-                >
-                  {label}
-                </button>
-              ))}
-              <button
-                onClick={() => scrollToRef(contactRef)}
-                className="ml-3 bg-gray-900 text-white text-sm font-medium rounded-lg px-5 py-2 min-h-[44px] hover:bg-gray-800 transition-colors"
-              >
-                Contact Us
-              </button>
-            </div>
-
-            <button
-              onClick={openDrawer}
-              className="md:hidden text-gray-600 p-2 -mr-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Open menu"
+              Talk to us
+            </PillLink>
+            <PillLink
+              to="/calculate"
+              variant="outline-dark"
+              trackCta={{ cta: "calculate_roi", location: "home_hero" }}
             >
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </nav>
+              Calculate ROI
+            </PillLink>
+          </>
+        }
+        visual={
+          <img
+            src="/products/ec-fan.webp"
+            width={1000}
+            height={944}
+            alt="Garvata EC plug fan"
+            className="mx-auto w-full max-w-[13rem] sm:max-w-sm lg:max-w-lg"
+          />
+        }
+      />
 
-      {/* ─── Mobile Drawer ─── */}
-      <div
-        ref={drawerRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-        className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-white shadow-xl transform transition-transform duration-200 ease-out z-50 ${isDrawerOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-10">
-            <div className="flex items-center gap-2">
-              <img src="/logo192.svg" alt="" className="w-6 h-6" />
-              <span className="font-serif font-bold text-gray-900">
-                Garvata
-              </span>
-            </div>
-            <button
-              onClick={closeDrawer}
-              className="text-gray-400 hover:text-gray-600 p-2 -mr-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Close menu"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="flex flex-col space-y-1">
-            {navLinks.map(({ label, ref }) => (
-              <button
-                key={label}
-                onClick={() => handleNavClick(() => scrollToRef(ref))}
-                className="text-gray-600 hover:text-gray-900 text-left py-2.5 min-h-[44px] transition-colors"
-              >
-                {label}
-              </button>
-            ))}
-            <button
-              onClick={() => handleNavClick(() => scrollToRef(contactRef))}
-              className="bg-gray-900 text-white text-left py-2.5 px-4 rounded-lg font-medium mt-4 min-h-[44px] hover:bg-gray-800 transition-colors"
-            >
-              Contact Us
-            </button>
-          </div>
-        </div>
-      </div>
-      {isDrawerOpen && (
-        <div className="fixed inset-0 bg-black/20 z-40" onClick={closeDrawer} />
-      )}
-
-      {/* H1: Main landmark */}
-      <main id="main-content">
-        {/* ─── Hero ─── */}
-        <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,_#ecfeff_0%,_#ffffff_58%)] px-4 pb-20 pt-32">
-          <div
-            className="pointer-events-none absolute inset-0 overflow-hidden"
-            aria-hidden="true"
+      <section className="py-16 sm:py-24">
+        <Container>
+          <SectionHeading
+            title="Cooling that runs itself,"
+            accent="engineered by Garvata"
+            action={
+              <PillLink variant="outline" href="#how-it-works">
+                How it works
+              </PillLink>
+            }
           >
-            <div className="hero-airflow-pulse absolute -right-16 top-4 h-[34rem] w-[34rem] rounded-full border border-cyan-700/20 sm:right-0 xl:right-16" />
-            <div className="hero-airflow-pulse-delayed absolute right-4 top-20 h-[26rem] w-[26rem] rounded-full border border-cyan-700/20 sm:right-16 xl:right-32" />
-            <div className="hero-electron-orbit absolute -right-16 top-4 h-[34rem] w-[34rem] sm:right-0 xl:right-16">
-              <span className="hero-electron absolute left-1/2 top-[-4px] h-2 w-2 -translate-x-1/2 rounded-full bg-cyan-600" />
-              <span className="hero-electron hero-electron-muted absolute bottom-[12%] left-[12%] h-1.5 w-1.5 rounded-full bg-cyan-500" />
-            </div>
-            <div className="hero-electron-orbit-reverse absolute right-4 top-20 h-[26rem] w-[26rem] sm:right-16 xl:right-32">
-              <span className="hero-electron absolute right-[-4px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-cyan-700" />
-            </div>
-            <div className="hero-electron-orbit-slow absolute -left-20 bottom-[-12rem] hidden h-[30rem] w-[30rem] sm:block xl:left-8">
-              <span className="hero-electron hero-electron-muted absolute left-1/2 top-[-3px] h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-600" />
-            </div>
-
-            <div className="hero-fan-drift absolute -right-40 top-8 h-[28rem] w-[28rem] opacity-[0.12] sm:-right-20 sm:opacity-[0.2] lg:right-0 xl:right-16">
-              <img
-                src="/fans/garvata-fan-01.webp"
-                width={600}
-                height={608}
-                alt=""
-                className="h-full w-full object-contain mix-blend-multiply saturate-75"
-              />
-            </div>
-            <div className="hero-fan-drift-reverse absolute -left-28 bottom-[-9rem] hidden h-[25rem] w-[25rem] opacity-[0.14] sm:block lg:left-0 xl:left-16">
-              <img
-                src="/fans/garvata-fan-12.webp"
-                width={450}
-                height={515}
-                alt=""
-                className="h-full w-full object-contain mix-blend-multiply grayscale-[20%]"
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.98)_0%,_rgba(255,255,255,0.9)_42%,_rgba(255,255,255,0.18)_78%)]" />
-          </div>
-
-          <div className="container relative z-10 mx-auto max-w-3xl text-center">
-            <p className="text-sm font-medium text-primary tracking-widest uppercase mb-5">
-              Autonomous AHU Control
+            <p>
+              Most cooling still runs on static rules written for the day the
+              building opened. Garvata replaces them with a control layer that
+              learns your site, predicts thermal load and drives every fan and
+              valve to the lowest-energy safe setpoint — on hardware we design
+              to work with it.
             </p>
-            <h1 className="text-[clamp(1.875rem,5vw,3.5rem)] font-serif font-extrabold text-gray-900 mb-6 leading-[1.1] tracking-tight">
-              Cut your Air Handling Unit energy costs by up to 60%
-            </h1>
-            <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
-              Autonomous control for AHUs that reduces energy spend, prevents
-              breakdowns, and runs without manual intervention.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => scrollToRef(contactRef)}
-                className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
-              >
-                Talk to Sales
-              </button>
-              <Link
-                to="/calculate"
-                className="border border-primary text-primary font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary hover:text-white transition-colors"
-              >
-                Calculate ROI
-              </Link>
-            </div>
-            <div className="flex justify-center mt-3">
-              <a
-                href="/documents/Garvata Solution For AHU and EC fans.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-cyan-700 font-medium transition-colors hover:text-cyan-900 min-h-[44px]"
-              >
-                <FileDown className="w-4 h-4" />
-                Solutions Overview
-              </a>
-            </div>
+          </SectionHeading>
+          <div className="mt-12">
+            <StatGrid stats={stats} />
           </div>
-        </section>
+        </Container>
+      </section>
 
-        {/* ─── Product Demo ─── */}
-        <section
-          ref={demoRef}
-          className="relative overflow-hidden border-y border-cyan-900/50 bg-slate-950 px-4 py-20"
-        >
-          <div
-            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute -left-32 top-12 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl"
-            aria-hidden="true"
-          />
+      <div className="border-t border-gray-200">
+        <HowItWorks />
+      </div>
 
-          <div className="container relative mx-auto max-w-5xl">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-                Product Demo
-              </p>
-              <h2 className="mb-4 font-serif text-2xl font-bold text-white md:text-3xl">
-                See autonomous AHU control in action
-              </h2>
-              <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                Watch a guided walkthrough of the Garvata platform and see how
-                operators monitor and optimize AHU performance.
-              </p>
-            </div>
+      <RoiCallout location="home" />
 
-            <div className="mx-auto mt-10 max-w-4xl">
-              <div className="mb-3 flex items-center justify-between px-1 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-slate-500">
-                <span>Garvata Labs</span>
-                <span>Product Walkthrough</span>
-              </div>
-              <div className="aspect-video overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl shadow-cyan-950/50">
-                <iframe
-                  className="h-full w-full"
-                  width="560"
-                  height="315"
-                  src="https://www.youtube.com/embed/MYFq11-nYx4?si=EIoPq_NVQbiHpFGv"
-                  title="Garvata autonomous AHU control product demo"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  loading="lazy"
-                  allowFullScreen
-                />
-              </div>
-              <div className="mt-7 flex justify-center">
-                <a
-                  href="https://demo.garvata.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-400/10 px-6 py-3 font-semibold text-cyan-100 transition-colors hover:border-cyan-300 hover:bg-cyan-300 hover:text-slate-950"
-                >
-                  Go to Demo <span aria-hidden="true">{"\u2197"}</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Stats Band ─── */}
-        <section className="border-y border-gray-200 bg-gray-50 py-12 px-4">
-          <div className="container max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center">
-            <div>
-              <p className="font-mono text-3xl md:text-4xl font-bold text-primary mb-1">
-                60%
-              </p>
-              <p className="text-sm text-gray-600">Energy Savings</p>
-            </div>
-            <div className="sm:border-x sm:border-gray-200">
-              <p className="font-mono text-3xl md:text-4xl font-bold text-accent mb-1">
-                24/7
-              </p>
-              <p className="text-sm text-gray-600">
-                Always-on, No Manual Oversight
-              </p>
-            </div>
-            <div>
-              <p className="font-mono text-3xl md:text-4xl font-bold text-emerald-700 mb-1">
-                10%
-              </p>
-              <p className="text-sm text-gray-600">
-                Additional Maintenance Savings
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Value Propositions ─── */}
-        <section className="py-20 px-4">
-          <div className="container max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
-            <LandingFeatureCard
-              icon={<TrendingUp className="w-5 h-5 text-primary" />}
-              title="Optimize Costs"
-              text="Demand-based fan controls cut unnecessary runtime. Typical payback within 18–20 months."
-            />
-            <LandingFeatureCard
-              icon={<Leaf className="w-5 h-5 text-emerald-700" />}
-              title="Save Energy"
-              text="Responds to temperature and humidity in real time, adjusting fan speed instead of running at full power."
-            />
-            <LandingFeatureCard
-              icon={<ThermometerSun className="w-5 h-5 text-accent" />}
-              title="Less Maintenance"
-              text="Lower fan stress means fewer breakdowns. The system flags issues before they cause downtime."
-            />
-          </div>
-        </section>
-
-        {/* ─── How It Compares ─── */}
-        <section
-          ref={howItComparesRef}
-          className="bg-gray-50 border-y border-gray-200 py-20 px-4"
-        >
-          <div className="container max-w-5xl mx-auto">
-            <h2
-              className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-12 text-center scroll-mt-20"
-              id="how-it-compares"
-            >
-              How It Compares
-            </h2>
-            <p className="text-xs text-gray-400 mb-2 md:hidden">
-              Scroll to see all columns &rarr;
-            </p>
-            <div
-              className="overflow-x-auto"
-              tabIndex={0}
-              role="region"
-              aria-label="Comparison table"
-            >
-              <table className="w-full min-w-[700px] text-sm">
-                <thead>
-                  <tr className="border-b-2 border-gray-300">
-                    <th className="text-left py-3 pr-4 font-serif font-semibold text-gray-900 w-1/4">
-                      Feature
-                    </th>
-                    <th className="py-3 px-2 font-serif font-semibold text-gray-900 text-center">
-                      Axial Fan + VFD
-                    </th>
-                    <th className="py-3 px-2 font-serif font-semibold text-gray-900 text-center">
-                      Plug Fan + VFD
-                    </th>
-                    <th className="py-3 px-2 font-serif font-semibold text-gray-900 text-center">
-                      EC Fan Only
-                    </th>
-                    <th className="py-3 pl-2 font-serif font-bold text-primary text-center border-l-2 border-primary">
-                      EC Fan + GarvataAI
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map((row, i) => (
-                    <tr
-                      key={i}
-                      className="border-b border-gray-200 hover:bg-gray-100/50 transition-colors"
-                    >
-                      <td className="py-3 pr-4 font-medium text-gray-900">
-                        {row.label}
-                      </td>
-                      {[0, 1, 2, 3].map((col) => (
-                        <td
-                          key={col}
-                          className={`py-3 px-2 text-center ${col === 3 ? "bg-primary/[0.03] border-l-2 border-primary" : ""}`}
-                        >
-                          {row.values[col] ? (
-                            <span
-                              className={`${col === 3 ? "font-mono font-semibold text-primary" : "text-gray-600"}`}
-                            >
-                              {row.values[col]}
-                            </span>
-                          ) : row.checks[col] === true ? (
-                            <CheckIcon label="Yes" />
-                          ) : row.checks[col] === false ? (
-                            <XIcon label="No" />
-                          ) : row.checks[col] === "bad-true" ? (
-                            <>
-                              <CheckCircle2
-                                className="w-4.5 h-4.5 text-red-500 mx-auto"
-                                aria-hidden="true"
-                              />
-                              <span className="sr-only">Yes (risk)</span>
-                            </>
-                          ) : row.checks[col] === "good-false" ? (
-                            <>
-                              <XCircle
-                                className="w-4.5 h-4.5 text-emerald-600 mx-auto"
-                                aria-hidden="true"
-                              />
-                              <span className="sr-only">No (good)</span>
-                            </>
-                          ) : null}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── How It Works ─── */}
-        <section ref={howItWorksRef} className="py-20 px-4">
-          <div className="container max-w-5xl mx-auto">
-            <div className="text-center mb-14">
-              <h2
-                className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-4 scroll-mt-20"
-                id="how-it-works"
-              >
-                How It Works
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Each AHU gets an edge device. The edge devices talk to our AI.
-                The AI optimizes everything. You watch from a dashboard.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4">
-              {howItWorksSteps.map((step, i) => (
-                <div
-                  key={step.num}
-                  className={`py-6 md:py-0 md:px-6 md:text-center ${i < howItWorksSteps.length - 1 ? "border-b md:border-b-0 md:border-r border-dashed border-gray-300" : ""}`}
-                >
-                  <span className="font-mono text-xs text-primary font-bold mb-2 block">
-                    {step.num}
-                  </span>
-                  <h3 className="font-serif font-bold text-gray-900 mb-1.5">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── EC Fans ─── */}
-        <section
-          ref={ecFansref}
-          className="bg-gray-50 border-y border-gray-200 py-20"
-        >
-          <div className="container max-w-5xl mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2
-                className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-3 scroll-mt-20"
-                id="ec-fans"
-              >
-                Garvata EC Fans
-              </h2>
-              <p className="text-gray-600 max-w-xl mx-auto">
-                German-engineered EC fans built for commercial HVAC. Designed to
-                pair with Garvata's autonomous control system.
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center mt-4">
-                {ecFanConfigDocuments.map((document) => (
-                  <a
-                    href={document.href}
-                    key={document.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-cyan-700 bg-white border border-gray-200 rounded-lg hover:border-cyan-300 transition-colors"
-                  >
-                    <FileDown className="w-4 h-4" />
-                    {document.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 justify-center max-w-[48rem] mx-auto">
-              {images.map((src, index) => (
-                <div
-                  key={index}
-                  className="w-[10rem] md:w-[14rem] h-[10rem] rounded-lg overflow-hidden border border-gray-200 bg-white"
-                >
-                  <img
-                    src={src}
-                    loading="lazy"
-                    width={224}
-                    height={160}
-                    alt={`Garvata EC Fan ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── EC Fan Capabilities ─── */}
-        <section ref={keyBenefitsRef} className="py-20 px-4">
-          <div className="container max-w-5xl mx-auto">
-            <h2
-              className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-10 text-center scroll-mt-20"
-              id="capabilities"
-            >
-              EC Fan Capabilities
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featureCards.map((card) => (
-                <ECFanCard key={card.title} {...card} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Contact ─── */}
-        <section
-          ref={contactRef}
-          className="bg-gray-50 border-y border-gray-200 py-20 px-4"
-        >
-          <div className="container max-w-2xl mx-auto text-center">
-            <h2
-              className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-3 scroll-mt-20"
-              id="contact"
-            >
-              Ready to reduce your energy costs?
-            </h2>
-            <p className="text-gray-600 mb-8">
-              We'll walk you through a live system and show you the numbers for
-              your building.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={loadCalendlyAndOpen}
-                className="bg-primary text-white font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary/90 transition-colors"
-              >
-                Schedule a Call
-              </button>
-              <Link
-                to="/calculate"
-                className="border border-primary text-primary font-semibold rounded-lg px-8 py-3.5 min-h-[44px] hover:bg-primary hover:text-white transition-colors"
-              >
-                Calculate ROI
-              </Link>
-            </div>
-            <p className="text-gray-400 text-sm mt-6 mb-3">
-              or send us a message
-            </p>
-            <ContactForm />
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm mt-10">
-              <a
-                href="mailto:hello@garvata.com"
-                className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors min-h-[44px]"
-              >
-                <Mail className="w-4 h-4" />
-                <span>hello@garvata.com</span>
-              </a>
-              <a
-                href="https://x.com/garvataHQ"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors min-h-[44px]"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-                <span>@garvataHQ</span>
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ─── Footer ─── */}
-      <footer className="py-8 px-4">
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <img src="/logo192.svg" alt="" className="w-4 h-4 opacity-50" />
-            <span>&copy; 2026 Garvata</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Smarter buildings, lower bills.</span>
-            <a
-              href="/privacy"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              Privacy
-            </a>
-          </div>
-        </div>
-      </footer>
-
-      {/* ─── Scroll to top ─── */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-gray-900 text-white p-3 rounded-lg shadow-md hover:bg-gray-800 transition-colors z-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      )}
-    </div>
+      <ContactSection
+        title="Talk to us about"
+        accent="your site"
+        description="Tell us what you're cooling — a data hall, an IT park or a production floor — and we'll show you what Garvata would change and what it would save."
+        location="home"
+      />
+    </>
   );
 };
 

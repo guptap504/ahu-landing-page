@@ -1,5 +1,9 @@
+import { track } from "@/lib/analytics";
+import ContactSection from "@/components/site/ContactSection";
+import PageIntro from "@/components/site/PageIntro";
+import { Container } from "@/components/site/ui";
+import { usePageMeta } from "@/lib/usePageMeta";
 import {
-  ArrowLeft,
   Download,
   FolderOpen,
   Gauge,
@@ -10,9 +14,8 @@ import {
   Upload,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import { Link } from "react-router-dom";
 
 type AhuRow = {
   id: string;
@@ -577,20 +580,11 @@ const Calculate = () => {
     (project) => project.id === selectedProjectId
   );
 
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = "EC Fan ROI Calculator | Garvata Labs";
-    const meta = document.querySelector('meta[name="description"]');
-    const prevDesc = meta?.getAttribute("content") ?? "";
-    meta?.setAttribute(
-      "content",
-      "Calculate project-level ROI for Garvata EC fan AHU retrofits."
-    );
-    return () => {
-      document.title = prevTitle;
-      meta?.setAttribute("content", prevDesc);
-    };
-  }, []);
+  usePageMeta(
+    "EC Fan ROI Calculator | Garvata Labs",
+    "Calculate project-level ROI for Garvata EC fan AHU retrofits.",
+    "/calculate"
+  );
 
   const results = useMemo(
     () => rows.map((row) => calculateAhu(row, tariff, perCfmRate)),
@@ -697,6 +691,7 @@ const Calculate = () => {
     setSavedProjects(nextProjects);
     setSelectedProjectId(projectToSave.id);
     setSaveMessage(`Saved "${projectToSave.name}".`);
+    track("calculator_project_saved", { ahu_count: rows.length });
   };
 
   const loadSelectedProject = () => {
@@ -1117,6 +1112,7 @@ const Calculate = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    track("calculator_exported", { ahu_count: results.length });
   };
 
   const importFromExcel = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -1200,7 +1196,12 @@ const Calculate = () => {
       setSaveMessage(
         `Imported ${importedRows.length} AHU row(s) from "${file.name}".`
       );
+      track("calculator_imported", {
+        status: "success",
+        ahu_count: importedRows.length,
+      });
     } catch {
+      track("calculator_imported", { status: "error" });
       setSaveMessage(
         "Could not read that file. Please upload a Garvata EC fan ROI export (.xlsx)."
       );
@@ -1209,494 +1210,480 @@ const Calculate = () => {
     }
   };
 
+  const resultCards = [
+    {
+      label: "Project payback",
+      value: formatPayback(projectPaybackMonths),
+      icon: <Gauge className="h-4 w-4 text-primary" aria-hidden="true" />,
+    },
+    {
+      label: "Monthly savings",
+      value: formatCurrency(project.monthlySavings),
+      icon: <IndianRupee className="h-4 w-4 text-accent" aria-hidden="true" />,
+    },
+    {
+      label: "Energy savings",
+      value: percentFormatter.format(projectSavingsPct),
+      icon: <Zap className="h-4 w-4 text-emerald-700" aria-hidden="true" />,
+    },
+    {
+      label: "Project capex",
+      value: formatCurrency(project.capex),
+      icon: <IndianRupee className="h-4 w-4 text-gray-400" aria-hidden="true" />,
+    },
+  ];
+
+  const costCards = [
+    { label: "Baseline monthly cost", value: formatCurrency(project.baselineMonthlyCost) },
+    { label: "EC fan monthly cost", value: formatCurrency(project.ecMonthlyCost) },
+    { label: "Annual savings", value: formatCurrency(project.annualSavings) },
+  ];
+
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900">
-      <header className="border-b border-gray-200 bg-white">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link
-            to="/"
-            className="flex min-h-[44px] items-center gap-2.5 text-gray-900 transition-opacity hover:opacity-80"
-          >
-            <img src="/logo192.svg" alt="" className="h-7 w-7" />
-            <span className="font-serif text-lg font-bold">Garvata Labs</span>
-          </Link>
-          <Link
-            to="/"
-            className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Home
-          </Link>
-        </div>
-      </header>
+    <>
+      <PageIntro
+        title="Estimate your"
+        accent="AHU savings"
+        description="Project payback for multi-AHU EC fan retrofits. Baseline energy is adjusted by VFD frequency; EC fan load is interpolated from 7.5K and 10K fan curves at the entered duct static pressure."
+      />
 
-      <main>
-        <section className="border-b border-gray-200 bg-gray-50 px-4 py-10 sm:py-14">
-          <div className="container mx-auto max-w-6xl">
-            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-              <div>
-                <p className="mb-4 text-sm font-medium uppercase tracking-widest text-primary">
-                  EC Fan Retrofit ROI
-                </p>
-                <h1 className="mb-5 max-w-3xl font-serif text-4xl font-extrabold leading-tight text-gray-900 sm:text-5xl">
-                  Project payback for multi-AHU EC fan retrofits
-                </h1>
-                <p className="max-w-2xl text-lg leading-relaxed text-gray-600">
-                  Baseline energy is adjusted by VFD frequency. EC fan load is
-                  interpolated from 7.5K and 10K fan curves at the entered duct
-                  static pressure.
-                </p>
-              </div>
-              <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:grid-cols-2">
-                <div className="sm:col-span-2 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-                  <label className="block">
-                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                      Project name
-                    </span>
-                    <input
-                      aria-label="Project name"
-                      className="h-11 w-full rounded-md border border-gray-300 px-3 text-base font-semibold text-gray-900 outline-none transition-colors focus:border-primary"
-                      placeholder="e.g. Hotel AHU retrofit"
-                      value={projectName}
-                      onChange={(event) => setProjectName(event.target.value)}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={saveProject}
-                    disabled={!projectName.trim()}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 md:min-w-[10rem]"
-                  >
-                    <Save className="h-4 w-4" />
-                    Save Project
-                  </button>
-                </div>
-                <div className="sm:col-span-2 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end">
-                  <label className="block">
-                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                      Saved projects
-                    </span>
-                    <select
-                      aria-label="Saved projects"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition-colors focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
-                      disabled={savedProjects.length === 0}
-                      value={selectedProjectId}
-                      onChange={(event) =>
-                        setSelectedProjectId(event.target.value)
-                      }
-                    >
-                      <option value="">
-                        {savedProjects.length === 0
-                          ? "No saved projects"
-                          : "Select saved project"}
-                      </option>
-                      {savedProjects.map((project) => (
-                        <option value={project.id} key={project.id}>
-                          {project.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={loadSelectedProject}
-                    disabled={!selectedProject}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-gray-300 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
-                  >
-                    <FolderOpen className="h-4 w-4" />
-                    Load
-                  </button>
-                  <button
-                    type="button"
-                    onClick={deleteSelectedProject}
-                    disabled={!selectedProject}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-gray-300 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </button>
-                </div>
-                {saveMessage && (
-                  <p
-                    className="sm:col-span-2 text-sm font-medium text-gray-500"
-                    role="status"
-                  >
-                    {saveMessage}
-                  </p>
-                )}
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Electricity tariff
-                  </span>
-                  <div className="flex min-h-[44px] items-center rounded-md border border-gray-300 bg-white px-3 focus-within:border-primary">
-                    <IndianRupee className="mr-2 h-4 w-4 text-gray-400" />
-                    <input
-                      aria-label="Electricity tariff in rupees per kWh"
-                      className="h-10 w-full bg-transparent text-base font-semibold text-gray-900 outline-none"
-                      inputMode="decimal"
-                      min="0"
-                      step="0.01"
-                      type="number"
-                      value={electricityTariff}
-                      onChange={(event) => setElectricityTariff(event.target.value)}
-                    />
-                    <span className="text-sm text-gray-500">/kWh</span>
-                  </div>
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Retrofit rate
-                  </span>
-                  <div className="flex min-h-[44px] items-center rounded-md border border-gray-300 bg-white px-3 focus-within:border-primary">
-                    <IndianRupee className="mr-2 h-4 w-4 text-gray-400" />
-                    <input
-                      aria-label="Retrofit rate in rupees per CFM"
-                      className="h-10 w-full bg-transparent text-base font-semibold text-gray-900 outline-none"
-                      inputMode="decimal"
-                      min="0"
-                      step="0.01"
-                      type="number"
-                      value={retrofitRate}
-                      onChange={(event) => setRetrofitRate(event.target.value)}
-                    />
-                    <span className="text-sm text-gray-500">/CFM</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-gray-200 px-4 py-8">
-          <div className="container mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-5">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-500">
-                <Gauge className="h-4 w-4 text-primary" />
-                Project ROI
-              </div>
-              <p className="font-mono text-3xl font-bold text-gray-900">
-                {formatPayback(projectPaybackMonths)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-5">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-500">
-                <IndianRupee className="h-4 w-4 text-accent" />
-                Monthly savings
-              </div>
-              <p className="font-mono text-3xl font-bold text-gray-900">
-                {formatCurrency(project.monthlySavings)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-5">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-500">
-                <Zap className="h-4 w-4 text-emerald-700" />
-                Energy savings
-              </div>
-              <p className="font-mono text-3xl font-bold text-gray-900">
-                {percentFormatter.format(projectSavingsPct)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-5">
-              <div className="mb-3 text-sm font-medium text-gray-500">
-                Project capex
-              </div>
-              <p className="font-mono text-3xl font-bold text-gray-900">
-                {formatCurrency(project.capex)}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-4 py-10">
-          <div className="container mx-auto max-w-6xl">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="font-serif text-2xl font-bold text-gray-900">
-                  AHU schedule
+      <section className="pb-8 sm:pb-12">
+        <Container>
+          <div className="rounded-[1.75rem] border border-gray-200 bg-gray-50 p-4 sm:p-8 lg:p-10">
+            <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+              <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                <h2 className="mb-5 font-serif text-xl font-semibold text-gray-900">
+                  Project
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Enter duct static pressure in Pa. Use 50 Hz when there is no
-                  VFD derating.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                  className="sr-only"
-                  onChange={importFromExcel}
-                  aria-label="Import AHU schedule from Excel"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
-                >
-                  <Upload className="h-4 w-4" />
-                  Import from Excel
-                </button>
-                <button
-                  type="button"
-                  onClick={exportToExcel}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
-                >
-                  <Download className="h-4 w-4" />
-                  Export to Excel
-                </button>
-                <button
-                  type="button"
-                  onClick={addRow}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add AHU
-                </button>
-              </div>
-            </div>
-
-            <div
-              className="max-h-[32rem] overflow-auto rounded-lg border border-gray-200"
-              role="region"
-              aria-label="AHU ROI calculator table"
-              tabIndex={0}
-            >
-              <table className="w-full min-w-[1280px] text-sm">
-                <thead className="sticky top-0 z-10 bg-gray-50">
-                  <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
-                    <th className="w-[9rem] px-3 py-3 font-semibold">AHU</th>
-                    <th className="w-[8rem] px-3 py-3 font-semibold">
-                      Design CFM
-                    </th>
-                    <th className="w-[9rem] px-3 py-3 font-semibold">
-                      Monthly hours
-                    </th>
-                    <th className="w-[9rem] px-3 py-3 font-semibold">
-                      Nameplate kW
-                    </th>
-                    <th className="w-[8rem] px-3 py-3 font-semibold">
-                      VFD Hz
-                    </th>
-                    <th className="w-[8rem] px-3 py-3 font-semibold">
-                      Static Pa
-                    </th>
-                    <th className="px-3 py-3 font-semibold">Fan mix</th>
-                    <th className="px-3 py-3 font-semibold">Curve CFM</th>
-                    <th className="px-3 py-3 font-semibold">Baseline kW</th>
-                    <th className="px-3 py-3 font-semibold">EC kW</th>
-                    <th className="px-3 py-3 font-semibold">Capex</th>
-                    <th className="px-3 py-3 font-semibold">Saving/mo</th>
-                    <th className="px-3 py-3 font-semibold">ROI</th>
-                    <th className="w-[3.5rem] px-3 py-3">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {results.map((result) => (
-                    <tr key={result.row.id}>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} name`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-gray-900 outline-none transition-colors focus:border-primary"
-                          value={result.row.name}
-                          onChange={(event) =>
-                            updateRow(result.row.id, "name", event.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} design CFM`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
-                          inputMode="numeric"
-                          min="0"
-                          type="number"
-                          value={result.row.designCfm}
-                          onChange={(event) =>
-                            updateRow(
-                              result.row.id,
-                              "designCfm",
-                              event.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} monthly run hours`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
-                          inputMode="decimal"
-                          min="0"
-                          step="0.1"
-                          type="number"
-                          value={result.row.monthlyRunHours}
-                          onChange={(event) =>
-                            updateRow(
-                              result.row.id,
-                              "monthlyRunHours",
-                              event.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} existing motor nameplate kilowatt`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
-                          inputMode="decimal"
-                          min="0"
-                          step="0.01"
-                          type="number"
-                          value={result.row.nameplateKw}
-                          onChange={(event) =>
-                            updateRow(
-                              result.row.id,
-                              "nameplateKw",
-                              event.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} VFD frequency in Hz`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
-                          inputMode="decimal"
-                          min="0"
-                          step="0.1"
-                          type="number"
-                          value={result.row.vfdFrequency}
-                          onChange={(event) =>
-                            updateRow(
-                              result.row.id,
-                              "vfdFrequency",
-                              event.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3">
-                        <input
-                          aria-label={`${result.row.name} duct static pressure in Pa`}
-                          className="h-10 w-full rounded-md border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
-                          inputMode="decimal"
-                          min="0"
-                          step="1"
-                          type="number"
-                          value={result.row.staticPressure}
-                          onChange={(event) =>
-                            updateRow(
-                              result.row.id,
-                              "staticPressure",
-                              event.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-3 font-medium text-gray-900">
-                        {getFanMixLabel(result.selection)}
-                      </td>
-                      <td className="px-3 py-3 font-mono text-gray-700">
-                        {formatNumber(result.selection.installedCfm)}
-                        {result.selection.overshootCfm > 0 && (
-                          <span className="ml-1 text-xs text-gray-400">
-                            +{formatNumber(result.selection.overshootCfm)}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 font-mono text-gray-700">
-                        {formatDecimal(result.baselineKw)}
-                      </td>
-                      <td className="px-3 py-3 font-mono text-gray-700">
-                        {formatDecimal(result.selection.totalKw)}
-                      </td>
-                      <td className="px-3 py-3 font-mono text-gray-700">
-                        {formatCurrency(result.capex)}
-                      </td>
-                      <td
-                        className={`px-3 py-3 font-mono font-semibold ${
-                          result.monthlySavings >= 0
-                            ? "text-emerald-700"
-                            : "text-red-600"
-                        }`}
+                <div className="grid gap-3">
+                  <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Project name
+                      </span>
+                      <input
+                        aria-label="Project name"
+                        className="h-11 w-full rounded-lg border border-gray-300 px-3 text-base font-semibold text-gray-900 outline-none transition-colors focus:border-primary"
+                        placeholder="e.g. Hotel AHU retrofit"
+                        value={projectName}
+                        onChange={(event) => setProjectName(event.target.value)}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={saveProject}
+                      disabled={!projectName.trim()}
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-navy px-5 text-sm font-semibold text-white transition-colors hover:bg-navy-700 disabled:cursor-not-allowed disabled:bg-gray-300 md:min-w-[10rem]"
+                    >
+                      <Save className="h-4 w-4" />
+                      Save project
+                    </button>
+                  </div>
+                  <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end">
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Saved projects
+                      </span>
+                      <select
+                        aria-label="Saved projects"
+                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition-colors focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
+                        disabled={savedProjects.length === 0}
+                        value={selectedProjectId}
+                        onChange={(event) =>
+                          setSelectedProjectId(event.target.value)
+                        }
                       >
-                        {formatCurrency(result.monthlySavings)}
-                      </td>
-                      <td className="px-3 py-3 font-mono font-semibold text-gray-900">
-                        {formatPayback(result.paybackMonths)}
-                      </td>
-                      <td className="px-3 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => removeRow(result.row.id)}
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
-                          disabled={rows.length === 1}
-                          aria-label={`Remove ${result.row.name}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot className="sticky bottom-0 z-10 border-t border-gray-300 bg-gray-50 font-semibold text-gray-900">
-                  <tr className="bg-gray-50">
-                    <td className="px-3 py-3" colSpan={7}>
-                      Project total
-                    </td>
-                    <td className="px-3 py-3 font-mono">
-                      {formatNumber(project.installedCfm)}
-                    </td>
-                    <td className="px-3 py-3" />
-                    <td className="px-3 py-3 font-mono">
-                      {formatNumber(project.fanCount)} fans
-                    </td>
-                    <td className="px-3 py-3 font-mono">
-                      {formatCurrency(project.capex)}
-                    </td>
-                    <td className="px-3 py-3 font-mono">
-                      {formatCurrency(project.monthlySavings)}
-                    </td>
-                    <td className="px-3 py-3 font-mono">
-                      {formatPayback(projectPaybackMonths)}
-                    </td>
-                    <td className="px-3 py-3" />
-                  </tr>
-                </tfoot>
-              </table>
+                        <option value="">
+                          {savedProjects.length === 0
+                            ? "No saved projects"
+                            : "Select saved project"}
+                        </option>
+                        {savedProjects.map((project) => (
+                          <option value={project.id} key={project.id}>
+                            {project.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={loadSelectedProject}
+                      disabled={!selectedProject}
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
+                    >
+                      <FolderOpen className="h-4 w-4" />
+                      Load
+                    </button>
+                    <button
+                      type="button"
+                      onClick={deleteSelectedProject}
+                      disabled={!selectedProject}
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition-colors hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-300 md:min-w-[6.5rem]"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                  {saveMessage && (
+                    <p className="text-sm font-medium text-gray-500" role="status">
+                      {saveMessage}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                <h2 className="mb-5 font-serif text-xl font-semibold text-gray-900">
+                  Assumptions
+                </h2>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Electricity tariff
+                    </span>
+                    <div className="flex min-h-[44px] items-center rounded-lg border border-gray-300 bg-white px-3 focus-within:border-primary">
+                      <IndianRupee className="mr-2 h-4 w-4 text-gray-400" />
+                      <input
+                        aria-label="Electricity tariff in rupees per kWh"
+                        className="h-10 w-full bg-transparent text-base font-semibold text-gray-900 outline-none"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.01"
+                        type="number"
+                        value={electricityTariff}
+                        onChange={(event) => setElectricityTariff(event.target.value)}
+                      />
+                      <span className="text-sm text-gray-500">/kWh</span>
+                    </div>
+                  </label>
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Retrofit rate
+                    </span>
+                    <div className="flex min-h-[44px] items-center rounded-lg border border-gray-300 bg-white px-3 focus-within:border-primary">
+                      <IndianRupee className="mr-2 h-4 w-4 text-gray-400" />
+                      <input
+                        aria-label="Retrofit rate in rupees per CFM"
+                        className="h-10 w-full bg-transparent text-base font-semibold text-gray-900 outline-none"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.01"
+                        type="number"
+                        value={retrofitRate}
+                        onChange={(event) => setRetrofitRate(event.target.value)}
+                      />
+                      <span className="text-sm text-gray-500">/CFM</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                <p className="mb-1 text-sm font-medium text-gray-500">
-                  Baseline monthly cost
-                </p>
-                <p className="font-mono text-2xl font-bold text-gray-900">
-                  {formatCurrency(project.baselineMonthlyCost)}
-                </p>
+            <dl className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {resultCards.map((card) => (
+                <div
+                  key={card.label}
+                  className="flex flex-col rounded-2xl border border-gray-200 bg-white p-4 sm:p-6"
+                >
+                  <dt className="order-1 mb-3 flex items-center gap-2 text-sm font-medium text-gray-500">
+                    {card.icon}
+                    {card.label}
+                  </dt>
+                  <dd className="order-2 break-words font-mono text-xl font-bold text-gray-900 sm:text-3xl">
+                    {card.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-12 border-t border-gray-200 pt-10">
+              <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <h2 className="font-serif text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-tight tracking-tight">
+                    <span className="text-gray-900">AHU </span>
+                    <span className="text-primary">schedule</span>
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Enter duct static pressure in Pa. Use 50 Hz when there is no
+                    VFD derating.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    className="sr-only"
+                    onChange={importFromExcel}
+                    aria-label="Import AHU schedule from Excel"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Import from Excel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exportToExcel}
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-700 transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export to Excel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={addRow}
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add AHU
+                  </button>
+                </div>
               </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                <p className="mb-1 text-sm font-medium text-gray-500">
-                  EC fan monthly cost
-                </p>
-                <p className="font-mono text-2xl font-bold text-gray-900">
-                  {formatCurrency(project.ecMonthlyCost)}
-                </p>
-              </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                <p className="mb-1 text-sm font-medium text-gray-500">
-                  Annual savings
-                </p>
-                <p className="font-mono text-2xl font-bold text-gray-900">
-                  {formatCurrency(project.annualSavings)}
-                </p>
-              </div>
+
+                <div
+                  className="relative max-h-[32rem] overflow-auto rounded-2xl border border-gray-200 bg-white"
+                  role="region"
+                  aria-label="AHU ROI calculator table"
+                  tabIndex={0}
+                >
+                  <table className="w-full min-w-[1280px] text-sm">
+                    <thead className="sticky top-0 z-10 bg-gray-50">
+                      <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
+                        <th className="w-[9rem] px-3 py-3 font-semibold">AHU</th>
+                        <th className="w-[8rem] px-3 py-3 font-semibold">
+                          Design CFM
+                        </th>
+                        <th className="w-[9rem] px-3 py-3 font-semibold">
+                          Monthly hours
+                        </th>
+                        <th className="w-[9rem] px-3 py-3 font-semibold">
+                          Nameplate kW
+                        </th>
+                        <th className="w-[8rem] px-3 py-3 font-semibold">
+                          VFD Hz
+                        </th>
+                        <th className="w-[8rem] px-3 py-3 font-semibold">
+                          Static Pa
+                        </th>
+                        <th className="px-3 py-3 font-semibold">Fan mix</th>
+                        <th className="px-3 py-3 font-semibold">Curve CFM</th>
+                        <th className="px-3 py-3 font-semibold">Baseline kW</th>
+                        <th className="px-3 py-3 font-semibold">EC kW</th>
+                        <th className="px-3 py-3 font-semibold">Capex</th>
+                        <th className="px-3 py-3 font-semibold">Saving/mo</th>
+                        <th className="px-3 py-3 font-semibold">ROI</th>
+                        <th className="w-[3.5rem] px-3 py-3">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {results.map((result) => (
+                        <tr key={result.row.id}>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} name`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-gray-900 outline-none transition-colors focus:border-primary"
+                              value={result.row.name}
+                              onChange={(event) =>
+                                updateRow(result.row.id, "name", event.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} design CFM`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
+                              inputMode="numeric"
+                              min="0"
+                              type="number"
+                              value={result.row.designCfm}
+                              onChange={(event) =>
+                                updateRow(
+                                  result.row.id,
+                                  "designCfm",
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} monthly run hours`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
+                              inputMode="decimal"
+                              min="0"
+                              step="0.1"
+                              type="number"
+                              value={result.row.monthlyRunHours}
+                              onChange={(event) =>
+                                updateRow(
+                                  result.row.id,
+                                  "monthlyRunHours",
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} existing motor nameplate kilowatt`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
+                              inputMode="decimal"
+                              min="0"
+                              step="0.01"
+                              type="number"
+                              value={result.row.nameplateKw}
+                              onChange={(event) =>
+                                updateRow(
+                                  result.row.id,
+                                  "nameplateKw",
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} VFD frequency in Hz`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
+                              inputMode="decimal"
+                              min="0"
+                              step="0.1"
+                              type="number"
+                              value={result.row.vfdFrequency}
+                              onChange={(event) =>
+                                updateRow(
+                                  result.row.id,
+                                  "vfdFrequency",
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <input
+                              aria-label={`${result.row.name} duct static pressure in Pa`}
+                              className="h-10 w-full rounded-lg border border-gray-300 px-2 text-right font-mono text-gray-900 outline-none transition-colors focus:border-primary"
+                              inputMode="decimal"
+                              min="0"
+                              step="1"
+                              type="number"
+                              value={result.row.staticPressure}
+                              onChange={(event) =>
+                                updateRow(
+                                  result.row.id,
+                                  "staticPressure",
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-3 font-medium text-gray-900">
+                            {getFanMixLabel(result.selection)}
+                          </td>
+                          <td className="px-3 py-3 font-mono text-gray-700">
+                            {formatNumber(result.selection.installedCfm)}
+                            {result.selection.overshootCfm > 0 && (
+                              <span className="ml-1 text-xs text-gray-400">
+                                +{formatNumber(result.selection.overshootCfm)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-mono text-gray-700">
+                            {formatDecimal(result.baselineKw)}
+                          </td>
+                          <td className="px-3 py-3 font-mono text-gray-700">
+                            {formatDecimal(result.selection.totalKw)}
+                          </td>
+                          <td className="px-3 py-3 font-mono text-gray-700">
+                            {formatCurrency(result.capex)}
+                          </td>
+                          <td
+                            className={`px-3 py-3 font-mono font-semibold ${
+                              result.monthlySavings >= 0
+                                ? "text-emerald-700"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {formatCurrency(result.monthlySavings)}
+                          </td>
+                          <td className="px-3 py-3 font-mono font-semibold text-gray-900">
+                            {formatPayback(result.paybackMonths)}
+                          </td>
+                          <td className="px-3 py-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(result.row.id)}
+                              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                              disabled={rows.length === 1}
+                              aria-label={`Remove ${result.row.name}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="sticky bottom-0 z-10 border-t border-gray-300 bg-gray-50 font-semibold text-gray-900">
+                      <tr className="bg-gray-50">
+                        <td className="px-3 py-3" colSpan={7}>
+                          Project total
+                        </td>
+                        <td className="px-3 py-3 font-mono">
+                          {formatNumber(project.installedCfm)}
+                        </td>
+                        <td className="px-3 py-3" />
+                        <td className="whitespace-nowrap px-3 py-3 font-mono">
+                          {formatNumber(project.fanCount)} fans
+                        </td>
+                        <td className="px-3 py-3 font-mono">
+                          {formatCurrency(project.capex)}
+                        </td>
+                        <td className="px-3 py-3 font-mono">
+                          {formatCurrency(project.monthlySavings)}
+                        </td>
+                        <td className="px-3 py-3 font-mono">
+                          {formatPayback(projectPaybackMonths)}
+                        </td>
+                        <td className="px-3 py-3" />
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+
+              <dl className="mt-4 grid gap-3 sm:gap-4 lg:grid-cols-3">
+                {costCards.map((card) => (
+                  <div
+                    key={card.label}
+                    className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5"
+                  >
+                    <dt className="order-1 mb-1 text-sm font-medium text-gray-500">
+                      {card.label}
+                    </dt>
+                    <dd className="order-2 font-mono text-2xl font-bold text-gray-900">
+                      {card.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </Container>
+      </section>
+
+      <ContactSection
+        title="Turn the estimate"
+        accent="into a plan"
+        description="Send us your AHU schedule or export and we'll validate the fan selection, check site conditions and confirm the numbers for your building."
+        location="calculate"
+      />
+    </>
   );
 };
 

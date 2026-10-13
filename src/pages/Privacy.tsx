@@ -1,29 +1,14 @@
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 const Privacy = () => {
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = "Privacy Policy | Garvata Labs";
-    const meta = document.querySelector('meta[name="description"]');
-    const prevDesc = meta?.getAttribute("content") ?? "";
-    meta?.setAttribute("content", "Garvata Labs privacy policy. Learn how we collect, use, and protect your data.");
-    return () => {
-      document.title = prevTitle;
-      meta?.setAttribute("content", prevDesc);
-    };
-  }, []);
+  usePageMeta(
+    "Privacy Policy | Garvata Labs",
+    "Garvata Labs privacy policy. Learn how we collect, use, and protect your data.",
+    "/privacy",
+  );
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-3xl mx-auto px-6 py-16 sm:py-24">
-        <Link
-          to="/"
-          className="inline-block text-sm text-gray-500 hover:text-gray-900 transition-colors duration-200 mb-12"
-        >
-          &larr; Back to Home
-        </Link>
-
+    <div className="mx-auto max-w-3xl px-6 pb-16 pt-36 sm:pb-24 sm:pt-44">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
           Privacy Policy
         </h1>
@@ -241,7 +226,6 @@ const Privacy = () => {
             </p>
           </section>
         </div>
-      </div>
     </div>
   );
 };
