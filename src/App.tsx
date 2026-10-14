@@ -17,6 +17,7 @@ const routeLoaders = {
   products: () => import("./pages/Products"),
   calculate: () => import("./pages/Calculate"),
   demo: () => import("./pages/Demo"),
+  contact: () => import("./pages/Contact"),
   privacy: () => import("./pages/Privacy"),
   notFound: () => import("./pages/NotFound"),
 };
@@ -24,6 +25,7 @@ const Solutions = lazy(routeLoaders.solutions);
 const Products = lazy(routeLoaders.products);
 const Calculate = lazy(routeLoaders.calculate);
 const Demo = lazy(routeLoaders.demo);
+const Contact = lazy(routeLoaders.contact);
 const Privacy = lazy(routeLoaders.privacy);
 const NotFound = lazy(routeLoaders.notFound);
 
@@ -93,6 +95,7 @@ const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="calculate" element={<Calculate />} />
             <Route path="demo" element={<Demo />} />
+            <Route path="contact" element={<Contact />} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Route>

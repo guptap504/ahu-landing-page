@@ -1,6 +1,7 @@
 import { ArrowUp } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import ContactBand from "./ContactBand";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
 
@@ -34,6 +35,7 @@ export default function SiteLayout() {
           </div>
         </Suspense>
       </main>
+      <ContactBand />
       <SiteFooter />
       {showScrollTop && (
         <button

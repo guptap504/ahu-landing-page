@@ -1,4 +1,3 @@
-import ContactSection from "@/components/site/ContactSection";
 import PageHero from "@/components/site/PageHero";
 import { HowItWorks, RoiCallout } from "@/components/site/sections";
 import {
@@ -34,7 +33,7 @@ const stats = [
 
 const Index = () => {
   usePageMeta(
-    "Garvata Labs: AI Native Cooling for Data Centers, IT Parks & Pharma",
+    "AI Native Cooling",
     "AI native cooling from Garvata Labs. Autonomous control and EC fans that cut cooling energy for data centers, commercial IT parks and pharma manufacturing.",
     "/",
   );
@@ -49,7 +48,7 @@ const Index = () => {
         actions={
           <>
             <PillLink
-              href="#contact"
+              to="/contact"
               variant="light"
               trackCta={{ cta: "talk_to_sales", location: "home_hero" }}
             >
@@ -105,13 +104,6 @@ const Index = () => {
       </div>
 
       <RoiCallout location="home" />
-
-      <ContactSection
-        title="Talk to us about"
-        accent="your site"
-        description="Tell us what you're cooling — a data hall, an IT park or a production floor — and we'll show you what Garvata would change and what it would save."
-        location="home"
-      />
     </>
   );
 };

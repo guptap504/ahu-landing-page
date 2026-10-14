@@ -15,7 +15,8 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-export default function ContactForm() {
+// `source` records which page the visitor came from (e.g. "pharma").
+export default function ContactForm({ source }: { source?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -34,7 +35,7 @@ export default function ContactForm() {
       const response = await fetch("/.netlify/functions/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, source }),
       });
 
       if (!response.ok) {
@@ -46,10 +47,14 @@ export default function ContactForm() {
       track("contact_form_submitted", {
         status: "success",
         has_company: Boolean(data.company?.trim()),
+        source: source ?? null,
       });
       toast.success("Message sent — we'll be in touch soon.");
     } catch {
-      track("contact_form_submitted", { status: "error" });
+      track("contact_form_submitted", {
+        status: "error",
+        source: source ?? null,
+      });
       toast.error("Something went wrong. Please email us directly.");
     } finally {
       setIsSubmitting(false);

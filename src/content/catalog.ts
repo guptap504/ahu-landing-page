@@ -72,8 +72,8 @@ export const products: Record<ProductId, Product> = {
     name: "Precision cooling units",
     tagline: "CRAH, CRAC and CDU with the controller built in",
     summary:
-      "Complete Garvata precision cooling units with EC fan arrays and intelligent controls, designed for Cooling OS.",
-    status: "in-development",
+      "Planned Garvata precision cooling units with EC fan arrays and intelligent controls, built for Cooling OS.",
+    status: "planned",
     image: {
       src: "/products/precision-cooling-unit.webp",
       alt: "Precision cooling unit concept render",
@@ -93,4 +93,16 @@ export const industries: {
   { id: "data-centers", tab: "Data Centers", name: "Data Centers" },
   { id: "commercial", tab: "IT Parks", name: "Commercial IT Parks" },
   { id: "pharma", tab: "Pharma", name: "Pharma Manufacturing" },
+];
+
+// Downloadable EC fan configuration sheets (Products page and footer).
+export const fanDocuments = [
+  {
+    label: "7.5K EC Fan Configuration",
+    href: "/documents/Garvata AI EC Fan Configuration_7.5K.pdf",
+  },
+  {
+    label: "10K EC Fan Configuration",
+    href: "/documents/Garvata AI EC Fan Configuration_10K.pdf",
+  },
 ];

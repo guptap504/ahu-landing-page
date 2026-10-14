@@ -1,5 +1,4 @@
 import { track } from "@/lib/analytics";
-import ContactSection from "@/components/site/ContactSection";
 import PageIntro from "@/components/site/PageIntro";
 import { Container } from "@/components/site/ui";
 import { usePageMeta } from "@/lib/usePageMeta";
@@ -581,7 +580,7 @@ const Calculate = () => {
   );
 
   usePageMeta(
-    "EC Fan ROI Calculator | Garvata Labs",
+    "ROI Calculator",
     "Calculate project-level ROI for Garvata EC fan AHU retrofits.",
     "/calculate"
   );
@@ -1676,13 +1675,6 @@ const Calculate = () => {
           </div>
         </Container>
       </section>
-
-      <ContactSection
-        title="Turn the estimate"
-        accent="into a plan"
-        description="Send us your AHU schedule or export and we'll validate the fan selection, check site conditions and confirm the numbers for your building."
-        location="calculate"
-      />
     </>
   );
 };

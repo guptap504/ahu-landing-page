@@ -4,13 +4,17 @@
 C-suite executives, facility heads and procurement decision-makers evaluating cooling for data centers, commercial IT parks and pharma manufacturing. They arrive seeking confidence that Garvata is a mature, reliable vendor. They care about ROI, energy cost savings, uptime and operational simplicity — not technical deep-dives. The interface should help them quickly understand value, find their industry, and reach out.
 
 ### Positioning
-"AI native cooling": Garvata pairs AI control (Cooling OS for data centers, GarvataAI for AHUs) with its own EC fans and controllers. Be honest about availability — every product carries a status badge (Available now / Early access / In development). Cooling OS is early access; EC motor and precision cooling units (CRAH/CRAC/CDU) are in development. Don't publish case-study figures or partner logos until cleared.
+"AI native cooling": Garvata pairs AI control (Cooling OS for data centers, GarvataAI for AHUs) with its own EC fans and controllers. Be honest about availability — every product carries a status badge (Available now / Early access / In development / Planned). Cooling OS is early access; the EC motor is in development; precision cooling units (CRAH/CRAC/CDU) are planned. Don't publish case-study figures or partner logos until cleared.
 
 ### Site structure (modelled on refroid.com)
-- `/` Home — dark hero, intro + stat cards, industry cards, product rows, how it works, demo, ROI callout, contact.
+- `/` Home — viewport-filling dark hero, intro + stat cards, how it works, ROI callout. Solutions and Products are reached from the nav, not from home-page links.
 - `/solutions/:industry` — centred intro, then one rounded container with industry tabs (data-centers, commercial, pharma). Each panel: intro, industry sections, key capabilities, "Explore products" cards. Tabs are links; they keep scroll position via `state={{ keepScroll: true }}`.
+- `/contact` — the only contact form. Links use `/contact?from=<context>` (see `src/content/contact.ts`) so the page copy matches the entry point and the enquiry email is tagged with it. The layout's `ContactBand` adds a "Talk to us" band above the footer on every other page — pages never render contact sections themselves.
+- `/demo` — walkthrough video and live demo link.
 - `/products` — every product as an alternating text/media row, plus EC fan gallery, PDFs and capabilities.
-- `/calculate` (ROI calculator) and `/privacy` keep their own simple headers.
+- `/calculate` (ROI calculator) — linked only from the nav and the home page.
+- Every route renders inside `SiteLayout` (persistent nav, footer, contact band); routes are lazy-loaded and prefetched when idle.
+- Page titles are always `<Page name> | Garvata Labs` (Title Case, matching the nav label or tab). Pass only the page name to `usePageMeta`, which adds the suffix and keeps the description, canonical URL and Open Graph/Twitter tags in sync.
 - Product names, summaries, images and status live in `src/content/catalog.ts`. Shared layout pieces live in `src/components/site/`; industry panels in `src/components/solutions/`.
 
 ### Brand Personality

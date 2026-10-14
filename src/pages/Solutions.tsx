@@ -1,4 +1,3 @@
-import ContactSection from "@/components/site/ContactSection";
 import PageIntro from "@/components/site/PageIntro";
 import { Container } from "@/components/site/ui";
 import CommercialPanel from "@/components/solutions/CommercialPanel";
@@ -16,44 +15,25 @@ const pages: Record<
     panel: ComponentType;
     title: string;
     description: string;
-    contact: { title: string; accent: string; description: string };
   }
 > = {
   "data-centers": {
     panel: DataCentersPanel,
-    title: "AI Native Cooling for Data Centers: Garvata Cooling OS | Garvata Labs",
+    title: "Data Center Solutions",
     description:
       "Garvata Cooling OS predicts thermal risk, coordinates CRAC and CRAH units as one system, and controls fans, valves and capacity against rack-inlet conditions. Early access open.",
-    contact: {
-      title: "Join the",
-      accent: "Cooling OS pilot",
-      description:
-        "We're taking on a small number of pilot sites ahead of general availability. Tell us about your site — IT load, cooling units, BMS and DCIM — and we'll follow up.",
-    },
   },
   commercial: {
     panel: CommercialPanel,
-    title: "AI Native Cooling for Commercial IT Parks | Garvata Labs",
+    title: "Commercial IT Park Solutions",
     description:
       "Retrofit AHUs with Garvata EC fans and autonomous control. Cut AHU fan energy by up to 60%, prevent breakdowns and run without manual tuning.",
-    contact: {
-      title: "Ready to reduce",
-      accent: "your energy costs?",
-      description:
-        "We'll walk you through a live system and show you the numbers for your building.",
-    },
   },
   pharma: {
     panel: PharmaPanel,
-    title: "AI Native Cooling for Pharma Clean Rooms and Labs | Garvata Labs",
+    title: "Pharma Solutions",
     description:
       "Garvata EC fans and autonomous AHU control for pharma clean rooms and labs: hold room pressure differentials, including negative pressure for containment, within the limits you set — with lower fan energy.",
-    contact: {
-      title: "Talk to us about",
-      accent: "your production site",
-      description:
-        "Tell us about your clean rooms, labs and the AHUs that serve them — the pressure, temperature and humidity they need to hold. We'll show you where Garvata can save energy without touching what has to stay fixed.",
-    },
   },
 };
 
@@ -108,11 +88,6 @@ function SolutionsPage({ industry }: { industry: IndustryId }) {
           </div>
         </Container>
       </section>
-
-      <ContactSection
-        {...page.contact}
-        location={`solutions_${industry}`}
-      />
     </>
   );
 }

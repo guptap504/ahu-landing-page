@@ -1,8 +1,25 @@
+import { fanDocuments } from "@/content/catalog";
 import { track } from "@/lib/analytics";
 import { Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const columns = [
+type FooterLink = { label: string; to?: string; href?: string };
+
+// Brand marks (Simple Icons paths) so both icons share one filled style.
+const socialLinks = [
+  {
+    label: "Garvata Labs on LinkedIn",
+    href: "https://www.linkedin.com/company/garvata/",
+    path: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.119 20.452H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z",
+  },
+  {
+    label: "Garvata Labs on X",
+    href: "https://x.com/garvataHQ",
+    path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z",
+  },
+];
+
+const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: "Solutions",
     links: [
@@ -23,10 +40,10 @@ const columns = [
     title: "Resources",
     links: [
       { label: "Product Demo", to: "/demo" },
-      {
-        label: "Solutions Overview (PDF)",
-        href: "/documents/Garvata Solution For AHU and EC fans.pdf",
-      },
+      ...fanDocuments.map((doc) => ({
+        label: `${doc.label} (PDF)`,
+        href: doc.href,
+      })),
       { label: "Privacy Policy", to: "/privacy" },
     ],
   },
@@ -63,7 +80,7 @@ export default function SiteFooter() {
               <ul className="mt-4 space-y-1">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    {"to" in link && link.to ? (
+                    {link.to ? (
                       <Link
                         to={link.to}
                         className="inline-flex min-h-[36px] items-center text-sm text-slate-400 hover:text-white"
@@ -77,7 +94,8 @@ export default function SiteFooter() {
                         rel="noopener noreferrer"
                         onClick={() =>
                           track("document_downloaded", {
-                            document: "Solutions Overview",
+                            document: link.label,
+                            location: "footer",
                           })
                         }
                         className="inline-flex min-h-[36px] items-center text-sm text-slate-400 hover:text-white"
@@ -94,22 +112,29 @@ export default function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <span>&copy; 2026 Garvata Labs. All rights reserved.</span>
-          <a
-            href="https://x.com/garvataHQ"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center gap-2 hover:text-white"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            @garvataHQ
-          </a>
+          <ul className="-mx-3 flex items-center">
+            {socialLinks.map((social) => (
+              <li key={social.href}>
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  title={social.label}
+                  className="flex h-11 w-11 items-center justify-center rounded-full hover:text-white"
+                >
+                  <svg
+                    className="h-[1.125rem] w-[1.125rem]"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d={social.path} />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

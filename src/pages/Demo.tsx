@@ -1,10 +1,9 @@
-import ContactSection from "@/components/site/ContactSection";
 import { Container, PillLink, SectionHeading } from "@/components/site/ui";
 import { usePageMeta } from "@/lib/usePageMeta";
 
 const Demo = () => {
   usePageMeta(
-    "Product Demo: Autonomous AHU Control | Garvata Labs",
+    "Product Demo",
     "Watch a guided walkthrough of the Garvata platform, then try the live demo of autonomous AHU control.",
     "/demo",
   );
@@ -48,13 +47,6 @@ const Demo = () => {
           </div>
         </Container>
       </section>
-
-      <ContactSection
-        title="Want a walkthrough"
-        accent="on your own site?"
-        description="We'll show you the platform running on live AHUs and what it would change for your building."
-        location="demo"
-      />
     </>
   );
 };

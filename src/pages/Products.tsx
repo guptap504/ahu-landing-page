@@ -1,9 +1,8 @@
-import ContactSection from "@/components/site/ContactSection";
 import PageIntro from "@/components/site/PageIntro";
 import ProductRow from "@/components/site/ProductRow";
 import { Container, PillLink, SectionHeading } from "@/components/site/ui";
 import { CoolingOsMark, ProductImage } from "@/components/site/visuals";
-import { products, type ProductId } from "@/content/catalog";
+import { fanDocuments, products, type ProductId } from "@/content/catalog";
 import { track } from "@/lib/analytics";
 import { usePageMeta } from "@/lib/usePageMeta";
 import { CheckCircle2, FileDown } from "lucide-react";
@@ -22,17 +21,6 @@ const fanImages = [
   "/fans/garvata-fan-10.webp",
   "/fans/garvata-fan-11.webp",
   "/fans/garvata-fan-12.webp",
-];
-
-const fanDocuments = [
-  {
-    label: "7.5K EC Fan Configuration",
-    href: "/documents/Garvata AI EC Fan Configuration_7.5K.pdf",
-  },
-  {
-    label: "10K EC Fan Configuration",
-    href: "/documents/Garvata AI EC Fan Configuration_10K.pdf",
-  },
 ];
 
 const capabilities = [
@@ -159,13 +147,13 @@ const rows: {
   {
     id: "precision-cooling",
     description:
-      "Complete Garvata precision cooling units with EC fan arrays and intelligent controls, designed for Cooling OS from the start — including CDUs for liquid cooling.",
+      "On our roadmap: complete Garvata precision cooling units with EC fan arrays and intelligent controls, built for Cooling OS from the start — including CDUs for liquid cooling.",
   },
 ];
 
 const Products = () => {
   usePageMeta(
-    "Products: Cooling OS, AHU Control and EC Fans | Garvata Labs",
+    "Products",
     "Garvata Cooling OS, GarvataAI AHU control with edge controllers, and high-efficiency EC fans — software and hardware for AI native cooling.",
     "/products",
   );
@@ -308,14 +296,6 @@ const Products = () => {
           </div>
         </Container>
       </section>
-
-
-      <ContactSection
-        title="Talk to us about"
-        accent="your site"
-        description="Tell us what you're cooling and we'll recommend the right mix of software and equipment — and show you what it would save."
-        location="products"
-      />
     </>
   );
 };

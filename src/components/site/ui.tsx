@@ -157,7 +157,7 @@ export function SectionHeading({
   );
 }
 
-export type Availability = "available" | "piloting" | "in-development";
+export type Availability = "available" | "piloting" | "in-development" | "planned";
 
 const availabilityStyles: Record<Availability, { label: string; className: string }> = {
   available: {
@@ -171,6 +171,10 @@ const availabilityStyles: Record<Availability, { label: string; className: strin
   "in-development": {
     label: "In development",
     className: "border-amber-200 bg-amber-50 text-amber-800",
+  },
+  planned: {
+    label: "Planned",
+    className: "border-gray-300 bg-gray-100 text-gray-700",
   },
 };
 

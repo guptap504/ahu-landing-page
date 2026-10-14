@@ -18,7 +18,12 @@ export default async (request: Request, _context: Context) => {
   }
 
   try {
-    const { name, email, company, message } = await request.json();
+    const { name, email, company, message, source } = await request.json();
+    // Page the enquiry came from; only short slug-like values are kept.
+    const origin =
+      typeof source === "string" && /^[a-z-]{1,32}$/.test(source)
+        ? source
+        : null;
 
     if (!name || !email || !message) {
       return new Response(
@@ -38,6 +43,7 @@ export default async (request: Request, _context: Context) => {
         `Name: ${name}`,
         `Email: ${email}`,
         company ? `Company: ${company}` : null,
+        origin ? `Source page: ${origin}` : null,
         ``,
         `Message:`,
         message,

@@ -1,3 +1,4 @@
+import { contactHref, contextForPath } from "@/content/contact";
 import { track } from "@/lib/analytics";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -70,8 +71,8 @@ export default function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-1">
-            <a
-              href="#contact"
+            <Link
+              to={contactHref(contextForPath(pathname))}
               onClick={() =>
                 track("cta_clicked", { cta: "contact_us", location: "nav" })
               }
@@ -84,7 +85,7 @@ export default function SiteHeader() {
               >
                 <ArrowRight className="h-4 w-4" />
               </span>
-            </a>
+            </Link>
             <button
               onClick={() => setIsOpen(true)}
               className="flex h-12 w-12 items-center justify-center rounded-full text-slate-200 hover:text-white lg:hidden"
@@ -128,8 +129,8 @@ export default function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <a
-            href="#contact"
+          <Link
+            to={contactHref(contextForPath(pathname))}
             onClick={() => {
               track("cta_clicked", { cta: "contact_us", location: "drawer" });
               close();
@@ -137,7 +138,7 @@ export default function SiteHeader() {
             className="mt-4 rounded-full bg-cyan-400 px-5 py-3 text-center font-semibold text-navy"
           >
             Contact us
-          </a>
+          </Link>
         </div>
       </div>
       {isOpen && (

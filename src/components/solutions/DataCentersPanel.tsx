@@ -128,7 +128,7 @@ export default function DataCentersPanel() {
         status="piloting"
         actions={
           <PillLink
-            href="#contact"
+            to="/contact?from=data-centers"
             trackCta={{ cta: "early_access", location: "solutions_dc" }}
           >
             Request early access

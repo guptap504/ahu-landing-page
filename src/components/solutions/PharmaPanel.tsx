@@ -53,7 +53,7 @@ export default function PharmaPanel() {
         status="available"
         actions={
           <PillLink
-            href="#contact"
+            to="/contact?from=pharma"
             trackCta={{ cta: "talk_to_sales", location: "solutions_pharma" }}
           >
             Talk to us

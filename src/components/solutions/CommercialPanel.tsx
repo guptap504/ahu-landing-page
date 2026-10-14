@@ -1,7 +1,6 @@
 import { HowItWorksSteps } from "@/components/site/sections";
 import { PillLink, StatGrid } from "@/components/site/ui";
-import { track } from "@/lib/analytics";
-import { CheckCircle2, FileDown, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { PanelIntro, PanelProducts, PanelSection } from "./Panel";
 
 const stats = [
@@ -142,25 +141,11 @@ export default function CommercialPanel() {
         status="available"
         actions={
           <PillLink
-            href="#contact"
+            to="/contact?from=commercial"
             trackCta={{ cta: "talk_to_sales", location: "solutions_commercial" }}
           >
             Talk to sales
           </PillLink>
-        }
-        footnote={
-          <a
-            href="/documents/Garvata Solution For AHU and EC fans.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() =>
-              track("document_downloaded", { document: "Solutions Overview" })
-            }
-            className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-primary hover:text-cyan-900"
-          >
-            <FileDown className="h-4 w-4" />
-            Download the solutions overview (PDF)
-          </a>
         }
         visual={
           <div className="overflow-hidden rounded-[1.5rem] border border-gray-200">

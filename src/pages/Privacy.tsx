@@ -2,7 +2,7 @@ import { usePageMeta } from "@/lib/usePageMeta";
 
 const Privacy = () => {
   usePageMeta(
-    "Privacy Policy | Garvata Labs",
+    "Privacy Policy",
     "Garvata Labs privacy policy. Learn how we collect, use, and protect your data.",
     "/privacy",
   );

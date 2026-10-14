@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 const NotFound = () => {
   const { pathname } = useLocation();
   usePageMeta(
-    "Page not found | Garvata Labs",
+    "Page Not Found",
     "The page you were looking for doesn't exist.",
     pathname,
   );
