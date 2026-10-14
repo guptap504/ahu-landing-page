@@ -24,10 +24,10 @@ export default function PageHero({
   footnote,
 }: PageHeroProps) {
   return (
-    <section className="p-3 sm:p-4">
+    <section className="p-2 sm:p-4">
       {/* Fills the viewport, leaving the section padding as an even margin
           on all four sides. svh avoids mobile browser-bar jumps. */}
-      <div className="relative isolate flex min-h-[calc(100vh-1.5rem)] items-center overflow-hidden rounded-[1.75rem] bg-navy supports-[height:100svh]:min-h-[calc(100svh-1.5rem)] sm:min-h-[calc(100vh-2rem)] sm:supports-[height:100svh]:min-h-[calc(100svh-2rem)]">
+      <div className="relative isolate flex min-h-[calc(100vh-1rem)] items-center overflow-hidden rounded-[1.75rem] bg-navy supports-[height:100svh]:min-h-[calc(100svh-1rem)] sm:min-h-[calc(100vh-2rem)] sm:supports-[height:100svh]:min-h-[calc(100svh-2rem)]">
         {/* Concentric rings echo the Garvata mark. */}
         <div
           className="pointer-events-none absolute -right-48 top-1/2 -z-10 hidden -translate-y-1/2 lg:block"
