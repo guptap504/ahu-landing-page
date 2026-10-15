@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const SITE_URL = "https://garvata.com";
+export const SITE_URL = "https://garvata.com";
 const SITE_NAME = "Garvata Labs";
 
 // Every page title follows "<Page name> | Garvata Labs"; pass only the page

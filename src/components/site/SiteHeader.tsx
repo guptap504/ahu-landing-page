@@ -12,6 +12,7 @@ const navItems = [
   { label: "Products", to: "/products", match: "/products" },
   { label: "ROI Calculator", to: "/calculate", match: "/calculate" },
   { label: "Demo", to: "/demo", match: "/demo" },
+  { label: "Blog", to: "/blog", match: "/blog" },
 ];
 
 export default function SiteHeader() {

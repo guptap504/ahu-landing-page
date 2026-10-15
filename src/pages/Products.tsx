@@ -28,7 +28,7 @@ const capabilities = [
     title: "High-efficiency motors",
     text: "EC motors that deliver more airflow per watt than AC alternatives.",
     points: [
-      "IE5 efficiency class",
+      "IE5-equivalent efficiency",
       "Aerodynamically optimized impellers",
       "German-engineered components",
     ],
@@ -129,7 +129,7 @@ const rows: {
     description:
       "Direct-drive EC fans that deliver more airflow per watt than belt-driven AC motors. Each fan reports its speed, temperature, power draw and vibration, so problems show up before they cause downtime.",
     points: [
-      "IE5 efficiency class motors",
+      "IE5-equivalent EC motors",
       "Drop-in replacement — no rewiring",
       "Modbus and BACnet ready",
     ],

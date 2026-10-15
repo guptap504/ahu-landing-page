@@ -40,6 +40,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
     title: "Resources",
     links: [
       { label: "Product Demo", to: "/demo" },
+      { label: "Blog", to: "/blog" },
       ...fanDocuments.map((doc) => ({
         label: `${doc.label} (PDF)`,
         href: doc.href,

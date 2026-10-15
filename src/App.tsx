@@ -17,6 +17,8 @@ const routeLoaders = {
   products: () => import("./pages/Products"),
   calculate: () => import("./pages/Calculate"),
   demo: () => import("./pages/Demo"),
+  blog: () => import("./pages/Blog"),
+  blogPost: () => import("./pages/BlogPost"),
   contact: () => import("./pages/Contact"),
   privacy: () => import("./pages/Privacy"),
   notFound: () => import("./pages/NotFound"),
@@ -25,6 +27,8 @@ const Solutions = lazy(routeLoaders.solutions);
 const Products = lazy(routeLoaders.products);
 const Calculate = lazy(routeLoaders.calculate);
 const Demo = lazy(routeLoaders.demo);
+const Blog = lazy(routeLoaders.blog);
+const BlogPost = lazy(routeLoaders.blogPost);
 const Contact = lazy(routeLoaders.contact);
 const Privacy = lazy(routeLoaders.privacy);
 const NotFound = lazy(routeLoaders.notFound);
@@ -95,6 +99,8 @@ const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="calculate" element={<Calculate />} />
             <Route path="demo" element={<Demo />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
             <Route path="contact" element={<Contact />} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
