@@ -324,6 +324,96 @@
   }
 }
 
+/* Investor deck (/investors) motion; the reduced-motion rule above stills it. */
+@keyframes deck-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(56px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes deck-in-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-56px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes deck-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes deck-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes deck-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.deck-enter-next {
+  animation: deck-in-next 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.deck-enter-prev {
+  animation: deck-in-prev 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.deck-grow-y {
+  transform-origin: bottom;
+  animation: deck-grow-y 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+
+.deck-grow-x {
+  transform-origin: left;
+  animation: deck-grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+
+.deck-spin {
+  animation: deck-spin 90s linear infinite;
+}
+
+/* Investor deck (/investors): one slide per printed 1280×720 page. */
+@media print {
+  .deck-print-page {
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    break-after: page;
+  }
+
+  .deck-print-page:last-child {
+    break-after: auto;
+  }
+
+  .deck-print * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .deck-print a[href]::after {
+    content: none;
+  }
+
+  .deck-print * {
+    animation: none !important;
+  }
+}
+
 /* Safe area for notched devices */
 @supports (padding: env(safe-area-inset-bottom)) {
   footer {

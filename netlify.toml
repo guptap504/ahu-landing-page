@@ -51,6 +51,12 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# Unlisted investor deck: keep it out of search results.
+[[headers]]
+  for = "/investors"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # SPA routing — serve index.html for all routes
 [[redirects]]
   from = "/*"

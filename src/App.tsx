@@ -1,4 +1,4 @@
-import { lazy, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -32,6 +32,8 @@ const BlogPost = lazy(routeLoaders.blogPost);
 const Contact = lazy(routeLoaders.contact);
 const Privacy = lazy(routeLoaders.privacy);
 const NotFound = lazy(routeLoaders.notFound);
+// Unlisted and full screen: outside the site layout and never prefetched.
+const InvestorDeck = lazy(() => import("./pages/InvestorDeck"));
 
 function usePrefetchRoutes() {
   useEffect(() => {
@@ -89,6 +91,14 @@ const App = () => {
       >
         <ScrollManager />
         <Routes>
+          <Route
+            path="investors"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-navy" />}>
+                <InvestorDeck />
+              </Suspense>
+            }
+          />
           <Route element={<SiteLayout />}>
             <Route index element={<Index />} />
             <Route
