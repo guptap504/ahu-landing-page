@@ -387,6 +387,18 @@
   animation: deck-spin 90s linear infinite;
 }
 
+/* Dashes running along a flow line, towards its end (dash period 8px). */
+@keyframes deck-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.deck-flow {
+  stroke-dasharray: 4 4;
+  animation: deck-flow 0.8s linear infinite;
+}
+
 /* Investor deck (/investors): one slide per printed 1280×720 page. */
 @media print {
   .deck-print-page {

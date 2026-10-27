@@ -151,6 +151,214 @@ function BmsVisual() {
   );
 }
 
+// Schematics for the problem slide's points, drawn on navy.
+const mono = "'JetBrains Mono', monospace";
+
+function ProblemVisual({ visual }: { visual: "static" | "reactive" | "silos" | "uncoordinated" }) {
+  const common = { viewBox: "0 0 200 90", className: "h-[90px] w-[200px] shrink-0", "aria-hidden": true } as const;
+  switch (visual) {
+    case "static":
+      // A fixed rule that ignores the changing load.
+      return (
+        <svg {...common}>
+          <polyline points="8,62 28,40 48,58 68,30 88,52 108,24 128,46 148,34 168,58 192,38" fill="none" stroke="#94a3b8" strokeWidth={2} strokeLinejoin="round" />
+          <line x1={8} y1={48} x2={192} y2={48} stroke="#22d3ee" strokeWidth={2.5} strokeDasharray="6 5" />
+          <text x={8} y={14} fontFamily={mono} fontSize={10} fill="#94a3b8">load</text>
+          <text x={192} y={84} textAnchor="end" fontFamily={mono} fontSize={10} fill="#22d3ee">fixed rule</text>
+        </svg>
+      );
+    case "reactive":
+      // Cooling responds only after the heat has arrived.
+      return (
+        <svg {...common}>
+          <path d="M8 58 H60 C74 58 78 22 92 22 H192" fill="none" stroke="#fbbf24" strokeWidth={2.5} />
+          <path d="M8 58 H110 C124 58 128 28 142 28 H192" fill="none" stroke="#22d3ee" strokeWidth={2.5} />
+          <path d="M76 76 H126 M76 71 V81 M126 71 V81" stroke="#e2e8f0" strokeWidth={1.5} />
+          <text x={134} y={80} fontFamily={mono} fontSize={10} fill="#e2e8f0">lag</text>
+          <text x={8} y={14} fontFamily={mono} fontSize={10} fill="#fbbf24">heat</text>
+          <text x={46} y={14} fontFamily={mono} fontSize={10} fill="#22d3ee">cooling</text>
+        </svg>
+      );
+    case "silos":
+      // DCIM and BMS don't talk, and fan, valve and pump each run their own
+      // loop behind a wall.
+      return (
+        <svg {...common} viewBox="0 0 200 100" className="h-[100px] w-[200px] shrink-0">
+          {[
+            ["DCIM", 8],
+            ["BMS", 136],
+          ].map(([name, x]) => (
+            <g key={name}>
+              <rect x={x} y={4} width={56} height={24} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
+              <text x={Number(x) + 28} y={20} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">
+                {name}
+              </text>
+            </g>
+          ))}
+          <line x1={64} y1={16} x2={136} y2={16} stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
+          <path d="M94 10 L106 22 M106 10 L94 22" stroke="#fbbf24" strokeWidth={2.5} strokeLinecap="round" />
+          <text x={100} y={40} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">no link</text>
+          {["Fan", "Valve", "Pump"].map((name, i) => {
+            const x = 8 + i * 67;
+            return (
+              <g key={name}>
+                <rect x={x} y={70} width={50} height={26} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
+                <text x={x + 25} y={87} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">{name}</text>
+                <path d={`M${x + 12} 70 C${x + 12} 50 ${x + 38} 50 ${x + 38} 66`} fill="none" stroke="#22d3ee" strokeWidth={2} />
+                <path d={`M${x + 33} 63 L${x + 38} 70 L${x + 43} 63 Z`} fill="#22d3ee" />
+              </g>
+            );
+          })}
+          {[66, 133].map((x) => (
+            <line key={x} x1={x} y1={50} x2={x} y2={98} stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
+          ))}
+        </svg>
+      );
+    case "uncoordinated":
+      // Two units working against each other: one humidifies, one dries.
+      return (
+        <svg {...common}>
+          {[8, 132].map((x, i) => (
+            <g key={x}>
+              <rect x={x} y={34} width={60} height={34} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
+              <text x={x + 30} y={55} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">CRAH {i + 1}</text>
+            </g>
+          ))}
+          <path d="M70 51 H90" stroke="#fbbf24" strokeWidth={2.5} />
+          <path d="M89 45 L97 51 L89 57 Z" fill="#fbbf24" />
+          <path d="M130 51 H110" stroke="#22d3ee" strokeWidth={2.5} />
+          <path d="M111 45 L103 51 L111 57 Z" fill="#22d3ee" />
+          <text x={82} y={26} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#fbbf24">+RH</text>
+          <text x={118} y={26} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#22d3ee">−RH</text>
+          <text x={100} y={84} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">fighting</text>
+        </svg>
+      );
+  }
+}
+
+// Schematics for the benefits slide, drawn on white.
+function BenefitVisual({
+  visual,
+}: {
+  visual: "energy" | "capacity" | "coordination" | "autonomy" | "guardrails" | "edge";
+}) {
+  const common = { viewBox: "0 0 120 56", className: "h-14 w-[120px]", "aria-hidden": true } as const;
+  switch (visual) {
+    case "energy":
+      // Energy before and after: a quarter off.
+      return (
+        <svg {...common}>
+          <rect x={30} y={8} width={24} height={44} rx={3} fill="#d1d5db" />
+          <rect x={66} y={19} width={24} height={33} rx={3} fill="#0e7490" />
+          <line x1={22} y1={52} x2={98} y2={52} stroke="#9ca3af" strokeWidth={1.5} />
+        </svg>
+      );
+    case "capacity":
+      // A rack with more of its slots in use.
+      return (
+        <svg {...common}>
+          <rect x={38} y={3} width={40} height={50} rx={4} fill="none" stroke="#9ca3af" strokeWidth={2} />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <rect key={i} x={44} y={9 + i * 8.6} width={28} height={5} rx={1.5} fill={i < 4 ? "#0e7490" : "#a5f3fc"} />
+          ))}
+          <path d="M90 28 H102 M96 22 V34" stroke="#0e7490" strokeWidth={2.5} strokeLinecap="round" />
+        </svg>
+      );
+    case "coordination":
+      // Three units on one controller.
+      return (
+        <svg {...common}>
+          <path d="M60 12 V22 M24 32 V22 H96 V32" fill="none" stroke="#0e7490" strokeWidth={2} />
+          <circle cx={60} cy={8} r={5} fill="#0e7490" />
+          {[14, 50, 86].map((x) => (
+            <rect key={x} x={x} y={32} width={20} height={20} rx={3} fill="#a5f3fc" stroke="#0e7490" strokeWidth={1.5} />
+          ))}
+        </svg>
+      );
+    case "autonomy":
+      // A closed loop running on its own.
+      return (
+        <svg {...common}>
+          <path d="M60 8 A20 20 0 1 1 40 28" fill="none" stroke="#0e7490" strokeWidth={3} />
+          <path d="M40 20 L34 30 L46 30 Z" fill="#0e7490" />
+          <circle cx={60} cy={28} r={5} fill="#a5f3fc" stroke="#0e7490" strokeWidth={1.5} />
+        </svg>
+      );
+    case "guardrails":
+      // Control kept inside safe limits.
+      return (
+        <svg {...common}>
+          <line x1={6} y1={10} x2={114} y2={10} stroke="#b45309" strokeWidth={2} strokeDasharray="5 4" />
+          <line x1={6} y1={46} x2={114} y2={46} stroke="#b45309" strokeWidth={2} strokeDasharray="5 4" />
+          <polyline points="6,30 22,20 38,36 54,22 70,34 86,18 102,32 114,26" fill="none" stroke="#0e7490" strokeWidth={2.5} strokeLinejoin="round" />
+        </svg>
+      );
+    case "edge":
+      // A controller chip at the equipment.
+      return (
+        <svg {...common}>
+          {[20, 28, 36].map((o) => (
+            <g key={o} stroke="#9ca3af" strokeWidth={2}>
+              <line x1={34} y1={o} x2={44} y2={o} />
+              <line x1={76} y1={o} x2={86} y2={o} />
+              <line x1={o + 32} y1={2} x2={o + 32} y2={12} />
+              <line x1={o + 32} y1={44} x2={o + 32} y2={54} />
+            </g>
+          ))}
+          <rect x={44} y={12} width={32} height={32} rx={4} fill="#071827" />
+          <rect x={52} y={20} width={16} height={16} rx={2} fill="none" stroke="#22d3ee" strokeWidth={2} />
+        </svg>
+      );
+  }
+}
+
+// Flow lines with dashes running in the direction of flow (deck-flow in
+// index.css), for the control-loop slide.
+const head = (x1: number, y1: number, x2: number, y2: number, size = 8) => {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  const bx = x2 - size * Math.cos(a);
+  const by = y2 - size * Math.sin(a);
+  const w = size * 0.55;
+  return `M${x2} ${y2} L${bx - w * Math.sin(a)} ${by + w * Math.cos(a)} L${bx + w * Math.sin(a)} ${by - w * Math.cos(a)} Z`;
+};
+
+function FlowArrow({ direction = "right", length = 40 }: { direction?: "right" | "up"; length?: number }) {
+  const [w, h] = direction === "right" ? [length, 16] : [16, length];
+  const [x1, y1, x2, y2] = direction === "right" ? [0, 8, length, 8] : [8, length, 8, 0];
+  return (
+    <svg aria-hidden="true" width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0 text-primary">
+      <line x1={x1} y1={y1} x2={direction === "right" ? x2 - 6 : x2} y2={direction === "up" ? y2 + 6 : y2} stroke="currentColor" strokeWidth={2} className="deck-flow" />
+      <path d={head(x1, y1, x2, y2)} fill="currentColor" />
+    </svg>
+  );
+}
+
+// The control-loop lists use fixed-height rows so the fan lines meet each
+// row's centre.
+const ROW = 38;
+const ROW_GAP = 8;
+
+function FanLines({ count, mode, width = 56 }: { count: number; mode: "in" | "out"; width?: number }) {
+  const height = count * ROW + (count - 1) * ROW_GAP;
+  const mid = height / 2;
+  const rows = Array.from({ length: count }, (_, i) => i * (ROW + ROW_GAP) + ROW / 2);
+  return (
+    <svg aria-hidden="true" width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="shrink-0 text-primary">
+      {rows.map((y) =>
+        mode === "in" ? (
+          <line key={y} x1={0} y1={y} x2={width - 8} y2={mid} stroke="currentColor" strokeWidth={2} className="deck-flow" />
+        ) : (
+          <g key={y}>
+            <line x1={0} y1={mid} x2={width - 6} y2={y} stroke="currentColor" strokeWidth={2} className="deck-flow" />
+            <path d={head(0, mid, width, y, 7)} fill="currentColor" />
+          </g>
+        ),
+      )}
+      {mode === "in" && <path d={head(0, mid, width, mid)} fill="currentColor" />}
+    </svg>
+  );
+}
+
 function SlideBody({
   slide,
   footer,
@@ -192,49 +400,58 @@ function SlideBody({
     case "problem":
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
-          <div className="grid flex-1 grid-cols-2 gap-6">
-            <div className="flex flex-col rounded-[1.25rem] bg-navy p-8">
-              <p className={`${eyebrow} text-cyan-400`}>{slide.controls.eyebrow}</p>
-              <h3 className="mt-3 font-serif text-[23px] font-semibold leading-snug text-white">
-                {slide.controls.heading}
-              </h3>
-              <ul className="mt-5 space-y-3 text-[15px] leading-snug text-slate-300">
-                {slide.controls.points.map((point) => (
-                  <li key={point} className="flex gap-3">
-                    <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-cyan-400" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-auto border-t border-white/10 pt-5 font-serif text-[22px] font-semibold text-cyan-400">
-                {slide.controls.stat}
-              </p>
+          <div className="flex flex-1 flex-col rounded-[1.25rem] bg-navy p-10">
+            <h3 className="font-serif text-[30px] font-semibold leading-snug text-white">{slide.heading}</h3>
+            <ol className="mt-8 grid flex-1 auto-rows-fr grid-cols-2 gap-5">
+              {slide.points.map((point, i) => (
+                <li key={point.text} className="flex items-center gap-6 rounded-xl border border-white/15 px-6 py-5">
+                  <div className="flex-1">
+                    <p className="font-mono text-[14px] font-bold text-cyan-400">{String(i + 1).padStart(2, "0")}</p>
+                    <p className="mt-2 font-serif text-[24px] font-semibold leading-snug text-white">{point.text}</p>
+                  </div>
+                  <ProblemVisual visual={point.visual} />
+                </li>
+              ))}
+            </ol>
+            <p className="mt-8 border-t border-white/10 pt-6 font-serif text-[24px] font-semibold text-cyan-400">
+              {slide.stat}
+            </p>
+          </div>
+        </Frame>
+      );
+
+    case "system":
+      return (
+        <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
+          <div className="flex flex-1 items-stretch gap-4">
+            <div className="flex w-[200px] flex-col items-center justify-center gap-5 rounded-[1.25rem] bg-navy p-6 text-center">
+              <img src="/logo192.svg" alt="" className="h-14 w-14" />
+              <p className="font-serif text-[26px] font-semibold leading-tight text-white">{slide.root}</p>
             </div>
-            <div className="flex flex-col rounded-[1.25rem] border border-gray-200 bg-white p-8">
-              <p className={`${eyebrow} text-primary`}>{slide.supply.eyebrow}</p>
-              <h3 className="mt-3 font-serif text-[23px] font-semibold leading-snug text-gray-900">
-                {slide.supply.heading}
-              </h3>
-              <ul className="mt-5 space-y-3 text-[15px] leading-snug text-gray-600">
-                {slide.supply.points.map((point) => (
-                  <li
-                    key={point.text}
-                    className={`flex gap-3 ${point.emphasis ? "font-semibold text-accent" : ""}`}
-                  >
-                    <span
-                      className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${point.emphasis ? "bg-accent" : "bg-primary"}`}
-                    />
-                    {point.text}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-auto border-t border-gray-200 pt-5 font-serif text-[20px] font-semibold text-gray-900">
-                {slide.supply.footer}
-              </p>
+            <div className="flex flex-1 flex-col gap-4">
+              {slide.branches.map((branch) => (
+                <div key={branch.name} className="flex flex-1 items-center gap-4">
+                  <Arrow className="text-primary" />
+                  <p className="w-[260px] rounded-[1.25rem] border border-gray-200 bg-white px-6 py-5 font-serif text-[21px] font-semibold leading-snug text-gray-900">
+                    {branch.name}
+                  </p>
+                  <Arrow className="text-primary" />
+                  <ul className="flex flex-1 flex-col gap-3">
+                    {branch.leaves.map((leaf) => (
+                      <li
+                        key={leaf}
+                        className="rounded-xl border border-cyan-300 bg-cyan-50 px-5 py-3 text-[16px] font-semibold leading-snug text-gray-900"
+                      >
+                        {leaf}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
-          <p className="mt-5 rounded-xl border border-cyan-200 bg-cyan-50 px-6 py-4 font-serif text-[19px] font-semibold text-gray-900">
-            {slide.result}
+          <p className="mt-5 rounded-xl border border-cyan-200 bg-cyan-50 px-6 py-4 font-serif text-[19px] font-semibold leading-snug text-gray-900">
+            {slide.statement}
           </p>
         </Frame>
       );
@@ -324,9 +541,11 @@ function SlideBody({
                   >
                     {pillar.heading}
                   </h3>
-                  <p className={`mt-3 text-[15px] leading-relaxed ${dark ? "text-slate-300" : "text-gray-600"}`}>
-                    {pillar.text}
-                  </p>
+                  {pillar.text && (
+                    <p className={`mt-3 text-[15px] leading-relaxed ${dark ? "text-slate-300" : "text-gray-600"}`}>
+                      {pillar.text}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -338,7 +557,11 @@ function SlideBody({
                   <p className="font-serif text-[19px] font-semibold text-gray-900">{stage.name}</p>
                   <p className="mt-1 text-[14px] text-gray-500">{stage.detail}</p>
                 </div>
-                {i < slide.flow.length - 1 && <Arrow className="text-primary" />}
+                {i < slide.flow.length - 1 && (
+                  <span aria-hidden="true" className="font-mono text-[28px] font-bold leading-none text-primary">
+                    +
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -444,20 +667,21 @@ function SlideBody({
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
           <div className="flex flex-1 items-center gap-3">
-            <div className={`flex items-center gap-3 ${fromLeft(2)}`}>
-              <ul className="flex w-[218px] flex-col gap-2">
+            <div className={`flex shrink-0 items-center ${fromLeft(2)}`}>
+              <ul className="flex w-[200px] flex-col" style={{ gap: ROW_GAP }}>
                 {slide.inputs.map((input) => (
                   <li
                     key={input}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-[15px] font-medium text-gray-900"
+                    className="flex items-center rounded-lg border border-gray-300 bg-white px-4 text-[15px] font-medium text-gray-900"
+                    style={{ height: ROW }}
                   >
                     {input}
                   </li>
                 ))}
               </ul>
-              <Arrow className="text-primary" />
+              <FanLines count={slide.inputs.length} mode="in" width={48} />
             </div>
-            <div className="flex w-[232px] flex-col items-center gap-3">
+            <div className="flex w-[212px] shrink-0 flex-col items-center gap-3">
               <div className="w-full rounded-[1.25rem] bg-navy p-6">
                 <img src="/logo192.svg" alt="" className="h-9 w-9" />
                 <p className="mt-4 font-serif text-[22px] font-semibold leading-tight text-white">
@@ -468,28 +692,27 @@ function SlideBody({
                   Control · Coordinate · Predict
                 </p>
               </div>
-              <div className={`flex w-full flex-col items-center gap-3 ${fromBelow(1)}`}>
-                <span aria-hidden="true" className="font-mono text-[22px] leading-none text-primary">
-                  ↑
-                </span>
+              <div className={`flex w-full flex-col items-center gap-2 ${fromBelow(1)}`}>
+                <FlowArrow direction="up" length={28} />
                 <p className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-center text-[15px] font-medium text-gray-900">
                   {slide.context}
                 </p>
               </div>
             </div>
-            <div className={`flex items-center gap-3 ${fromLeft(3)}`}>
-              <Arrow className="text-primary" />
-              <p className="w-[150px] rounded-[1.25rem] border border-gray-300 bg-white p-5 text-center font-serif text-[17px] font-semibold leading-snug text-gray-900">
+            <div className={`flex shrink-0 items-center gap-3 ${fromLeft(3)}`}>
+              <FlowArrow length={36} />
+              <p className="w-[140px] rounded-[1.25rem] border border-gray-300 bg-white p-4 text-center font-serif text-[17px] font-semibold leading-snug text-gray-900">
                 {slide.executor}
               </p>
             </div>
-            <div className={`flex items-center gap-3 ${fromLeft(4)}`}>
-              <Arrow className="text-primary" />
-              <ul className="flex w-[196px] flex-col gap-2">
+            <div className={`flex shrink-0 items-center ${fromLeft(4)}`}>
+              <FanLines count={slide.outputs.length} mode="out" width={44} />
+              <ul className="flex w-[206px] flex-col" style={{ gap: ROW_GAP }}>
                 {slide.outputs.map((output) => (
                   <li
                     key={output}
-                    className="rounded-lg border border-cyan-300 bg-cyan-50 px-4 py-2 text-[15px] font-semibold text-gray-900"
+                    className="flex items-center rounded-lg border border-cyan-300 bg-cyan-50 px-4 text-[15px] font-semibold text-gray-900"
+                    style={{ height: ROW }}
                   >
                     {output}
                   </li>
@@ -497,20 +720,83 @@ function SlideBody({
               </ul>
             </div>
             <div
-              className={`flex flex-1 flex-col justify-center self-stretch rounded-[1.25rem] bg-navy p-6 ${fromLeft(5)}`}
+              className={`flex min-w-0 flex-1 flex-col justify-center self-stretch rounded-[1.25rem] bg-navy px-6 py-8 ${fromLeft(5)}`}
             >
               <p className="font-mono text-[12px] font-bold uppercase tracking-[0.14em] text-cyan-400">Objective</p>
-              <p className="mt-3 font-serif text-[20px] font-semibold leading-snug text-white">{slide.objective}</p>
+              <p className="mt-4 font-serif text-[20px] font-semibold leading-snug text-white">{slide.objective}</p>
             </div>
           </div>
         </Frame>
       );
     }
 
+    case "benefits":
+      return (
+        <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
+          <ul className="my-auto grid grid-cols-3 gap-5">
+            {slide.items.map((item) => (
+              <li
+                key={item.title}
+                className="flex h-[210px] flex-col items-center justify-center rounded-[1.25rem] border border-gray-200 bg-white px-8 text-center"
+              >
+                <BenefitVisual visual={item.visual} />
+                {item.value && (
+                  <p className="mt-4 font-mono text-[30px] font-bold leading-none text-primary">{item.value}</p>
+                )}
+                <h3
+                  className={`font-serif font-semibold leading-snug text-gray-900 ${item.value ? "mt-2 text-[19px]" : "mt-4 text-[21px]"}`}
+                >
+                  {item.title}
+                </h3>
+              </li>
+            ))}
+          </ul>
+        </Frame>
+      );
+
+    case "ecosystem":
+      return (
+        <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
+          <div className="flex flex-1 items-stretch gap-6">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-[1.25rem] bg-navy p-9 text-center">
+              <p className={`${eyebrow} text-cyan-400`}>{slide.agent.eyebrow}</p>
+              <img src="/logo192.svg" alt="" className="mt-8 h-24 w-24" />
+              <h3 className="mt-8 font-serif text-[34px] font-semibold leading-tight text-white">{slide.agent.name}</h3>
+              <p className="mt-3 max-w-[400px] text-[17px] leading-relaxed text-slate-300">{slide.agent.text}</p>
+              <p className="mt-6 rounded-xl bg-cyan-400 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-navy">
+                Control · Coordinate · Predict
+              </p>
+            </div>
+            <span aria-hidden="true" className="self-center font-mono text-[36px] font-bold leading-none text-primary">
+              +
+            </span>
+            <div className="flex flex-1 flex-col items-center rounded-[1.25rem] border border-gray-200 bg-white p-9 text-center">
+              <p className={`${eyebrow} text-primary`}>{slide.hardware.eyebrow}</p>
+              <dl className="mt-6 grid w-full flex-1 grid-cols-2 divide-x divide-gray-200">
+                {slide.hardware.groups.map((group) => (
+                  <div key={group.label} className="flex flex-col items-center justify-center px-5">
+                    <img
+                      src={group.image.src}
+                      alt={group.image.alt}
+                      className="h-[190px] w-full rounded-xl bg-gray-50 object-contain p-4"
+                    />
+                    <dt className={`${eyebrow} mt-6 text-primary`}>{group.label}</dt>
+                    <dd className="mt-2 font-serif text-[21px] font-semibold leading-snug text-gray-900">{group.items}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        </Frame>
+      );
+
     case "products":
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
-          <div className="grid flex-1 grid-cols-4 gap-5">
+          <div
+            className="grid flex-1 gap-5"
+            style={{ gridTemplateColumns: `repeat(${slide.products.length}, minmax(0, 1fr))` }}
+          >
             {slide.products.map((product) => (
               <div
                 key={product.name}
@@ -520,19 +806,12 @@ function SlideBody({
                 <h3 className="mt-2 font-serif text-[23px] font-semibold leading-tight text-gray-900">
                   {product.name}
                 </h3>
-                {product.image ? (
-                  <img
-                    src={product.image.src}
-                    alt={product.image.alt}
-                    className="mt-4 h-[200px] w-full rounded-xl bg-gray-50 object-contain p-3"
-                  />
-                ) : (
-                  <div className="mt-4 flex h-[200px] w-full flex-col justify-between rounded-xl bg-navy p-5">
-                    <img src="/logo192.svg" alt="" className="h-12 w-12" />
-                    <p className="font-serif text-[24px] font-bold text-white">Garvata AI</p>
-                  </div>
-                )}
-                <p className="mt-4 text-[14px] leading-relaxed text-gray-600">{product.text}</p>
+                <img
+                  src={product.image.src}
+                  alt={product.image.alt}
+                  className="mt-4 h-[230px] w-full rounded-xl bg-gray-50 object-contain p-3"
+                />
+                <p className="mt-4 text-[15px] leading-relaxed text-gray-600">{product.text}</p>
               </div>
             ))}
           </div>
@@ -574,54 +853,51 @@ function SlideBody({
         </Frame>
       );
 
-    case "competition": {
-      const max = Math.max(...slide.share.rows.map((row) => row.value));
+    case "competition":
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
-          <div className="grid flex-1 grid-cols-2 gap-6">
-            <div className="flex flex-col rounded-[1.25rem] bg-navy p-8">
+          <div className="grid flex-1 grid-cols-[1fr_1.7fr] gap-6">
+            <div className="flex flex-col items-center justify-center rounded-[1.25rem] bg-navy p-8 text-center">
               <p className={`${eyebrow} text-cyan-400`}>{slide.software.eyebrow}</p>
-              <h3 className="mt-3 font-serif text-[26px] font-semibold text-white">{slide.software.heading}</h3>
-              <ul className="mt-5 space-y-3 text-[16px] text-slate-300">
-                {slide.software.points.map((point) => (
-                  <li key={point} className="flex gap-3">
-                    <span className="mt-[8px] h-2 w-2 shrink-0 rounded-full bg-cyan-400" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
+              <img src="/logo192.svg" alt="" className="mt-10 h-20 w-20" />
+              <h3 className="mt-10 font-serif text-[34px] font-semibold leading-tight text-white">
+                {slide.software.heading}
+              </h3>
             </div>
-            <div className="flex flex-col rounded-[1.25rem] border border-gray-200 bg-white p-8">
-              <p className={`${eyebrow} text-primary`}>{slide.share.eyebrow}</p>
-              <ul className="mt-5 flex flex-1 flex-col justify-between">
-                {slide.share.rows.map((row) => (
-                  <li key={row.name} className="flex items-center gap-4">
-                    <span className="w-[150px] shrink-0 text-[15px] font-semibold text-gray-900">{row.name}</span>
-                    <span className="h-5 flex-1 rounded bg-gray-100">
-                      <span
-                        className={`deck-grow-x block h-full rounded ${row.name === "Others" ? "bg-gray-300" : "bg-primary"}`}
-                        style={{ width: `${(row.value / max) * 100}%` }}
-                      />
-                    </span>
-                    <span className="w-12 text-right font-mono text-[15px] font-bold text-gray-900">
-                      {row.value}
-                      {slide.share.unit}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex flex-col gap-5">
+              {slide.hardware.map((group) => (
+                <div
+                  key={group.label}
+                  className="flex flex-1 flex-col items-center justify-center rounded-[1.25rem] border border-gray-200 bg-white px-8 py-6 text-center"
+                >
+                  <p className={`${eyebrow} text-primary`}>{group.label}</p>
+                  <ul
+                    className="mt-4 grid w-full divide-x divide-gray-100"
+                    style={{ gridTemplateColumns: `repeat(${group.segments.length}, minmax(0, 1fr))` }}
+                  >
+                    {group.segments.map((segment) => (
+                      <li key={segment.name} className="flex flex-col items-center px-4">
+                        <h3 className="font-serif text-[22px] font-semibold text-gray-900">{segment.name}</h3>
+                        <p className="mt-1 text-[14px] leading-snug text-gray-600">{segment.text}</p>
+                        <ul className="mt-4 flex flex-wrap justify-center gap-2">
+                          {segment.players.map((player) => (
+                            <li
+                              key={player}
+                              className="rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-[14px] font-semibold text-gray-800"
+                            >
+                              {player}
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="mt-5 grid grid-cols-[1fr_2fr] items-center gap-8 rounded-xl bg-navy px-8 py-5">
-            <div>
-              <p className={`${eyebrow} text-cyan-400`}>{slide.fans.eyebrow}</p>
-              <p className="mt-2 font-serif text-[21px] font-semibold text-white">{slide.fans.name}</p>
-            </div>
-            <p className="text-[15px] leading-snug text-slate-300">{slide.fans.text}</p>
           </div>
         </Frame>
       );
-    }
 
     case "traction":
       return (
@@ -635,17 +911,19 @@ function SlideBody({
             ))}
           </dl>
           <div className="mt-5 grid flex-1 grid-cols-2 rounded-[1.25rem] border border-gray-200 bg-white">
-            <div className="flex flex-col border-r border-gray-200 p-8">
+            <div className="flex flex-col items-center border-r border-gray-200 p-8 text-center">
               <p className={`${eyebrow} text-primary`}>{slide.partner.eyebrow}</p>
               <h3 className="mt-3 font-serif text-[24px] font-semibold leading-snug text-gray-900">
                 {slide.partner.heading}
               </h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-gray-600">{slide.partner.text}</p>
-              <div className="mt-auto pt-4">
+              {slide.partner.text && (
+                <p className="mt-3 text-[15px] leading-relaxed text-gray-600">{slide.partner.text}</p>
+              )}
+              <div className="flex flex-1 items-center justify-center pt-4">
                 <LogoImage logo={slide.partner.logo} height={84} />
               </div>
             </div>
-            <div className="flex flex-col p-8">
+            <div className="flex flex-col p-8 text-center">
               <p className={`${eyebrow} text-primary`}>{slide.others.eyebrow}</p>
               <div className="flex flex-1 items-center justify-around gap-8">
                 {slide.others.logos.map((logo) => (
@@ -720,19 +998,49 @@ function SlideBody({
                 ))}
               </ol>
             </div>
-            <div className="flex flex-col justify-between">
+            <div>
               <div className="rounded-[1.25rem] bg-primary p-8">
                 <p className={`${eyebrow} text-white/80`}>{slide.raise.eyebrow}</p>
                 <p className="mt-4 font-mono text-[52px] font-bold leading-none text-white">{slide.raise.amount}</p>
                 <p className="mt-3 text-[17px] text-white/90">{slide.raise.round}</p>
               </div>
-              <div>
-                <p className={`${eyebrow} text-slate-500`}>Contact</p>
-                <p className="mt-2 font-serif text-[22px] font-semibold text-white">{slide.contact}</p>
-              </div>
             </div>
           </div>
         </Frame>
+      );
+
+    case "closing":
+      return (
+        <div className="relative flex h-full w-full flex-col justify-between bg-navy px-16 py-14 font-sans text-white">
+          <div className="flex items-center gap-3">
+            <img src="/logo192.svg" alt="" className="h-9 w-9" />
+            <span className="font-serif text-[22px] font-bold">Garvata Labs</span>
+          </div>
+          <div className="absolute right-20 top-1/2 h-[300px] w-[300px] -translate-y-1/2">
+            <img src="/logo192.svg" alt="" className="deck-spin h-full w-full" />
+          </div>
+          <div>
+            <h1 className="font-serif text-[84px] font-semibold leading-[1.02] tracking-tight text-white">
+              {slide.title}
+            </h1>
+            <div className="mt-8 max-w-[640px] border-t border-white/15 pt-6">
+              <p className={`${eyebrow} text-cyan-400`}>{slide.contact.eyebrow}</p>
+              <p className="mt-3 font-serif text-[26px] font-semibold">
+                {slide.contact.name}
+                <span className="text-slate-400">, {slide.contact.role}</span>
+              </p>
+              <p className="mt-3 flex gap-8 font-mono text-[18px] text-slate-300">
+                <a href={`tel:${slide.contact.phone.replace(/\s/g, "")}`}>{slide.contact.phone}</a>
+                <a href={`mailto:${slide.contact.email}`} className="text-cyan-400">
+                  {slide.contact.email}
+                </a>
+              </p>
+            </div>
+          </div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">
+            {footer} · {page}
+          </p>
+        </div>
       );
   }
 }
