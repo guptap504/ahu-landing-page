@@ -346,7 +346,7 @@ export const deck: DeckContent = {
       label: "Funding",
       title: "Fund requirement",
       accent: "and deployment",
-      raise: { eyebrow: "Current raise", amount: "INR 7 Cr", round: "Angel round" },
+      raise: { eyebrow: "Current raise", amount: "INR 7 Cr", round: "Pre-seed round" },
       uses: [
         {
           title: "Engineering and deployment teams",
