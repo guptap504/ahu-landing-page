@@ -324,7 +324,7 @@
   }
 }
 
-/* Investor deck (/investors) motion; the reduced-motion rule above stills it. */
+/* Deck (/investors, /product-deck-dc) motion; the reduced-motion rule above stills it. */
 @keyframes deck-in-next {
   from {
     opacity: 0;
@@ -399,7 +399,7 @@
   animation: deck-flow 0.8s linear infinite;
 }
 
-/* Investor deck (/investors): one slide per printed 1280×720 page. */
+/* Decks (/investors, /product-deck-dc): one slide per printed 1280×720 page. */
 @media print {
   .deck-print-page {
     width: 1280px;

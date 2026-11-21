@@ -1,4 +1,4 @@
-import type { DeckContent } from "../../../src/content/investorDeck";
+import type { DeckContent } from "../../../src/content/deck";
 import { cbre, energeia, jci } from "./logos";
 
 // Investor deck: Garvata Labs Investor Pitch Deck V1 (October 2026) for
@@ -13,6 +13,7 @@ export const deck: DeckContent = {
       title: "Autonomous cooling",
       accent: "for data centers",
       subtitle: "Cooling OS · EC fans · CRAC/CRAH · CDU",
+      note: "Investor presentation · Confidential",
     },
     {
       kind: "team",

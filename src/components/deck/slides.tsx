@@ -1,4 +1,4 @@
-import type { Logo, Slide } from "@/content/investorDeck";
+import type { BenefitVisualName, Logo, ProblemVisualName, Slide } from "@/content/deck";
 import type { ReactNode } from "react";
 
 // Slides are laid out on a fixed 1280×720 canvas; the presenter scales the
@@ -154,8 +154,33 @@ function BmsVisual() {
 // Schematics for the problem slide's points, drawn on navy.
 const mono = "'JetBrains Mono', monospace";
 
-function ProblemVisual({ visual }: { visual: "static" | "reactive" | "silos" | "uncoordinated" }) {
-  const common = { viewBox: "0 0 200 90", className: "h-[90px] w-[200px] shrink-0", "aria-hidden": true } as const;
+// Fan, valve and pump, each running its own loop behind a wall.
+const deviceLoops = (
+  <>
+    {["Fan", "Valve", "Pump"].map((name, i) => {
+      const x = 8 + i * 67;
+      return (
+        <g key={name}>
+          <rect x={x} y={70} width={50} height={26} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
+          <text x={x + 25} y={87} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">{name}</text>
+          <path d={`M${x + 12} 70 C${x + 12} 50 ${x + 38} 50 ${x + 38} 66`} fill="none" stroke="#22d3ee" strokeWidth={2} />
+          <path d={`M${x + 33} 63 L${x + 38} 70 L${x + 43} 63 Z`} fill="#22d3ee" />
+        </g>
+      );
+    })}
+    {[66, 133].map((x) => (
+      <line key={x} x1={x} y1={50} x2={x} y2={98} stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
+    ))}
+  </>
+);
+
+function ProblemVisual({ visual, fit = false }: { visual: ProblemVisualName; fit?: boolean }) {
+  // `fit` scales the drawing to the width of its column.
+  const common = {
+    viewBox: "0 0 200 90",
+    className: fit ? "w-full shrink-0" : "h-[90px] w-[200px] shrink-0",
+    "aria-hidden": true,
+  } as const;
   switch (visual) {
     case "static":
       // A fixed rule that ignores the changing load.
@@ -183,7 +208,7 @@ function ProblemVisual({ visual }: { visual: "static" | "reactive" | "silos" | "
       // DCIM and BMS don't talk, and fan, valve and pump each run their own
       // loop behind a wall.
       return (
-        <svg {...common} viewBox="0 0 200 100" className="h-[100px] w-[200px] shrink-0">
+        <svg {...common} viewBox="0 0 200 100" className={fit ? common.className : "h-[100px] w-[200px] shrink-0"}>
           {[
             ["DCIM", 8],
             ["BMS", 136],
@@ -198,20 +223,7 @@ function ProblemVisual({ visual }: { visual: "static" | "reactive" | "silos" | "
           <line x1={64} y1={16} x2={136} y2={16} stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
           <path d="M94 10 L106 22 M106 10 L94 22" stroke="#fbbf24" strokeWidth={2.5} strokeLinecap="round" />
           <text x={100} y={40} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">no link</text>
-          {["Fan", "Valve", "Pump"].map((name, i) => {
-            const x = 8 + i * 67;
-            return (
-              <g key={name}>
-                <rect x={x} y={70} width={50} height={26} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
-                <text x={x + 25} y={87} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">{name}</text>
-                <path d={`M${x + 12} 70 C${x + 12} 50 ${x + 38} 50 ${x + 38} 66`} fill="none" stroke="#22d3ee" strokeWidth={2} />
-                <path d={`M${x + 33} 63 L${x + 38} 70 L${x + 43} 63 Z`} fill="#22d3ee" />
-              </g>
-            );
-          })}
-          {[66, 133].map((x) => (
-            <line key={x} x1={x} y1={50} x2={x} y2={98} stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
-          ))}
+          {deviceLoops}
         </svg>
       );
     case "uncoordinated":
@@ -233,15 +245,96 @@ function ProblemVisual({ visual }: { visual: "static" | "reactive" | "silos" | "
           <text x={100} y={84} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">fighting</text>
         </svg>
       );
+    case "open-loop":
+      // An action reaches the racks, but nothing carries the response back.
+      return (
+        <svg {...common}>
+          {[
+            ["Action", 8],
+            ["Racks", 132],
+          ].map(([name, x]) => (
+            <g key={name}>
+              <rect x={x} y={8} width={60} height={28} rx={5} fill="#11283d" stroke="#64748b" strokeWidth={1.5} />
+              <text x={Number(x) + 30} y={26} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#e2e8f0">
+                {name}
+              </text>
+            </g>
+          ))}
+          <path d="M68 22 H122" stroke="#22d3ee" strokeWidth={2.5} />
+          <path d="M121 16 L131 22 L121 28 Z" fill="#22d3ee" />
+          <path d="M162 36 V62 H38 V36" fill="none" stroke="#64748b" strokeWidth={1.5} strokeDasharray="3 4" />
+          <rect x={86} y={50} width={28} height={24} fill="#071827" />
+          <path d="M94 56 L106 68 M106 56 L94 68" stroke="#fbbf24" strokeWidth={2.5} strokeLinecap="round" />
+          <text x={100} y={87} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">no feedback</text>
+        </svg>
+      );
+    case "single-loops":
+      // Each device runs its own loop; nothing spans them.
+      return (
+        <svg {...common}>
+          <g transform="translate(0 -40)">{deviceLoops}</g>
+          <text x={100} y={78} textAnchor="middle" fontFamily={mono} fontSize={10} fill="#94a3b8">separate loops</text>
+        </svg>
+      );
   }
 }
 
+// A data hall for the coverage slide: a CRAH supplying air to a row of racks
+// and, with `liquid`, a CDU feeding a liquid loop to the same racks.
+function HallVisual({ liquid = false }: { liquid?: boolean }) {
+  const racks = [0, 1, 2, 3, 4].map((i) => 190 + i * 54);
+  const unit = (name: string, y: number, height: number) => (
+    <g>
+      <rect x={16} y={y} width={92} height={height} rx={6} fill="#ffffff" stroke="#9ca3af" strokeWidth={1.5} />
+      <text x={62} y={y + height / 2 + 4} textAnchor="middle" fontFamily={mono} fontSize={12} fontWeight={700} fill="#374151">
+        {name}
+      </text>
+    </g>
+  );
+  return (
+    <svg
+      viewBox={liquid ? "0 0 480 132" : "0 -20 480 132"}
+      className="h-[132px] w-full rounded-xl bg-gray-50"
+      role="img"
+      aria-label={liquid ? "Racks cooled by air from a CRAH and liquid from a CDU" : "Racks cooled by air from a CRAH"}
+    >
+      {unit("CRAH", 16, 52)}
+      <line x1={108} y1={42} x2={170} y2={42} stroke="#0e7490" strokeWidth={2} className="deck-flow" />
+      <path d={head(108, 42, 180, 42)} fill="#0e7490" />
+      <text x={143} y={32} textAnchor="middle" fontFamily={mono} fontSize={11} fill="#0e7490">air</text>
+      {racks.map((x) => (
+        <g key={x}>
+          <rect x={x} y={16} width={40} height={52} rx={4} fill="#cffafe" stroke="#0e7490" strokeWidth={1.5} />
+          {[0, 1, 2].map((row) => (
+            <rect key={row} x={x + 7} y={25 + row * 13} width={26} height={6} rx={2} fill="#0e7490" />
+          ))}
+        </g>
+      ))}
+      {liquid && (
+        <>
+          {unit("CDU", 84, 34)}
+          <path
+            d={`M108 101 H${racks[racks.length - 1] + 20}`}
+            fill="none"
+            stroke="#b45309"
+            strokeWidth={2}
+            className="deck-flow"
+          />
+          {racks.map((x) => (
+            <g key={x}>
+              <line x1={x + 20} y1={101} x2={x + 20} y2={76} stroke="#b45309" strokeWidth={2} />
+              <path d={head(x + 20, 101, x + 20, 68, 7)} fill="#b45309" />
+            </g>
+          ))}
+          <text x={143} y={119} textAnchor="middle" fontFamily={mono} fontSize={11} fill="#b45309">liquid</text>
+        </>
+      )}
+    </svg>
+  );
+}
+
 // Schematics for the benefits slide, drawn on white.
-function BenefitVisual({
-  visual,
-}: {
-  visual: "energy" | "capacity" | "coordination" | "autonomy" | "guardrails" | "edge";
-}) {
+function BenefitVisual({ visual }: { visual: BenefitVisualName }) {
   const common = { viewBox: "0 0 120 56", className: "h-14 w-[120px]", "aria-hidden": true } as const;
   switch (visual) {
     case "energy":
@@ -322,12 +415,23 @@ const head = (x1: number, y1: number, x2: number, y2: number, size = 8) => {
   return `M${x2} ${y2} L${bx - w * Math.sin(a)} ${by + w * Math.cos(a)} L${bx + w * Math.sin(a)} ${by - w * Math.cos(a)} Z`;
 };
 
-function FlowArrow({ direction = "right", length = 40 }: { direction?: "right" | "up"; length?: number }) {
+function FlowArrow({
+  direction = "right",
+  length = 40,
+  className = "text-primary",
+}: {
+  direction?: "right" | "up" | "down";
+  length?: number;
+  className?: string;
+}) {
   const [w, h] = direction === "right" ? [length, 16] : [16, length];
-  const [x1, y1, x2, y2] = direction === "right" ? [0, 8, length, 8] : [8, length, 8, 0];
+  const [x1, y1, x2, y2] =
+    direction === "right" ? [0, 8, length, 8] : direction === "up" ? [8, length, 8, 0] : [8, 0, 8, length];
+  // The line stops short of the arrowhead.
+  const dy = direction === "up" ? 6 : direction === "down" ? -6 : 0;
   return (
-    <svg aria-hidden="true" width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0 text-primary">
-      <line x1={x1} y1={y1} x2={direction === "right" ? x2 - 6 : x2} y2={direction === "up" ? y2 + 6 : y2} stroke="currentColor" strokeWidth={2} className="deck-flow" />
+    <svg aria-hidden="true" width={w} height={h} viewBox={`0 0 ${w} ${h}`} className={`shrink-0 ${className}`}>
+      <line x1={x1} y1={y1} x2={direction === "right" ? x2 - 6 : x2} y2={y2 + dy} stroke="currentColor" strokeWidth={2} className="deck-flow" />
       <path d={head(x1, y1, x2, y2)} fill="currentColor" />
     </svg>
   );
@@ -337,6 +441,20 @@ function FlowArrow({ direction = "right", length = 40 }: { direction?: "right" |
 // row's centre.
 const ROW = 38;
 const ROW_GAP = 8;
+
+// Fixed geometry of the closed-loop slide, in slide pixels from the diagram's
+// top-left corner. The x positions follow from the column widths in the
+// "closed-loop" case: inputs 200 + 44, Cooling OS 236, arrow 32 + BMS 132,
+// fan 44 + outputs 200, each 12 apart.
+const LOOP = {
+  height: 500,
+  rowHeight: 420,
+  // Horizontal run of the return path, below the row.
+  trackY: 466,
+  // Centre of the Cooling OS panel, and of the outputs list.
+  coreX: 256 + 236 / 2,
+  outputsX: 736 + 200 / 2,
+};
 
 function FanLines({ count, mode, width = 56 }: { count: number; mode: "in" | "out"; width?: number }) {
   const height = count * ROW + (count - 1) * ROW_GAP;
@@ -391,34 +509,49 @@ function SlideBody({
               {slide.subtitle}
             </p>
           </div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">
-            Investor presentation · Confidential
-          </p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">{slide.note}</p>
         </div>
       );
 
-    case "problem":
+    case "problem": {
+      // Four points make a two-by-two grid with the drawing beside the text;
+      // any other number sits in one row, drawing above the text.
+      const columns = slide.points.length !== 4;
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
-          <div className="flex flex-1 flex-col rounded-[1.25rem] bg-navy p-10">
+          <div className={`flex flex-1 flex-col rounded-[1.25rem] bg-navy ${columns ? "p-8" : "p-10"}`}>
             <h3 className="font-serif text-[30px] font-semibold leading-snug text-white">{slide.heading}</h3>
-            <ol className="mt-8 grid flex-1 auto-rows-fr grid-cols-2 gap-5">
+            <ol
+              className={`grid flex-1 auto-rows-fr ${columns ? "mt-6 gap-4" : "mt-8 grid-cols-2 gap-5"}`}
+              style={columns ? { gridTemplateColumns: `repeat(${slide.points.length}, minmax(0, 1fr))` } : undefined}
+            >
               {slide.points.map((point, i) => (
-                <li key={point.text} className="flex items-center gap-6 rounded-xl border border-white/15 px-6 py-5">
-                  <div className="flex-1">
+                <li
+                  key={point.text}
+                  className={`flex rounded-xl border border-white/15 py-5 ${columns ? "flex-col-reverse justify-end gap-4 px-4" : "items-center gap-6 px-6"}`}
+                >
+                  <div className={columns ? "" : "flex-1"}>
                     <p className="font-mono text-[14px] font-bold text-cyan-400">{String(i + 1).padStart(2, "0")}</p>
-                    <p className="mt-2 font-serif text-[24px] font-semibold leading-snug text-white">{point.text}</p>
+                    <p
+                      className={`mt-2 font-serif font-semibold leading-snug text-white ${columns ? "text-[20px]" : "text-[24px]"}`}
+                    >
+                      {point.text}
+                    </p>
+                    {point.detail && <p className="mt-2 text-[14px] leading-snug text-slate-300">{point.detail}</p>}
                   </div>
-                  <ProblemVisual visual={point.visual} />
+                  <ProblemVisual visual={point.visual} fit={columns} />
                 </li>
               ))}
             </ol>
-            <p className="mt-8 border-t border-white/10 pt-6 font-serif text-[24px] font-semibold text-cyan-400">
+            <p
+              className={`border-t border-white/10 pt-6 font-serif text-[24px] font-semibold text-cyan-400 ${columns ? "mt-6" : "mt-8"}`}
+            >
               {slide.stat}
             </p>
           </div>
         </Frame>
       );
+    }
 
     case "system":
       return (
@@ -449,6 +582,50 @@ function SlideBody({
                 </div>
               ))}
             </div>
+          </div>
+          <p className="mt-5 rounded-xl border border-cyan-200 bg-cyan-50 px-6 py-4 font-serif text-[19px] font-semibold leading-snug text-gray-900">
+            {slide.statement}
+          </p>
+        </Frame>
+      );
+
+    case "coverage":
+      return (
+        <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
+          <div className="flex items-center gap-4 rounded-[1.25rem] bg-navy px-7 py-5">
+            <img src="/logo192.svg" alt="" className="h-9 w-9" />
+            <p className="font-serif text-[24px] font-semibold text-white">{slide.layer.name}</p>
+            <p className={`${eyebrow} ml-auto text-cyan-400`}>{slide.layer.detail}</p>
+          </div>
+          <div
+            className="grid flex-1 gap-6"
+            style={{ gridTemplateColumns: `repeat(${slide.sites.length}, minmax(0, 1fr))` }}
+          >
+            {slide.sites.map((site) => (
+              <div key={site.label} className="flex flex-col items-center">
+                <FlowArrow direction="down" length={26} className="my-1 text-primary" />
+                <div className="flex w-full flex-1 flex-col rounded-[1.25rem] border border-gray-200 bg-white p-6">
+                  <p className={`${eyebrow} text-primary`}>{site.label}</p>
+                  <h3 className="mt-2 font-serif text-[26px] font-semibold leading-tight text-gray-900">
+                    {site.heading}
+                  </h3>
+                  <p className="mt-1 text-[15px] text-gray-600">{site.text}</p>
+                  <div className="my-auto py-3">
+                    <HallVisual liquid={site.liquid} />
+                  </div>
+                  <ul className="flex flex-wrap gap-2">
+                    {site.equipment.map((item) => (
+                      <li
+                        key={item}
+                        className="rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-[14px] font-semibold text-gray-800"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
           </div>
           <p className="mt-5 rounded-xl border border-cyan-200 bg-cyan-50 px-6 py-4 font-serif text-[19px] font-semibold leading-snug text-gray-900">
             {slide.statement}
@@ -520,8 +697,10 @@ function SlideBody({
     }
 
     case "pillars": {
-      // Builds: 0 = the three principles, 1 = the solution flow.
+      // Builds: 0 = the three principles, 1 = the solution flow, 2 = with an
+      // umbrella, the panel naming the parts as one product.
       const flowShown = step === undefined || step >= 1;
+      const umbrellaShown = Boolean(slide.umbrella) && (step === undefined || step >= 2);
       const flowClass = `transition-[opacity,transform] duration-500 ease-out ${flowShown ? "opacity-100 translate-y-0" : "translate-y-4 opacity-0"}`;
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
@@ -550,21 +729,64 @@ function SlideBody({
               );
             })}
           </div>
-          <div className={`my-auto flex items-center justify-center gap-5 py-6 ${flowClass}`}>
-            {slide.flow.map((stage, i) => (
-              <div key={stage.name} className="flex items-center gap-5">
-                <div className="w-[260px] rounded-xl border border-gray-200 bg-white px-6 py-4 text-center">
-                  <p className="font-serif text-[19px] font-semibold text-gray-900">{stage.name}</p>
-                  <p className="mt-1 text-[14px] text-gray-500">{stage.detail}</p>
+          {slide.flow.length === slide.pillars.length ? (
+            // One part per pillar: each sits under the principle it delivers.
+            <div className={`my-auto py-5 ${flowClass}`}>
+              <div className="grid grid-cols-3 justify-items-center gap-5">
+                {slide.flow.map((stage) => (
+                  <FlowArrow key={stage.name} direction="up" length={26} />
+                ))}
+              </div>
+              {/* The panel reaches past the parts on every side, so they stay
+                  in line with the pillars above whether or not it is drawn. */}
+              <div
+                className={`relative -mx-3.5 mt-1 rounded-[1.25rem] border-2 border-dashed p-3 transition-colors duration-700 ease-out ${umbrellaShown ? "border-primary bg-white" : "border-transparent"}`}
+              >
+                <div className="grid grid-cols-3 gap-5">
+                  {slide.flow.map((stage, i) => (
+                    <div key={stage.name} className="relative">
+                      <div className="rounded-xl border border-cyan-300 bg-cyan-50 px-6 py-4 text-center">
+                        <p className="font-serif text-[21px] font-semibold text-gray-900">{stage.name}</p>
+                        <p className="mt-1 text-[14px] text-gray-600">{stage.detail}</p>
+                      </div>
+                      {i < slide.flow.length - 1 && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute -right-5 top-1/2 w-5 -translate-y-1/2 text-center font-mono text-[24px] font-bold leading-none text-primary"
+                        >
+                          +
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                {i < slide.flow.length - 1 && (
-                  <span aria-hidden="true" className="font-mono text-[28px] font-bold leading-none text-primary">
-                    +
-                  </span>
+                {slide.umbrella && (
+                  // Sits on the bottom border, naming what the panel holds.
+                  <p
+                    className={`absolute -bottom-[14px] left-1/2 flex h-[26px] -translate-x-1/2 items-center whitespace-nowrap rounded-full bg-primary px-4 font-serif text-[15px] font-semibold text-white transition-opacity duration-700 ease-out ${umbrellaShown ? "opacity-100" : "opacity-0"}`}
+                  >
+                    {slide.umbrella}
+                  </p>
                 )}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className={`my-auto flex items-center justify-center gap-5 py-6 ${flowClass}`}>
+              {slide.flow.map((stage, i) => (
+                <div key={stage.name} className="flex items-center gap-5">
+                  <div className="w-[260px] rounded-xl border border-gray-200 bg-white px-6 py-4 text-center">
+                    <p className="font-serif text-[19px] font-semibold text-gray-900">{stage.name}</p>
+                    <p className="mt-1 text-[14px] text-gray-500">{stage.detail}</p>
+                  </div>
+                  {i < slide.flow.length - 1 && (
+                    <span aria-hidden="true" className="font-mono text-[28px] font-bold leading-none text-primary">
+                      +
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
           <p
             className={`rounded-xl border border-cyan-200 bg-cyan-50 px-6 py-4 font-serif text-[19px] font-semibold text-gray-900 ${flowClass}`}
           >
@@ -576,75 +798,108 @@ function SlideBody({
 
     case "architecture": {
       // Builds: 0 = DCIM → BMS → equipment, 1 = Cooling OS slides in
-      // between, 2 = the summary line.
+      // between, 2 = the summary line. With an umbrella, build 1 also draws
+      // one panel around Cooling OS and the layers before it: separate
+      // cards, one product.
       const on = (n: number) => step === undefined || step >= n;
+      // The arrow joining a layer to its neighbour sits inside the layer's
+      // column, so it folds away with a layer that is not shown yet.
+      const column = (layer: (typeof slide.layers)[number], i: number, arrow?: "before" | "after") => {
+        const inserted = layer.highlight;
+        const shown = !inserted || on(1);
+        return (
+          <div
+            key={layer.name}
+            className="flex items-center overflow-hidden transition-[flex,opacity] duration-700 ease-out"
+            style={{ flex: shown ? "1 1 0%" : "0 0 0%", opacity: shown ? 1 : 0 }}
+          >
+            {arrow === "before" && <Arrow className="mx-2 text-primary" />}
+            <div
+              className={`flex h-full min-w-[232px] flex-1 flex-col rounded-[1.25rem] p-5 ${inserted ? "bg-navy text-white" : "border border-gray-200 bg-white"}`}
+            >
+              <p className={`font-mono text-[13px] font-bold ${inserted ? "text-cyan-400" : "text-primary"}`}>
+                {String(i + 1).padStart(2, "0")}
+              </p>
+              <h3
+                className={`mt-1 font-serif text-[22px] font-semibold leading-tight ${inserted ? "text-white" : "text-gray-900"}`}
+              >
+                {layer.name}
+              </h3>
+              <p
+                className={`mt-1 min-h-[54px] text-[14px] font-semibold leading-snug ${inserted ? "text-cyan-400" : "text-primary"}`}
+              >
+                {layer.role}
+              </p>
+              <div className="mt-2">
+                {i === 0 && <DcimVisual />}
+                {i === 1 && <CoolingOsVisual />}
+                {i === 2 && <BmsVisual />}
+                {i === 3 && (
+                  <img
+                    src={slide.image.src}
+                    alt={slide.image.alt}
+                    className="h-[110px] w-full rounded-xl bg-gray-50 object-contain"
+                  />
+                )}
+              </div>
+              {layer.points.length > 0 && (
+                <ul
+                  className={`mt-3 space-y-1.5 text-[14px] font-medium leading-snug ${inserted ? "text-slate-100" : "text-gray-800"}`}
+                >
+                  {layer.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              )}
+              {i === slide.layers.length - 1 && (
+                <div className="mt-3 rounded-xl bg-navy p-4">
+                  <p className={`${eyebrow} text-cyan-400`}>{slide.equipment.heading}</p>
+                  <p className="mt-1 text-[14px] font-medium leading-snug text-slate-100">
+                    {slide.equipment.text}
+                  </p>
+                </div>
+              )}
+              <p
+                className={`mt-auto rounded-xl px-3 py-2 text-center font-mono text-[11px] font-bold uppercase leading-snug tracking-[0.06em] ${inserted ? "bg-cyan-400 text-navy" : "bg-gray-100 text-gray-700"}`}
+              >
+                {layer.tag}
+              </p>
+            </div>
+            {arrow === "after" && <Arrow className="mx-2 text-primary" />}
+          </div>
+        );
+      };
+      // Layers up to and including the highlighted one go under the umbrella.
+      const grouped = slide.umbrella ? slide.layers.findIndex((layer) => layer.highlight) + 1 : 0;
+      const last = slide.layers.length - 1;
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
           <div className="flex flex-1 items-stretch">
-            {slide.layers.map((layer, i) => {
-              const inserted = layer.highlight;
-              const shown = !inserted || on(1);
-              return (
+            {slide.umbrella && (
+              <>
                 <div
-                  key={layer.name}
-                  className="flex items-center overflow-hidden transition-[flex,opacity] duration-700 ease-out"
-                  style={{ flex: shown ? "1 1 0%" : "0 0 0%", opacity: shown ? 1 : 0 }}
+                  className={`relative flex min-w-0 flex-col rounded-[1.5rem] border-2 border-dashed transition-[flex,padding,background-color,border-color] duration-700 ease-out ${on(1) ? "border-primary bg-cyan-50 px-2.5 pb-2.5 pt-4" : "border-transparent p-0"}`}
+                  style={{ flex: `${on(1) ? grouped : grouped - 1} 1 0%` }}
                 >
-                  <div
-                    className={`flex h-full min-w-[232px] flex-1 flex-col rounded-[1.25rem] p-5 ${inserted ? "bg-navy text-white" : "border border-gray-200 bg-white"}`}
+                  {/* Sits on the top border, like a fieldset legend. */}
+                  <p
+                    className={`absolute -top-[14px] left-6 flex h-[26px] items-center gap-2 whitespace-nowrap rounded-full bg-primary px-3.5 transition-opacity duration-700 ease-out ${on(1) ? "opacity-100" : "opacity-0"}`}
                   >
-                    <p className={`font-mono text-[13px] font-bold ${inserted ? "text-cyan-400" : "text-primary"}`}>
-                      {String(i + 1).padStart(2, "0")}
-                    </p>
-                    <h3
-                      className={`mt-1 font-serif text-[22px] font-semibold leading-tight ${inserted ? "text-white" : "text-gray-900"}`}
-                    >
-                      {layer.name}
-                    </h3>
-                    <p
-                      className={`mt-1 min-h-[54px] text-[14px] font-semibold leading-snug ${inserted ? "text-cyan-400" : "text-primary"}`}
-                    >
-                      {layer.role}
-                    </p>
-                    <div className="mt-2">
-                      {i === 0 && <DcimVisual />}
-                      {i === 1 && <CoolingOsVisual />}
-                      {i === 2 && <BmsVisual />}
-                      {i === 3 && (
-                        <img
-                          src={slide.image.src}
-                          alt={slide.image.alt}
-                          className="h-[110px] w-full rounded-xl bg-gray-50 object-contain"
-                        />
-                      )}
-                    </div>
-                    {layer.points.length > 0 && (
-                      <ul
-                        className={`mt-3 space-y-1.5 text-[14px] font-medium leading-snug ${inserted ? "text-slate-100" : "text-gray-800"}`}
-                      >
-                        {layer.points.map((point) => (
-                          <li key={point}>{point}</li>
-                        ))}
-                      </ul>
-                    )}
-                    {i === slide.layers.length - 1 && (
-                      <div className="mt-3 rounded-xl bg-navy p-4">
-                        <p className={`${eyebrow} text-cyan-400`}>{slide.equipment.heading}</p>
-                        <p className="mt-1 text-[14px] font-medium leading-snug text-slate-100">
-                          {slide.equipment.text}
-                        </p>
-                      </div>
-                    )}
-                    <p
-                      className={`mt-auto rounded-xl px-3 py-2 text-center font-mono text-[11px] font-bold uppercase leading-snug tracking-[0.06em] ${inserted ? "bg-cyan-400 text-navy" : "bg-gray-100 text-gray-700"}`}
-                    >
-                      {layer.tag}
-                    </p>
+                    <span className="font-serif text-[15px] font-semibold text-white">{slide.umbrella.name}</span>
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-cyan-100">
+                      {slide.umbrella.detail}
+                    </span>
+                  </p>
+                  <div className="flex min-h-0 flex-1 items-stretch">
+                    {slide.layers.slice(0, grouped).map((layer, i) => column(layer, i, i > 0 ? "before" : undefined))}
                   </div>
-                  {i < slide.layers.length - 1 && <Arrow className="mx-2 text-primary" />}
                 </div>
-              );
-            })}
+                <Arrow className="mx-2 self-center text-primary" />
+              </>
+            )}
+            {slide.layers
+              .slice(grouped)
+              .map((layer, j) => column(layer, grouped + j, grouped + j < last ? "after" : undefined))}
           </div>
           <p
             className={`mt-5 rounded-xl bg-navy px-6 py-4 text-center font-serif text-[18px] font-semibold text-white transition-opacity duration-500 ${on(2) ? "opacity-100" : "opacity-0"}`}
@@ -730,14 +985,138 @@ function SlideBody({
       );
     }
 
+    case "closed-loop": {
+      // Builds: 0 Cooling OS and its parts, 1 sensor inputs, 2 output to the
+      // BMS, 3 BMS to the individual outputs, 4 the objective, 5 the response
+      // returning through DCIM, which closes the loop.
+      // The diagram has fixed geometry (LOOP) so the return path can be drawn
+      // from the outputs, under the row, up into the Cooling OS panel.
+      const shown = (n: number) => step === undefined || step >= n;
+      const reveal = (n: number) =>
+        `transition-[opacity,transform] duration-500 ease-out ${shown(n) ? "opacity-100 translate-x-0" : "pointer-events-none -translate-x-4 opacity-0"}`;
+      const outputsHeight = slide.outputs.length * ROW + (slide.outputs.length - 1) * ROW_GAP;
+      const from = { x: LOOP.outputsX, y: (LOOP.rowHeight + outputsHeight) / 2 + 4 };
+      const to = { x: LOOP.coreX, y: LOOP.rowHeight + 2 };
+      const r = 14;
+      const parts = slide.core.parts;
+      return (
+        <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
+          <div className="relative my-auto" style={{ height: LOOP.height }}>
+            <div className="flex items-center gap-3" style={{ height: LOOP.rowHeight }}>
+              <div className={`flex shrink-0 items-center ${reveal(1)}`}>
+                <ul className="flex w-[200px] flex-col" style={{ gap: ROW_GAP }}>
+                  {slide.inputs.map((input) => (
+                    <li
+                      key={input}
+                      className="flex items-center rounded-lg border border-gray-300 bg-white px-4 text-[15px] font-medium text-gray-900"
+                      style={{ height: ROW }}
+                    >
+                      {input}
+                    </li>
+                  ))}
+                </ul>
+                <FanLines count={slide.inputs.length} mode="in" width={44} />
+              </div>
+              <div className="flex w-[236px] shrink-0 flex-col self-stretch rounded-[1.25rem] bg-navy p-4">
+                <div className="flex items-center gap-2.5">
+                  <img src="/logo192.svg" alt="" className="h-7 w-7" />
+                  <p className="whitespace-nowrap font-serif text-[17px] font-semibold leading-tight text-white">
+                    {slide.core.name}
+                  </p>
+                </div>
+                <ul className="mt-3 flex flex-1 flex-col gap-2">
+                  {parts.map((part, i) => {
+                    // The last part takes the response coming back in.
+                    const entry = i === parts.length - 1;
+                    return (
+                      <li key={part.name} className="flex flex-1 flex-col gap-2">
+                        {entry && <FlowArrow direction="up" length={18} className="self-center text-cyan-400" />}
+                        <div
+                          className={`flex flex-1 flex-col justify-center rounded-xl px-4 ${entry ? "bg-cyan-400" : "border border-white/20"}`}
+                        >
+                          <p className={`font-serif text-[18px] font-semibold leading-tight ${entry ? "text-navy" : "text-white"}`}>
+                            {part.name}
+                          </p>
+                          <p className={`mt-1 text-[14px] font-medium leading-snug ${entry ? "text-navy" : "text-slate-300"}`}>
+                            {part.detail}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className={`flex shrink-0 items-center gap-3 ${reveal(2)}`}>
+                <FlowArrow length={32} />
+                <p className="w-[132px] rounded-[1.25rem] border border-gray-300 bg-white px-3 py-4 text-center font-serif text-[17px] font-semibold leading-snug text-gray-900">
+                  {slide.executor}
+                </p>
+              </div>
+              <div className={`flex shrink-0 items-center ${reveal(3)}`}>
+                <FanLines count={slide.outputs.length} mode="out" width={44} />
+                <ul className="flex w-[200px] flex-col" style={{ gap: ROW_GAP }}>
+                  {slide.outputs.map((output) => (
+                    <li
+                      key={output}
+                      className="flex items-center rounded-lg border border-cyan-300 bg-cyan-50 px-4 text-[15px] font-semibold text-gray-900"
+                      style={{ height: ROW }}
+                    >
+                      {output}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div
+                className={`flex min-w-0 flex-1 flex-col justify-center self-stretch rounded-[1.25rem] bg-navy px-6 py-8 ${reveal(4)}`}
+              >
+                <p className="font-mono text-[12px] font-bold uppercase tracking-[0.14em] text-cyan-400">Objective</p>
+                <p className="mt-4 font-serif text-[20px] font-semibold leading-snug text-white">{slide.objective}</p>
+              </div>
+            </div>
+            <div
+              className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ease-out ${shown(5) ? "opacity-100" : "opacity-0"}`}
+            >
+              <svg
+                aria-hidden="true"
+                width="100%"
+                height={LOOP.height}
+                className="absolute inset-0 text-primary"
+              >
+                <path
+                  d={`M${from.x} ${from.y} V${LOOP.trackY - r} Q${from.x} ${LOOP.trackY} ${from.x - r} ${LOOP.trackY} H${to.x + r} Q${to.x} ${LOOP.trackY} ${to.x} ${LOOP.trackY - r} V${to.y + 6}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  className="deck-flow"
+                />
+                <path d={head(to.x, to.y + 12, to.x, to.y, 9)} fill="currentColor" />
+              </svg>
+              <p
+                className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl border border-cyan-300 bg-cyan-50 px-5 py-1.5 text-center"
+                style={{ left: (from.x + to.x) / 2, top: LOOP.trackY }}
+              >
+                <span className="block font-serif text-[16px] font-semibold leading-tight text-gray-900">
+                  {slide.feedback.name}
+                </span>
+                <span className="mt-0.5 block font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-primary">
+                  {slide.feedback.detail}
+                </span>
+              </p>
+            </div>
+          </div>
+        </Frame>
+      );
+    }
+
     case "benefits":
       return (
         <Frame label={slide.label} title={slide.title} accent={slide.accent} footer={footer} page={page}>
-          <ul className="my-auto grid grid-cols-3 gap-5">
+          {/* Three to a row; a short last row is centred. */}
+          <ul className="my-auto flex flex-wrap justify-center gap-5">
             {slide.items.map((item) => (
               <li
                 key={item.title}
-                className="flex h-[210px] flex-col items-center justify-center rounded-[1.25rem] border border-gray-200 bg-white px-8 text-center"
+                className="flex h-[210px] w-[370px] flex-col items-center justify-center rounded-[1.25rem] border border-gray-200 bg-white px-8 text-center"
               >
                 <BenefitVisual visual={item.visual} />
                 {item.value && (

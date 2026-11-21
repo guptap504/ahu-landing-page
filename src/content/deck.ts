@@ -1,7 +1,8 @@
-// Shape of the investor deck. The content itself is confidential: it lives in
-// netlify/functions/investor-deck/content.ts and is only returned by that
-// function after the passcode checks out, so it never ships in the site
-// bundle. Only these types are shared with the page that renders it.
+// Shape of the passcode-protected decks (/investors, /product-deck-dc). The
+// content itself is confidential: it lives beside each deck's function in
+// netlify/functions/<deck>/content.ts and is only returned after the passcode
+// checks out, so it never ships in the site bundle. Only these types are
+// shared with the page that renders it.
 
 export type Step = { name: string; detail: string };
 export type Logo = { name: string; src: string; width: number; height: number };
@@ -11,19 +12,50 @@ type Image = { src: string; alt: string };
 // `accent` in the brand colour. `label` is the section eyebrow above it.
 type Titled = { title: string; accent?: string; label?: string };
 
+export type ProblemVisualName =
+  | "static"
+  | "reactive"
+  | "silos"
+  | "uncoordinated"
+  | "open-loop"
+  | "single-loops";
+export type BenefitVisualName =
+  | "energy"
+  | "capacity"
+  | "coordination"
+  | "autonomy"
+  | "guardrails"
+  | "edge";
+
 export type Slide =
-  | { kind: "cover"; title: string; accent: string; subtitle: string }
+  | { kind: "cover"; title: string; accent: string; subtitle: string; note: string }
   | (Titled & {
       kind: "problem";
       heading: string;
-      // Each point names the schematic drawn beside it (slides.tsx).
-      points: { text: string; visual: "static" | "reactive" | "silos" | "uncoordinated" }[];
+      // Each point names the schematic drawn beside it (slides.tsx). Four
+      // points make a two-by-two grid; any other number is laid out as one
+      // row of columns, with room for a line of detail.
+      points: { text: string; detail?: string; visual: ProblemVisualName }[];
       stat: string;
     })
   | (Titled & {
       kind: "system";
       root: string;
       branches: { name: string; leaves: string[] }[];
+      statement: string;
+    })
+  | (Titled & {
+      // Where Cooling OS has to work: one layer over each kind of hall.
+      kind: "coverage";
+      layer: { name: string; detail: string };
+      sites: {
+        label: string;
+        heading: string;
+        text: string;
+        equipment: string[];
+        // Draws a liquid loop beside the air path.
+        liquid?: boolean;
+      }[];
       statement: string;
     })
   | (Titled & {
@@ -46,13 +78,20 @@ export type Slide =
   | (Titled & {
       kind: "pillars";
       pillars: { label: string; heading: string; text?: string }[];
-      // Joined with "+": the parts that make up Cooling OS.
+      // Joined with "+": the parts that make up Cooling OS. When there is
+      // one part per pillar, each sits under the pillar it delivers.
       flow: Step[];
+      // Product name for the parts: a last build draws one dashed panel
+      // around them (needs one part per pillar).
+      umbrella?: string;
       statement: string;
     })
   | (Titled & {
       kind: "architecture";
       layers: { name: string; role: string; points: string[]; tag: string; highlight?: boolean }[];
+      // Names the product that the highlighted layer and the ones before it
+      // belong to; they are drawn as separate cards inside one panel.
+      umbrella?: { name: string; detail: string };
       image: Image;
       equipment: { heading: string; text: string };
       flow: string;
@@ -67,14 +106,21 @@ export type Slide =
       objective: string;
     })
   | (Titled & {
+      // The control loop with Cooling OS as one panel holding its parts, and
+      // the equipment's response returning through the last part (DCIM).
+      kind: "closed-loop";
+      inputs: string[];
+      core: { name: string; parts: Step[] };
+      executor: string;
+      outputs: string[];
+      feedback: { name: string; detail: string };
+      objective: string;
+    })
+  | (Titled & {
       kind: "benefits";
       // Each item names the schematic drawn above it (slides.tsx); an item
       // can lead with a figure instead.
-      items: {
-        title: string;
-        value?: string;
-        visual: "energy" | "capacity" | "coordination" | "autonomy" | "guardrails" | "edge";
-      }[];
+      items: { title: string; value?: string; visual: BenefitVisualName }[];
     })
   | (Titled & {
       kind: "ecosystem";
@@ -134,5 +180,7 @@ const builds: Partial<Record<Slide["kind"], number>> = {
   pillars: 2,
   architecture: 3,
   "control-loop": 6,
+  "closed-loop": 6,
 };
-export const buildSteps = (slide: Slide) => builds[slide.kind] ?? 1;
+export const buildSteps = (slide: Slide) =>
+  (builds[slide.kind] ?? 1) + (slide.kind === "pillars" && slide.umbrella ? 1 : 0);

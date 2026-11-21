@@ -34,6 +34,7 @@ const Privacy = lazy(routeLoaders.privacy);
 const NotFound = lazy(routeLoaders.notFound);
 // Unlisted and full screen: outside the site layout and never prefetched.
 const InvestorDeck = lazy(() => import("./pages/InvestorDeck"));
+const ProductDeckDc = lazy(() => import("./pages/ProductDeckDc"));
 
 function usePrefetchRoutes() {
   useEffect(() => {
@@ -96,6 +97,14 @@ const App = () => {
             element={
               <Suspense fallback={<div className="min-h-screen bg-navy" />}>
                 <InvestorDeck />
+              </Suspense>
+            }
+          />
+          <Route
+            path="product-deck-dc"
+            element={
+              <Suspense fallback={<div className="min-h-screen bg-navy" />}>
+                <ProductDeckDc />
               </Suspense>
             }
           />

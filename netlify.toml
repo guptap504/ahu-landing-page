@@ -51,9 +51,14 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
-# Unlisted investor deck: keep it out of search results.
+# Unlisted decks: keep them out of search results.
 [[headers]]
   for = "/investors"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/product-deck-dc"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
