@@ -39,15 +39,12 @@ export type Slide =
       stat: string;
     })
   | (Titled & {
-      kind: "system";
-      root: string;
-      branches: { name: string; leaves: string[] }[];
-      statement: string;
-    })
-  | (Titled & {
       // Where Cooling OS has to work: one layer over each kind of hall.
       kind: "coverage";
       layer: { name: string; detail: string };
+      // A second layer drawn under the halls (Garvata's own equipment). There
+      // is room for this or the statement, not both.
+      hardware?: { name: string; detail: string };
       sites: {
         label: string;
         heading: string;
@@ -56,7 +53,7 @@ export type Slide =
         // Draws a liquid loop beside the air path.
         liquid?: boolean;
       }[];
-      statement: string;
+      statement?: string;
     })
   | (Titled & {
       kind: "market";
@@ -97,15 +94,6 @@ export type Slide =
       flow: string;
     })
   | (Titled & {
-      kind: "control-loop";
-      inputs: string[];
-      context: string;
-      core: { name: string; text: string };
-      executor: string;
-      outputs: string[];
-      objective: string;
-    })
-  | (Titled & {
       // The control loop with Cooling OS as one panel holding its parts, and
       // the equipment's response returning through the last part (DCIM).
       kind: "closed-loop";
@@ -124,7 +112,7 @@ export type Slide =
     })
   | (Titled & {
       kind: "ecosystem";
-      agent: { eyebrow: string; name: string; text: string };
+      agent: { eyebrow: string; name: string; text: string; tag: string };
       hardware: { eyebrow: string; groups: { label: string; items: string; image: Image }[] };
     })
   | (Titled & {
@@ -179,7 +167,6 @@ export type DeckContent = { title: string; footer: string; slides: Slide[] };
 const builds: Partial<Record<Slide["kind"], number>> = {
   pillars: 2,
   architecture: 3,
-  "control-loop": 6,
   "closed-loop": 6,
 };
 export const buildSteps = (slide: Slide) =>

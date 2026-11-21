@@ -1,9 +1,12 @@
 import type { DeckContent } from "../../../src/content/deck";
+import { coolingOsSlides } from "../../lib/coolingOsSlides";
 import { cbre, energeia, jci } from "./logos";
 
 // Investor deck: Garvata Labs Investor Pitch Deck V1 (October 2026) for
 // presenting online. Confidential — only returned by investor-deck.ts once the
-// passcode checks out. Edit slides here; the page at /investors renders them.
+// passcode checks out. Edit slides here, and the five problem and Cooling OS
+// slides shared with the product deck in netlify/lib/coolingOsSlides.ts; the
+// page at /investors renders them.
 export const deck: DeckContent = {
   title: "Autonomous Cooling for Data Centers",
   footer: "Garvata Labs · Confidential",
@@ -44,134 +47,18 @@ export const deck: DeckContent = {
         },
       ],
     },
-    {
-      kind: "problem",
-      label: "Problem",
-      title: "Inefficient and broken cooling",
-      accent: "cannot manage AI demand",
-      heading: "Rule-based modulation, inefficient operations, no coordination",
-      points: [
-        { text: "Static rules for cooling control", visual: "static" },
-        { text: "A reactive approach", visual: "reactive" },
-        { text: "Controls available in silos", visual: "silos" },
-        { text: "No system coordination", visual: "uncoordinated" },
-      ],
-      stat: "Compute and energy losses due to broken cooling",
-    },
-    {
-      kind: "system",
-      label: "Solution",
-      title: "What does the cooling system",
-      accent: "look like?",
-      root: "Autonomous cooling",
-      branches: [
-        {
-          name: "Retrofit, mainly air cooling",
-          leaves: ["Supervisory layer with AI-driven decision making", "Control with intelligent hardware"],
-        },
-        {
-          name: "Future hybrid (air + liquid) cooling",
-          leaves: ["Supervisory layer with AI-driven decision making", "Control with intelligent hardware"],
-        },
-      ],
-      statement:
-        "A truly intelligent cooling ecosystem that combines AI-driven decision making with intelligent hardware to deliver autonomous, efficient and future-ready cooling.",
-    },
-    {
-      kind: "pillars",
-      label: "Solution",
-      title: "Garvata Cooling OS:",
-      accent: "for liquid and air cooling",
-      pillars: [
-        {
-          label: "Predictive",
-          heading: "Anticipate thermal risk",
-          text: "Forecasts thermal load on the racks and proposes efficient setpoints before conditions drift.",
-        },
-        {
-          label: "Coordination",
-          heading: "Operate the room as one system",
-          text: "Manages every cooling device together to reduce unit fighting, reheat and airflow imbalance.",
-        },
-        {
-          label: "Control",
-          heading: "Closed-loop, multi-parameter control",
-          text: "Modulates fans, valves and cooling capacity against rack-inlet conditions, not a single room signal.",
-        },
-      ],
-      flow: [
-        { name: "Digital twin", detail: "Anticipates thermal conditions" },
-        { name: "HVAC agent", detail: "Decision + execution" },
-      ],
-      statement:
-        "Manage complex cooling systems as one operating layer: improve efficiency, reliability and compute capacity.",
-    },
-    {
-      kind: "control-loop",
-      label: "Solution",
-      title: "Garvata Cooling OS:",
-      accent: "how it will work",
-      inputs: [
-        "Return air temperature",
-        "Supply air temperature",
-        "Chilled water in",
-        "Chilled water out",
-        "CO₂",
-        "Duct pressure",
-        "Relative humidity",
-        "Outside conditions",
-      ],
-      context: "Data center infrastructure management (DCIM)",
-      core: { name: "Garvata Cooling OS", text: "Supervisory + control layer" },
-      executor: "Building management system (BMS)",
-      outputs: [
-        "Fresh-air damper %",
-        "Chilled-water valve %",
-        "EC fan RPM",
-        "Pump motor RPM",
-        "CRAC/CRAH setpoints",
-      ],
-      objective: "Improve compute capacity and availability, and minimise energy use",
-    },
-    {
-      kind: "architecture",
-      label: "Solution",
-      title: "Where Cooling OS sits in the",
-      accent: "data center architecture",
-      layers: [
-        {
-          name: "DCIM",
-          role: "Workload + rack context",
-          points: ["Rack locations", "IT / rack load", "Cooling requirement", "Capacity / asset context"],
-          tag: "Rack context",
-        },
-        {
-          name: "Garvata Cooling OS",
-          role: "Agentic control layer powered by a digital twin",
-          points: ["The operating layer that turns context into coordinated action"],
-          tag: "Control · Coordinate · Predict",
-          highlight: true,
-        },
-        {
-          name: "BMS",
-          role: "Safe local execution",
-          points: ["Receives control setpoints", "Fan, valve and capacity commands", "Equipment state and alarms", "Local safety and PID loops"],
-          tag: "Execution",
-        },
-        {
-          name: "CRAC / CRAH / CDU",
-          role: "Precision cooling",
-          points: [],
-          tag: "Equipment",
-        },
-      ],
-      image: { src: "/products/precision-cooling-unit.webp", alt: "Precision cooling unit concept render" },
-      equipment: {
-        heading: "Equipment layer",
-        text: "Garvata controller + EC fan array + intelligent controls",
-      },
-      flow: "DCIM supplies context → Cooling OS proposes → BMS executes → equipment closes the loop",
-    },
+    // The problem, where Cooling OS has to work, then Cooling OS itself. For
+    // investors the halls also sit on Garvata's own hardware, which takes the
+    // place of the closing statement on that slide.
+    ...coolingOsSlides.map((slide) =>
+      slide.kind === "coverage"
+        ? {
+            ...slide,
+            statement: undefined,
+            hardware: { name: "Garvata cooling hardware", detail: "EC fans · CRAH / CRAC · CDU" },
+          }
+        : slide,
+    ),
     {
       kind: "benefits",
       label: "Value and benefits",
@@ -194,7 +81,8 @@ export const deck: DeckContent = {
       agent: {
         eyebrow: "01 · AI agent",
         name: "Garvata Cooling OS",
-        text: "Supervisory software over DCIM and BMS data: optimisation, coordination and safety checks.",
+        text: "Digital twin, DCIM and agent in one supervisory layer over the BMS: optimisation, coordination and safety checks.",
+        tag: "Anticipate · Close the loop · Control",
       },
       hardware: {
         eyebrow: "02 · Intelligent hardware",
@@ -246,9 +134,13 @@ export const deck: DeckContent = {
       accent: "roadmap",
       rows: [
         { product: "Garvata EC fans", timeline: "Deployed", remarks: "With imported motor", done: true },
-        { product: "Garvata Cooling OS", timeline: "Dec 2026", remarks: "Under development; in discussion with a few data centers" },
-        { product: "Garvata Cooling OS with DCIM", timeline: "Mar 2027", remarks: "DCIM as open source" },
-        { product: "Garvata EC motor", timeline: "Mar 2027", remarks: "Contract manufacturing" },
+        { product: "Garvata DCIM", timeline: "Done", remarks: "Part of Cooling OS; open source", done: true },
+        {
+          product: "Garvata Cooling OS",
+          timeline: "Dec 2026",
+          remarks: "Digital twin and agent under development; in discussion with a few data centers",
+        },
+        { product: "Garvata EC motor", timeline: "Mar 2027", remarks: "Localisation in progress; contract manufacturing" },
         { product: "Garvata EC fan", timeline: "Oct 2027", remarks: "In-house manufacturing set up" },
         { product: "Garvata CRAH units", timeline: "Dec 2027", remarks: "" },
         { product: "Garvata CRAC and CDU units", timeline: "Aug 2028", remarks: "Liquid cooling introduction" },
